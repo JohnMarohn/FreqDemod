@@ -66,7 +66,8 @@ class Signal(object):
             :dt: the time per point [s], a floating-point number
             
         We cast the input ``s`` into a ``numpy`` array just in case the user 
-        passes the function a list instead.            
+        passes the function a list instead.  An array of time data, 
+        ``signal[`t`]`` is created.           
             
         """    
 
@@ -91,9 +92,18 @@ class Signal(object):
 
         """
         Truncate the signal, if needed, so that it is a factor of two in length.  
-        How this is done depends on the ``mode``, which may be "start","middle",
-        or "end".  This function redefines the signal `signal[s]` as the truncated
-        signal while saving a copy of the original signal in `signal[s_original]`.
+        How this is done depends on the ``mode``, which may be 
+        
+        * "start"
+        
+        * "middle"
+        
+        * "end"  
+        
+        This function redefines the signal ``signal['s']`` as the truncated
+        signal while saving a copy of the original signal in ``signal['s_original']``.
+        Likewise, a new time array ``signal['t']`` is created and a copy of the
+        original time array saved in ``signal['t_original']``.
         
         """
 
@@ -121,6 +131,20 @@ class Signal(object):
         self.signal['t'] = self.signal['t'][array_indices]
                 
     def window(self,tw):
+                
+        """
+        Create a windowing function ``signal['w']`` and apply this windowing
+        function to the signal to yield a windowed signal ``signal['sw']``.
+        The windowing function is a concatenation of 
+        
+        1. the rising half of a Blackman filter;
+        
+        2. a constant 1.0; and 
+        
+        3. the falling half of a Blackman filter.
+        
+        The parameter ``tw`` is the rise/fall time in units of seconds.
+        """
                 
         ww = int(math.ceil((1.0*tw)/(1.0*self.signal['dt'])))
         n = len(self.signal['s'])
