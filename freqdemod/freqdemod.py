@@ -47,6 +47,7 @@ We demodulate the signal in the following steps:
 """
 
 import numpy as np
+import scipy as sp
 import math
 import copy
 from util import eng
@@ -56,14 +57,16 @@ class Signal(object):
 
     def __init__(self, s, s_name, s_unit, dt):
         
-        """Initialze the Signal object, with
+        """
+        Initialze the Signal object, with
         
             :s: the signal *vs* time, a ``numpy`` array 
             :s_name: the signal's name, a string
             :s_name: the signal's units, a string
             :dt: the time per point [s], a floating-point number
             
-        We cast the input ``s`` into a ``numpy`` array just in case the user passes the function a list instead.            
+        We cast the input ``s`` into a ``numpy`` array just in case the user 
+        passes the function a list instead.            
             
         """    
 
@@ -72,22 +75,30 @@ class Signal(object):
         signal['s'] = np.array(s)
         signal['s_name'] = s_name
         signal['s_unit'] = s_unit
+        signal['sw'] = np.array([])
+                
         signal['dt'] = dt
+        signal['t'] = dt*np.arange(0,len(np.array(s)))
         
-        signal['s_original'] = np.array([])        
+        signal['s_original'] = np.array([])
+        signal['t_original'] = np.array([]) 
+         
+        signal['w'] = np.array([])       
         
         self.signal = signal
         
     def binarate(self,mode):
 
-        """Truncate the signal, if needed, so it is a factor of two in length.  
+        """
+        Truncate the signal, if needed, so that it is a factor of two in length.  
         How this is done depends on the ``mode``, which may be "start","middle",
-        or "end".  The function redefines the signal `s` and saves a copy of the
-        original signal in `s_original`.
+        or "end".  This function redefines the signal `signal[s]` as the truncated
+        signal while saving a copy of the original signal in `signal[s_original]`.
         
         """
 
         self.signal['s_original'] = copy.deepcopy(self.signal['s'])
+        self.signal['t_original'] = copy.deepcopy(self.signal['t'])
 
         n = len(self.signal['s'])
         n2 = int(math.pow(2,int(math.floor(math.log(n, 2)))))
@@ -107,11 +118,27 @@ class Signal(object):
             array_indices = list(np.arange(n-n2,n))
             
         self.signal['s'] = self.signal['s'][array_indices]
+        self.signal['t'] = self.signal['t'][array_indices]
                 
+    def window(self,tw):
+                
+        ww = int(math.ceil((1.0*tw)/(1.0*self.signal['dt'])))
+        n = len(self.signal['s'])
+        
+        w = np.concatenate([sp.blackman(2*ww)[0:ww],
+                    np.ones(n-2*ww),
+                    sp.blackman(2*ww)[-ww:]])
+                    
+        self.signal['w'] = w
+        self.signal['sw'] = w*self.signal['s']
+        
         
     def __repr__(self):
-        """ Make a report of the (original) signal's properties including its 
+        
+        """ 
+        Make a report of the (original) signal's properties including its 
         name, unit, time step, rms, max, and min.
+        
         """
         
         s_rms = np.sqrt(np.mean(self.signal['s']**2))
