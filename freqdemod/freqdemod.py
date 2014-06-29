@@ -211,14 +211,31 @@ class Signal(object):
             :label: Eq:bp
             
             \\begin{equation}
-            \\mathrm{bp}(f) = \\frac{1}{1 + (\\frac{f - f_0}{\\Delta f})^n}
+            \\mathrm{bp}(f) = \\frac{1}{1 + (\\frac{|f - f_0|}{\\Delta f})^n}
             \\end{equation}  
-                 
+            
+        The absolute value makes the filter symmetric for odd values of 
+        :math:`n`.
                                                          
         """
         
-        pass
+        # save the filter parameters
         
+        self.signal['bw'] = bw
+        self.signal['order'] = order
+        
+        # the right-hand filter
+                
+        f_shifted = self.signal['f'] - self.signal['df']/2
+        self.signal['rh'] = (abs(f_shifted) + f_shifted)/(abs(f_shifted))        
+        swFTrh = self.signal['rh']*self.signal['swFT']
+         
+        # the bandpass filter 
+
+        self.signal['f0'] = self.signal['f'][np.argmax(abs(swFTrh))]        
+        f_scaled = (self.signal['f'] - self.signal['f0'])/bw        
+        self.signal['bp'] = 1.0/(1.0+np.power(abs(f_scaled),order))        
+        self.signal['swFTfilt'] = swFTrh*self.signal['bp']
         
     def __repr__(self):
         
