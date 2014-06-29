@@ -43,7 +43,6 @@ We demodulate the signal in the following steps:
 
 7. Calculate the "instantaneous" frequency :math:`f(t)` by dividing the instantaneous phase data into equal-time segments and fitting each segment to a line.  The average frequency :math:`f(t)` during each time segment is the slope of the respective line.
 
-
 """
 
 import numpy as np
@@ -77,10 +76,14 @@ class Signal(object):
         signal['s_name'] = s_name
         signal['s_unit'] = s_unit
         signal['sw'] = np.array([])
+        signal['swFT'] = np.array([])
+
                 
         signal['dt'] = dt
         signal['t'] = dt*np.arange(0,len(np.array(s)))
-        
+        signal['df'] = 0.0
+        signal['f'] = np.array([])
+                
         signal['s_original'] = np.array([])
         signal['t_original'] = np.array([]) 
          
@@ -155,6 +158,66 @@ class Signal(object):
                     
         self.signal['w'] = w
         self.signal['sw'] = w*self.signal['s']
+        
+    def fft(self):
+        
+        """
+        Take the Fast Fourier Transform of the windowed signal, ``self.signal['sw']``,
+        and store the result in ``self.signal['swFT']``.  Create a frequency axis for
+        plotting, ``self.signal['f']``, and compute the frequency step, ``self.signal['df']``.
+        """
+        
+        self.signal['swFT'] = \
+            np.fft.fftshift(
+                np.fft.fft(
+                    self.signal['sw']))
+        
+        self.signal['f'] = \
+            np.fft.fftshift(
+                np.fft.fftfreq(
+                    self.signal['swFT'].size,
+                    d=self.signal['dt']))
+                    
+        self.signal['df'] = self.signal['f'][1] - self.signal['f'][0]
+        
+    def filter(self,bw,order=50):
+        
+        """
+        The input parameters are:
+            
+            :bw: filter bandwidth [Hz], :math:`\\Delta f` 
+            :order: filter order [unitless], :math:`n`.  Defaults to 50.
+        
+        Apply two filters to the Fourier transformed data.  The first filter
+        sets the negative-frequency components of the FT'ed data to zero, giving 
+        a "right handed" spectrum.  The associated filtering function is
+        
+        .. math::
+            :label: Eq:rh
+            
+            \\begin{equation}
+            \\mathrm{rh}(f) = \\begin{cases}
+                0 & \\text{if $f <0$} \\\\
+                0 & \\text{if $f = 0$} \\\\
+                2 & \\text{if $f > 0$}
+            \\end{cases}
+            \\end{equation}
+        
+        The second filter is a bandpass filter centered at the oscillation 
+        frequency, :math:`f_0`, which we take to be the largest peak in the 
+        right handed spectrum.  The associated filtering function is
+
+        .. math::
+            :label: Eq:bp
+            
+            \\begin{equation}
+            \\mathrm{bp}(f) = \\frac{1}{1 + (\\frac{f - f_0}{\\Delta f})^n}
+            \\end{equation}  
+                 
+                                                         
+        """
+        
+        pass
         
         
     def __repr__(self):
