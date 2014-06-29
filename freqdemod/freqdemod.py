@@ -167,10 +167,14 @@ class Signal(object):
         plotting, ``self.signal['f']``, and compute the frequency step, ``self.signal['df']``.
         """
         
+        # Fourier transform the data
+        
         self.signal['swFT'] = \
             np.fft.fftshift(
                 np.fft.fft(
                     self.signal['sw']))
+        
+        # make a frequency axis
         
         self.signal['f'] = \
             np.fft.fftshift(
@@ -215,7 +219,10 @@ class Signal(object):
             \\end{equation}  
             
         The absolute value makes the filter symmetric for odd values of 
-        :math:`n`.
+        :math:`n`.  The filtered signal is stored in the array
+        ``self.signal['swFTfilt']``.  The right-hand and bandpass filters
+        are stored as ``self.signal['rh']`` and ``self.signal['bp']``,
+        respectively.
                                                          
         """
         
@@ -236,6 +243,20 @@ class Signal(object):
         f_scaled = (self.signal['f'] - self.signal['f0'])/bw        
         self.signal['bp'] = 1.0/(1.0+np.power(abs(f_scaled),order))        
         self.signal['swFTfilt'] = swFTrh*self.signal['bp']
+        
+    def ifft(self):
+        
+        """
+        Apply an Inverse Fast Fourier Transform to the FT'ed data.
+        """
+        
+        self.signal['z'] = self.signal['swFTfilt'] = \
+            np.fft.ifft(
+                np.fft.fftshift(
+                    self.signal['swFTfilt']))
+                    
+        self.signal['theta'] = np.unwrap(np.angle(self.signal['z']))/(2*np.pi)
+        self.signal['a'] = abs(self.signal['z'])
         
     def __repr__(self):
         
