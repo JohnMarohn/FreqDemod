@@ -47,7 +47,10 @@ We demodulate the signal in the following steps:
 """
 
 import numpy as np
+import math
+import copy
 from util import eng
+
 
 class Signal(object):
 
@@ -60,25 +63,56 @@ class Signal(object):
             :s_name: the signal's units, a string
             :dt: the time per point [s], a floating-point number
             
+        We cast the input ``s`` into a ``numpy`` array just in case the user passes the function a list instead.            
+            
         """    
 
         signal = {}
-        signal['s'] = s
+
+        signal['s'] = np.array(s)
         signal['s_name'] = s_name
         signal['s_unit'] = s_unit
         signal['dt'] = dt
         
+        signal['s_original'] = np.array([])        
+        
         self.signal = signal
         
-    def __window__(self,t_rise):
+    def binarate(self,mode):
+
+        """Truncate the signal, if needed, so it is a factor of two in length.  
+        How this is done depends on the ``mode``, which may be "start","middle",
+        or "end".  The function redefines the signal `s` and saves a copy of the
+        original signal in `s_original`.
         
-        pass
+        """
+
+        self.signal['s_original'] = copy.deepcopy(self.signal['s'])
+
+        n = len(self.signal['s'])
+        n2 = int(math.pow(2,int(math.floor(math.log(n, 2)))))
+        
+        if mode == "middle":
+                  
+            n_start = int(math.floor((n - n2)/2))
+            n_stop = int(n_start + n2)
+            array_indices = list(np.arange(n_start,n_stop)) 
+
+        elif mode == "start": 
+            
+            array_indices = list(np.arange(0,n2))
+            
+        elif mode == "end":
+            
+            array_indices = list(np.arange(n-n2,n))
+            
+        self.signal['s'] = self.signal['s'][array_indices]
+                
         
     def __repr__(self):
-        """ Make a report of the signal's properties including its name, 
-        unit, time step, rms, max, and min.
+        """ Make a report of the (original) signal's properties including its 
+        name, unit, time step, rms, max, and min.
         """
-        
         
         s_rms = np.sqrt(np.mean(self.signal['s']**2))
         s_min = np.min(self.signal['s'])
@@ -89,6 +123,7 @@ class Signal(object):
         temp.append("======")
         temp.append("signal name: {0}".format(self.signal['s_name']))
         temp.append("signal unit: {0}".format(self.signal['s_unit']))
+        temp.append("signal lenth = {}".format(len(self.signal['s'])))
         temp.append("time step = {0:.3f} us".format(self.signal['dt']*1E6))
         temp.append("rms = {}".format(eng(s_rms)))
         temp.append("max = {}".format(eng(s_max)))
