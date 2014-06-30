@@ -32,7 +32,7 @@ import unittest
 
 class FilterTests(unittest.TestCase):
     """
-    Make sure the filters are set up corrections
+    Make sure the filters are set up correctly
     """
     
     def setUp(self):
