@@ -53,7 +53,8 @@ We demodulate the signal in the following steps:
 import numpy as np 
 import scipy as sp 
 import math
-import copy 
+import copy
+import matplotlib.pyplot as plt 
 from util import eng
 
 class Signal(object):
@@ -457,8 +458,31 @@ def main():
     R.ifft()
     R.trim()
 
+    # Print out a report
+
     print(R)
+
+    # Plot the signal
     
+    plt.plot(1E6*R.signal['t'][0:100],R.signal['z'].real[0:100])
+    plt.plot(1E6*R.signal['t'][0:100],R.signal['z'].imag[0:100])
+    # plt.xlim(0,R.signal['t_original'][-1]*1E6)
+    plt.ylabel(R.signal['s_name'] + " [" + R.signal['s_unit'] + "]")
+    plt.xlabel("t [us]")
+    plt.show()
+    
+    plt.plot(R.signal['t']*1E6,R.signal['theta'])
+    plt.xlim(0,R.signal['t_original'][-1]*1E6)
+    plt.ylabel("phase [cycles/sec]")
+    plt.xlabel("t [us]")
+    plt.show()
+    
+    plt.plot(R.signal['t']*1E6,R.signal['a'])
+    plt.xlim(0,R.signal['t_original'][-1]*1E6)
+    plt.ylabel("amplitude")
+    plt.xlabel("t [us]")
+    plt.show()    
+                
     return(R)
 
 if __name__ == "__main__":
