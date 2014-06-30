@@ -76,6 +76,8 @@ class Signal(object):
         :param str signal['s_unit']: a copy of the signal's unit
         :param float signal['dt']: a copy of the time per point [s]
         :param np.array signal['t']: an array of time data [s]
+        :param str report: a string summarizing in words what has
+            been done to the signal 
         
         """
 
@@ -88,7 +90,16 @@ class Signal(object):
         signal['dt'] = dt
         signal['t'] = dt*np.arange(0,len(np.array(s)))
 
-        self.signal = signal
+        self.signal = signal        
+                        
+        self.report = []
+        
+        new_report = []
+        new_report.append("Add a signal {0}[{1}]".format(s_name,s_unit))
+        new_report.append("of length {0}".format(np.array(s).size))
+        new_report.append("and time step {0:.3f} us.".format(1E6*dt))
+        
+        self.report.append(" ".join(new_report))
 
     def binarate(self,mode):
 
@@ -118,25 +129,45 @@ class Signal(object):
         self.signal['s_original'] = copy.deepcopy(self.signal['s'])
         self.signal['t_original'] = copy.deepcopy(self.signal['t'])
 
-        n = len(self.signal['s']) 
+        n = self.signal['s'].size 
         n2 = int(math.pow(2,int(math.floor(math.log(n, 2)))))
+
+        n_start = 0
+        n_stop = n
+        n_msg = "N/A"
 
         if mode == "middle":
 
             n_start = int(math.floor((n - n2)/2))
             n_stop = int(n_start + n2)
-            array_indices = list(np.arange(n_start,n_stop))
+            n_msg = "beginning and end"
 
         elif mode == "start":
-
-            array_indices = list(np.arange(0,n2))
+            
+            n_start = 0
+            n_stop = n2
+            n_msg = "end"           
 
         elif mode == "end":
 
-            array_indices = list(np.arange(n-n2,n))
+            n_start = n-n2
+            n_stop = n
+            n_msg = "beginning"
+
+        array_indices = list(np.arange(n_start,n_stop))
 
         self.signal['s'] = self.signal['s'][array_indices]
         self.signal['t'] = self.signal['t'][array_indices]
+
+        new_report = []
+        new_report.append("Truncate the signal to be {0}".format(n2))
+        new_report.append("points long, a power of two.")
+        new_report.append("This was done by chopping points off the")
+        new_report.append("{0} of the signal array,".format(n_msg))
+        new_report.append("that is, by using points")
+        new_report.append("{0} up to {1}.".format(n_start,n_stop))
+        
+        self.report.append(" ".join(new_report))
 
     def window(self,tw):
 
@@ -164,6 +195,7 @@ class Signal(object):
 
         ww = int(math.ceil((1.0*tw)/(1.0*self.signal['dt']))) 
         n = len(self.signal['s'])
+        tw_actual = ww*self.signal['dt'] 
 
         w = np.concatenate([sp.blackman(2*ww)[0:ww],
                             np.ones(n-2*ww),
@@ -171,6 +203,14 @@ class Signal(object):
 
         self.signal['w'] = w
         self.signal['sw'] = w*self.signal['s']
+        
+        new_report = []
+        new_report.append("Window the signal with a rising/falling")
+        new_report.append("blackman filter having a rise/fall time of")
+        new_report.append("{0:.3f} us".format(1E6*tw_actual))
+        new_report.append("({0} points).".format(ww))
+        
+        self.report.append(" ".join(new_report))
 
     def fft(self):
 
@@ -203,6 +243,11 @@ class Signal(object):
                     d=self.signal['dt']))
 
         self.signal['df'] = self.signal['f'][1] - self.signal['f'][0]
+
+        new_report = []
+        new_report.append("Fourier transform the windowed signal.")
+        
+        self.report.append(" ".join(new_report))
 
     def filter(self,bw,order=50):
 
@@ -282,6 +327,18 @@ class Signal(object):
         # the estimated delay time
         
         self.signal['td'] = 1.25/bw
+        
+        # report
+        
+        new_report = []
+        new_report.append("Reject negative frequencies,")
+        new_report.append("apply a bandpass filter")
+        new_report.append("of bandwidth {0:.1f} Hz".format(bw))
+        new_report.append("& order {0},".format(order))
+        new_report.append("and set the delay time to")
+        new_report.append("{0} us.".format(1E6*self.signal['td']))
+        
+        self.report.append(" ".join(new_report))
 
     def ifft(self):
 
@@ -308,6 +365,11 @@ class Signal(object):
         self.signal['theta'] = np.unwrap(np.angle(self.signal['z']))/(2*np.pi)
         self.signal['a'] = abs(self.signal['z'])
         
+        new_report = []
+        new_report.append("Apply an inverse Fourier transform.")
+        
+        self.report.append(" ".join(new_report))
+        
     def trim(self):
     
         """
@@ -330,8 +392,14 @@ class Signal(object):
         self.signal['theta'] = self.signal['theta'][id:-id]
         self.signal['a'] = self.signal['a'][id:-id]
         self.signal['t'] = self.signal['t'][id:-id]
+ 
+        new_report = []
+        new_report.append("Remove the leading and trailing ripple")
+        new_report.append("from the complex signal.")
+        new_report.append("Compute the signal phase and amplitude.")
         
-    
+        self.report.append(" ".join(new_report))        
+                      
     def __repr__(self):
 
         """
@@ -355,6 +423,44 @@ class Signal(object):
         temp.append("rms = {}".format(eng(s_rms)))
         temp.append("max = {}".format(eng(s_max)))
         temp.append("min = {}".format(eng(s_min)))
+        temp.append(" ")
+        temp.append("Signal Report")
+        temp.append("=============")
+        temp.append("\n\n".join(["* " + msg for msg in self.report]))
 
         return '\n'.join(temp)
 
+def main():
+    
+    # Generate a signal
+    #
+    # f0 = signal frequency
+    # fd = digitization frequency
+    # nt = number of signal points
+    
+    f0 = 4.457E3  
+    fd = 50.0E3 
+    nt = 600
+    
+    dt = 1/fd
+    t = dt*np.arange(nt)
+    s = np.sin(2*np.pi*f0*t)
+    
+    R = Signal(s,"x","nm",1/fd)
+    
+    # Analyze the signal
+    
+    R.binarate("middle")
+    R.window(201E-6)
+    R.fft()
+    R.filter(bw=4E3)
+    R.ifft()
+    R.trim()
+
+    print(R)
+    
+    return(R)
+
+if __name__ == "__main__":
+    
+    R = main()
