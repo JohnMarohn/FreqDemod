@@ -54,6 +54,7 @@ import numpy as np
 import scipy as sp 
 import math
 import copy
+import time
 import matplotlib.pyplot as plt 
 from util import eng
 
@@ -97,8 +98,9 @@ class Signal(object):
         
         new_report = []
         new_report.append("Add a signal {0}[{1}]".format(s_name,s_unit))
-        new_report.append("of length {0}".format(np.array(s).size))
-        new_report.append("and time step {0:.3f} us.".format(1E6*dt))
+        new_report.append("of length {0},".format(np.array(s).size))
+        new_report.append("time step {0:.3f} us,".format(1E6*dt))
+        new_report.append("and duration {0:.3f} s".format(signal['s'].size*dt))
         
         self.report.append(" ".join(new_report))
 
@@ -230,6 +232,8 @@ class Signal(object):
 
         # Fourier transform the data
          
+        start = time.time() 
+         
         self.signal['swFT'] = \
             np.fft.fftshift(
                 np.fft.fft(
@@ -245,8 +249,13 @@ class Signal(object):
 
         self.signal['df'] = self.signal['f'][1] - self.signal['f'][0]
 
+        stop = time.time()
+        t_calc = stop - start
+
         new_report = []
         new_report.append("Fourier transform the windowed signal.")
+        new_report.append("It took {0:.1f} ms".format(1E3*t_calc))
+        new_report.append("to compute the FFT.")
         
         self.report.append(" ".join(new_report))
 
@@ -401,12 +410,72 @@ class Signal(object):
         
         self.report.append(" ".join(new_report))
         
-    def fit(self,dt_chunk):
+    def fit(self,dt_chunk_target):
         
         """
         Fit the phase versus time data to extract the frequency 
-        """       
-                      
+        """
+
+        # work out the chunking details
+
+        n_per_chunk = int(round(dt_chunk_target/self.signal['dt']))
+        dt_chunk = self.signal['dt']*n_per_chunk
+        n_tot_chunk = int(round(self.signal['theta'].size/n_per_chunk))
+        n_total = n_per_chunk*n_tot_chunk
+        
+        # report the chunking details
+        
+        new_report = []
+        new_report.append("Curve fit the phase data.")
+        new_report.append("The target chunk duration is")
+        new_report.append("{0:.3f} us;".format(1E6*dt_chunk_target))
+        new_report.append("the actual chunk duration is")
+        new_report.append("{0:.3f} us".format(1E6*dt_chunk))
+        new_report.append("({0} points).".format(n_per_chunk))
+        new_report.append("{0} chunks will be curve fit;".format(n_tot_chunk))
+        new_report.append("{0:.3f} ms of data.".format(1E3*self.signal['dt']*n_total))
+        
+        start = time.time() 
+        
+        # reshape the phase data
+        #  zero the phase at start of each chunk
+        
+        s_sub = self.signal['theta'][0:n_total].reshape((n_tot_chunk,n_per_chunk))
+        s_sub_reset = s_sub - s_sub[:,:,np.newaxis][:,0,:]*np.ones(n_per_chunk)
+
+        # reshape the time data
+        #  zero the time at start of each chunk
+
+        t_sub = self.signal['t'][0:n_total].reshape((n_tot_chunk,n_per_chunk))
+        t_sub_reset = t_sub - t_sub[:,:,np.newaxis][:,0,:]*np.ones(n_per_chunk)
+
+        # use linear least-squares fitting formulas
+        #  to calculate the best-fit slope
+
+        SX = (self.signal['dt'])*0.50*(n_per_chunk-1)*(n_per_chunk)
+        SXX = (self.signal['dt'])**2*(1/6.0)*\
+            (n_per_chunk)*(n_per_chunk-1)*(2*n_per_chunk-1)
+
+        SY = np.sum(s_sub_reset,axis=1)
+        SXY = np.sum(t_sub_reset*s_sub_reset,axis=1)
+
+        slope = (n_per_chunk*SXY-SX*SY)/(n_per_chunk*SXX-SX*SX)
+
+        stop = time.time()
+        t_calc = stop - start
+                                
+        # save the slope and the associated time axis
+        
+        self.signal['fit_freq'] = slope
+        self.signal['fit_time'] = t_sub[:,0]
+        
+        # preprare th report
+        
+        new_report.append("It took {0:.1f} ms".format(1E3*t_calc))
+        new_report.append("to perform the curve fit and obtain the frequency.")
+                 
+        self.report.append(" ".join(new_report))       
+                                            
     def __repr__(self):
 
         """
@@ -445,9 +514,9 @@ def main():
     # fd = digitization frequency
     # nt = number of signal points
     
-    f0 = 4.457E3  
+    f0 = 5.00E3  
     fd = 50.0E3 
-    nt = 600
+    nt = 600E3
     
     dt = 1/fd
     t = dt*np.arange(nt)
@@ -463,6 +532,7 @@ def main():
     R.filter(bw=4E3)
     R.ifft()
     R.trim()
+    R.fit(201.34E-6)
 
     # Print out a report
 
@@ -488,7 +558,13 @@ def main():
     plt.ylabel("amplitude [" + R.signal['s_unit'] + "]")
     plt.xlabel("t [us]")
     plt.show()    
-                
+
+    plt.plot(R.signal['fit_time']*1E6,R.signal['fit_freq'])
+    plt.xlim(0,R.signal['t_original'][-1]*1E6)
+    plt.ylabel("best-fit frequency [Hz]")
+    plt.xlabel("t [us]")
+    plt.show()                    
+                                                
     return(R)
 
 if __name__ == "__main__":
