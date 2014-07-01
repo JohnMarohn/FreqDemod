@@ -5,6 +5,11 @@
 # 
 # For formatting fields, see 
 # http://sphinx-doc.org/domains.html#info-field-lists
+#
+# From http://nbviewer.ipython.org/github/jrjohansson/scientific-python-lectures/blob/master/Lecture-4-Matplotlib.ipynb
+# import matplotlib
+# matplotlib.rcParams.update({'font.size': 18, 'font.family': 'STIXGeneral', 'mathtext.fontset': 'stix'})
+
 
 """
 
@@ -55,8 +60,18 @@ import scipy as sp
 import math
 import copy
 import time
+
 import matplotlib.pyplot as plt 
 from util import eng
+
+# Set the default font and size for the figure
+
+font = {'family' : 'serif',
+        'weight' : 'normal',
+        'size'   : 24}
+
+plt.rc('font', **font)
+plt.rcParams['figure.figsize'] = 10, 8
 
 class Signal(object):
 
@@ -397,7 +412,8 @@ class Signal(object):
         
         """
         
-        id = self.signal['td']/self.signal['dt']
+        id = int(self.signal['td']/self.signal['dt'])
+        
         self.signal['z'] = self.signal['z'][id:-id]
         self.signal['theta'] = self.signal['theta'][id:-id]
         self.signal['a'] = self.signal['a'][id:-id]
@@ -405,7 +421,7 @@ class Signal(object):
  
         new_report = []
         new_report.append("Remove the leading and trailing ripple")
-        new_report.append("from the complex signal.")
+        new_report.append("({0} points) from the complex signal.".format(id))
         new_report.append("Compute the signal phase and amplitude.")
         
         self.report.append(" ".join(new_report))
@@ -533,7 +549,45 @@ class Signal(object):
         new_report.append("to perform the curve fit and obtain the frequency.")
                  
         self.report.append(" ".join(new_report))       
-                                            
+                       
+    def plot_fit(self):
+       
+        """
+        Plot the frequency [Hz] *vs* time [ms].
+        """
+        
+        # plotting using tex is nice, but slow
+        #  so only use it temporarily for this plot
+        
+        old_param = plt.rcParams['text.usetex']
+        plt.rcParams['text.usetex'] = True
+        
+        # create the plot
+        
+        fig=plt.figure(facecolor='w',figsize=(6,3))
+        plt.plot(self.signal['fit_time'],self.signal['fit_freq'])
+        
+        # axes limits and labels
+        
+        plt.xlim([self.signal['t_original'][0],self.signal['t_original'][-1]])
+        plt.xlabel(r"$t \: \mathrm{[s]}$")
+        plt.ylabel(r"$f \: \mathrm{[Hz]}$")
+        
+        # set text spacing so that the plot is pleasing to the eye
+
+        plt.locator_params(axis = 'x', nbins = 4)
+        plt.locator_params(axis = 'y', nbins = 4)
+        fig.subplots_adjust(bottom=0.15,left=0.12) 
+        
+        # don't forget to show the plot
+        
+        plt.show()
+
+        # don't forget to reset the tex option
+
+        plt.rcParams['text.usetex'] = old_param
+                                                                             
+                                                                                      
     def __repr__(self):
 
         """
@@ -574,6 +628,7 @@ def main():
     
     f0 = 5.00E3  
     fd = 50.0E3 
+    # nt = 512*1024
     nt = 600E3
     
     dt = 1/fd
@@ -598,31 +653,32 @@ def main():
 
     # Plot the signal
     
-    plt.plot(1E6*R.signal['t'][0:100],R.signal['z'].real[0:100])
-    plt.plot(1E6*R.signal['t'][0:100],R.signal['z'].imag[0:100])
-    # plt.xlim(0,R.signal['t_original'][-1]*1E6)
+    plt.plot(R.signal['t'][0:100],R.signal['z'].real[0:100])
+    plt.plot(R.signal['t'][0:100],R.signal['z'].imag[0:100])
     plt.ylabel(R.signal['s_name'] + " [" + R.signal['s_unit'] + "]")
-    plt.xlabel("t [us]")
+    plt.xlabel("t [s]")
     plt.show()
     
-    plt.plot(R.signal['t']*1E6,R.signal['theta'])
-    plt.xlim(0,R.signal['t_original'][-1]*1E6)
+    plt.plot(R.signal['t'],R.signal['theta'])
+    plt.xlim(0,R.signal['t_original'][-1])
     plt.ylabel("phase [cycles]")
-    plt.xlabel("t [us]")
+    plt.xlabel("t [s]")
     plt.show()
     
-    plt.plot(R.signal['t']*1E6,R.signal['a'])
-    plt.xlim(0,R.signal['t_original'][-1]*1E6)
+    plt.plot(R.signal['t'],R.signal['a'])
+    plt.xlim(0,R.signal['t_original'][-1])
     plt.ylabel("amplitude [" + R.signal['s_unit'] + "]")
-    plt.xlabel("t [us]")
+    plt.xlabel("t [s]")
     plt.show()    
 
-    plt.plot(R.signal['fit_time']*1E6,R.signal['fit_freq'])
-    plt.xlim(0,R.signal['t_original'][-1]*1E6)
+    plt.plot(R.signal['fit_time'],R.signal['fit_freq'])
+    plt.xlim(0,R.signal['t_original'][-1])
     plt.ylabel("best-fit frequency [Hz]")
-    plt.xlabel("t [us]")
+    plt.xlabel("t [s]")
     plt.show()                    
-                                                
+                       
+    R.plot_fit()                                            
+                                                                                                  
     return(R)
 
 if __name__ == "__main__":
