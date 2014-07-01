@@ -353,7 +353,7 @@ class Signal(object):
             **z.real** is a filtered copy of the original signal, while
             **z.imag** is a phase-shifted (quadrature) copy of the original
             signal
-        :param np.array signal['theta']: the signal phase [Hz, not radians]
+        :param np.array signal['theta']: the signal phase [cycles, not radians]
         :param np.array signal['a']: the signal amplitude
         
         """
@@ -399,7 +399,13 @@ class Signal(object):
         new_report.append("from the complex signal.")
         new_report.append("Compute the signal phase and amplitude.")
         
-        self.report.append(" ".join(new_report))        
+        self.report.append(" ".join(new_report))
+        
+    def fit(self,dt_chunk):
+        
+        """
+        Fit the phase versus time data to extract the frequency 
+        """       
                       
     def __repr__(self):
 
@@ -473,13 +479,13 @@ def main():
     
     plt.plot(R.signal['t']*1E6,R.signal['theta'])
     plt.xlim(0,R.signal['t_original'][-1]*1E6)
-    plt.ylabel("phase [cycles/sec]")
+    plt.ylabel("phase [cycles]")
     plt.xlabel("t [us]")
     plt.show()
     
     plt.plot(R.signal['t']*1E6,R.signal['a'])
     plt.xlim(0,R.signal['t_original'][-1]*1E6)
-    plt.ylabel("amplitude")
+    plt.ylabel("amplitude [" + R.signal['s_unit'] + "]")
     plt.xlabel("t [us]")
     plt.show()    
                 
