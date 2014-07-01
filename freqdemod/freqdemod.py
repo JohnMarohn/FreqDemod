@@ -413,7 +413,63 @@ class Signal(object):
     def fit(self,dt_chunk_target):
         
         """
-        Fit the phase versus time data to extract the frequency 
+        Fit the phase *vs* time data to a line.  The slope of the line is the
+        (instantaneous) frequency. The phase data is broken into "chunks", with  
+        
+        :param float dt_chunk_target: the target chunk duration [s]
+        
+        If the chosen duration is not an integer multiple of the digitization
+        time, then find the nearest chunk duration which is.  Create the 
+        following objects in the *Signal* object
+        
+        :param np.array signal['fit_time']: the time at the start of each chunk
+        :param np.array signal['fit_freq']: the best-fit frequency during each chunk
+        
+        Calculate the slope :math:`m` of the phase *vs* time line using
+        the linear-least squares formula
+        
+        .. math::
+            
+            \\begin{equation}
+            m = \\frac{n \\: S_{xy} - S_x S_y}{n \\: S_{xx} - (S_x)^2}
+            \\end{equation}
+        
+        with :math:`x` representing time, :math:`y` representing
+        phase, and :math:`n` the number of data points contributing to the 
+        fit.  The sums involving the :math:`x` (e.g., time) data can be computed
+        analytically because the time data here are equally spaced.  With the 
+        time per point :math:`\\Delta t`, 
+        
+        .. math::
+            
+            \\begin{equation}
+            S_x = \\sum_{k = 0}^{n-1} x_k = \\sum_{k = 0}^{n-1} k \\: \\Delta t
+             = \\frac{1}{2} \\Delta t \\: n (n-1)
+            \\end{equation}
+            
+            \\begin{equation}
+            S_{xx} = \\sum_{k = 0}^{n-1} x_k^2 = \\sum_{k = 0}^{n-1} k^2 \\: {\\Delta t}^2
+             = \\frac{1}{6} \\Delta t \\: n (n-1) (2n -1)
+            \\end{equation}
+        
+        The sums involving :math:`y` (e.g., phase) can not be similarly
+        precomputed. These sums are
+
+        .. math:: 
+                       
+             \\begin{equation}
+             S_y =  \\sum_{k = 0}^{n-1} y_k = \\sum_{k = 0}^{n-1} \\phi_k
+             \\end{equation} 
+
+             \\begin{equation}
+             S_{xy} =  \\sum_{k = 0}^{n-1} x_k y_k = \\sum_{k = 0}^{n-1} (k \\Delta t) \\: \\phi_k
+             \\end{equation}         
+        
+        To avoid problems with round-off error, a constant is subtracted from 
+        the time and phase arrays in each chuck so that the time array
+        and phase array passed to the least-square formula each start at
+        zero.  
+                                                                                                                
         """
 
         # work out the chunking details
@@ -433,7 +489,8 @@ class Signal(object):
         new_report.append("{0:.3f} us".format(1E6*dt_chunk))
         new_report.append("({0} points).".format(n_per_chunk))
         new_report.append("{0} chunks will be curve fit;".format(n_tot_chunk))
-        new_report.append("{0:.3f} ms of data.".format(1E3*self.signal['dt']*n_total))
+        new_report.append("{0:.3f} ms of data.".\
+            format(1E3*self.signal['dt']*n_total))
         
         start = time.time() 
         
@@ -469,7 +526,8 @@ class Signal(object):
         self.signal['fit_freq'] = slope
         self.signal['fit_time'] = t_sub[:,0]
         
-        # preprare th report
+        # report the curve-fitting details
+        #  and prepare the report
         
         new_report.append("It took {0:.1f} ms".format(1E3*t_calc))
         new_report.append("to perform the curve fit and obtain the frequency.")
