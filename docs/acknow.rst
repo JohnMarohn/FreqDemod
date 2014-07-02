@@ -1,8 +1,7 @@
-Acknowledgements
+acknowledgements
 ================
 
-Contributors
-------------
+**Contributors**: 
 
 * John A. Marohn (JAM; Cornell University; `jam99@cornell.edu <mailto:jam99@cornell.edu>`__)
 
@@ -10,8 +9,7 @@ Contributors
 
 * Sarah R. Nathan (SRN; Cornell University)
 
-Funding
--------
+**Funding**:
 
 The authors acknowledge salary support from the following funding sources:  
 
@@ -25,5 +23,5 @@ The authors acknowledge salary support from the following funding sources:
 
 #. Cornell University -- JAM, SRN 
 
-*Any opinions, findings, conclusions, or recommendations expressed in this code are those of the author(s) and do not necessarily reflect the views of Cornell University, the NSF, the NIH, or the ARO.*
+* Any opinions, findings, conclusions, or recommendations expressed in this code are those of the author(s) and do not necessarily reflect the views of Cornell University, the NSF, the NIH, or the ARO.*
 
