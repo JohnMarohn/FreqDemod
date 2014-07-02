@@ -1,4 +1,4 @@
-Welcome freqdemod's documentation!
+welcome freqdemod's documentation!
 ==================================
 
 Contents:
@@ -15,7 +15,7 @@ Contents:
    acknow.rst
 
 
-Indices and tables
+indices and tables
 ==================
 
 * :ref:`genindex`
