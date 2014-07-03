@@ -550,10 +550,10 @@ class Signal(object):
                  
         self.report.append(" ".join(new_report))       
                        
-    def plot_fit(self):
+    def plot_phase_fit(self):
        
         """
-        Plot the frequency [Hz] *vs* time [ms].
+        Plot the frequency [Hz] *vs* time [s].
         """
         
         # plotting using tex is nice, but slow
@@ -677,7 +677,7 @@ def main():
     plt.xlabel("t [s]")
     plt.show()                    
                        
-    R.plot_fit()                                            
+    R.plot_phase_fit()                                            
                                                                                                   
     return(R)
 
