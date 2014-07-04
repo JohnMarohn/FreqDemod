@@ -193,7 +193,7 @@ class Signal(object):
         Create a windowing function and apply it to the signal array
         **signal['s']**.
         
-        :param float tw: the window's rist/fall time [s] 
+        :param float tw: the window's target rise/fall time [s] 
         
         The windowing function is a concatenation of
         
@@ -208,7 +208,12 @@ class Signal(object):
         :param np.array signal['w']: the windowing function
         :param np.array signal['sw']: the signal multiplied by the 
             windowing function
-        
+        :param np.array signal[tw_actual]: the actual rise/fall file [s]
+
+        The actual rise/fall time may not exactly equal the target rise/fall
+        time if the requested time is not an integer multiple of the signal's
+        time per point.
+                
         """
 
         ww = int(math.ceil((1.0*tw)/(1.0*self.signal['dt']))) 
@@ -221,6 +226,8 @@ class Signal(object):
 
         self.signal['w'] = w
         self.signal['sw'] = w*self.signal['s']
+        self.signal['tw_actual'] = tw_actual
+        
         
         new_report = []
         new_report.append("Window the signal with a rising/falling")
@@ -739,7 +746,91 @@ class Signal(object):
         
         plt.show()
         plt.rcParams['text.usetex'] = old_param                                                                                                                                
-                                                                                                                                                                                                                                                                                                                                                                                            
+
+    def plot_signal(self):
+        
+        """Plot the windowed signal *vs* time.  Before you call this function,
+        you must have run the ``.window()`` function first.  Because the signal
+        is likely to have many oscillations, draw subplots that zoom in to the
+        beginning, middle, and end of the data, respectively.  
+        
+        """
+
+        # at the beginning and end
+        #  look at a stretch of data which is 2x the rise/fall time
+        #  determined by the .window() function
+        
+        i0_del = int(math.floor(2*self.signal['tw_actual']/self.signal['dt']))
+        i_end = self.signal['t'].size
+          
+        # For the middle section, we want to display approximately 
+        #  10 cycles of the signal.  We may not have taken the FT of the
+        #  data yet.  So here we take an FT of the leading 1024 points 
+        #  of the signal and use it to determine the peak frequency
+        #  (which may be negative)                              
+        
+        sFT = np.fft.fftshift(np.fft.fft(self.signal['s'][0:1024]))
+        f = np.fft.fftshift(np.fft.fftfreq(1024,d=self.signal['dt']))        
+        f0_est = f[np.argmax(abs(sFT))]
+        t_delta = 10/abs(f0_est)
+        i1_del = int(math.floor(t_delta/self.signal['dt']))
+                
+        # use tex-formatted axes labels temporarily for this plot
+        
+        old_param = plt.rcParams['text.usetex']
+        plt.rcParams['text.usetex'] = True        
+        
+        # compute plot labels
+        
+        x_label = r"$\Delta t \: \mathrm{[ms]}$"
+        y_label = r"$" + "{}".format(self.signal['s_name']) + \
+            "\mathrm{[" + "{}".format(self.signal['s_unit']) + "]}$"
+        
+        # create the plot
+        
+        fig=plt.figure(facecolor='w')
+        
+        plt.subplot(131)    
+        i1 = list(np.arange(0,i0_del))
+        t1 = 1E3*(self.signal['t'][i1])
+        plt.plot(t1-t1[0],self.signal['sw'][i1])
+        plt.xlim(0,max(t1-t1[0]))
+        plt.xlabel(x_label,labelpad=20)
+        plt.ylabel(y_label)
+        plt.locator_params(axis = 'x', nbins = 4)
+        
+        ax2=plt.subplot(132)
+        i2 = list(np.arange(i_end/2-i1_del/2,i_end/2+i1_del/2))
+        t2 = 1E3*(self.signal['t'][i2])
+        plt.plot(t2-t2[0],self.signal['sw'][i2])
+        plt.xlim(0,max(t2-t2[0]))
+        plt.xlabel(x_label,labelpad=20)
+        plt.setp(ax2.get_yticklabels(), visible=False)
+        plt.locator_params(axis = 'x', nbins = 4)
+        
+        ax3=plt.subplot(133)
+        i3 = list(np.arange(i_end-i0_del,i_end))
+        t3 = 1E3*(self.signal['t'][i3])
+        plt.plot(t3-t3[0],self.signal['sw'][i3])
+        plt.xlim(0,max(t3-t3[0]))
+        plt.xlabel(x_label,labelpad=20)
+        plt.setp(ax3.get_yticklabels(), visible=False)
+        plt.locator_params(axis = 'x', nbins = 4)        
+        
+        title_str = "signal at time offsets " + \
+            "{0:.4f}, ".format(t1[0]/1E3) + \
+            "{0:.4f}, and ".format(t2[0]/1E3) + \
+            "{0:.4f} s".format(t3[0]/1E3)
+        
+        plt.title(title_str, size=14, horizontalalignment='right') 
+        
+        # clean up label spacings, show the plot, and reset the tex option
+        
+        fig.subplots_adjust(bottom=0.15,left=0.12)    
+        plt.show()
+        plt.rcParams['text.usetex'] = old_param  
+                
+    
     def __repr__(self):
 
         """
@@ -792,7 +883,7 @@ def main():
     # Analyze the signal
     
     R.binarate("middle")
-    R.window(201E-6)
+    R.window(1E-3)
     R.fft()
     R.filter(bw=4E3)
     R.ifft()
@@ -830,8 +921,10 @@ def main():
 #    plt.show()                    
 #                       
 
-    R.plot_phase()
-    R.plot_phase(delta="yes")
+    R.plot_signal()
+
+    # R.plot_phase()
+    # R.plot_phase(delta="yes")
     
     # R.plot_phase_fit()
     # R.plot_phase_fit(delta="yes")
