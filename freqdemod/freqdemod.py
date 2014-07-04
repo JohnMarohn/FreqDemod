@@ -350,17 +350,14 @@ class Signal(object):
         self.signal['swFTfilt'] = swFTrh*self.signal['bp']
         
         # an improved estimate of the center frequency
-        #  empirically, recentering 5x seems to converge
+        #  using the method of moments -- this only gives the right answer
+        #  because we have applied the nice bandpass filter first
         
-        f0 = self.signal['f0']
-        for k in np.arange(5):
+        a = self.signal['f']
+        b = abs(self.signal['swFTfilt'])
         
-            f0_del = ((self.signal['f']-f0)*abs(self.signal['swFTfilt'])).mean()
-            f0 = f0 + f0_del
-            self.signal['f0'] = np.append(self.signal['f0'],f0)
-            
-        self.signal['f00'] = self.signal['f0'][-1]
-                                
+        self.signal['f00'] = (a*b).sum()/b.sum()
+    
         # the estimated delay time
         
         self.signal['td'] = 1.25/bw
@@ -368,12 +365,15 @@ class Signal(object):
         # report
         
         new_report = []
-        new_report.append("Reject negative frequencies,")
-        new_report.append("apply a bandpass filter")
-        new_report.append("of bandwidth {0:.1f} Hz".format(bw))
-        new_report.append("& order {0},".format(order))
+        new_report.append("Reject negative frequencies;")
+        new_report.append("apply a bandpass filter (center frequency")
+        new_report.append("{0:.3f} Hz,".format(self.signal['f0']))
+        new_report.append("bandwidth {0:.1f} Hz, ".format(bw))
+        new_report.append("& order {0});".format(order))
         new_report.append("and set the delay time to")
         new_report.append("{0} us.".format(1E6*self.signal['td']))
+        new_report.append("Make an improved estimate of the center")
+        new_report.append("frequency: {0:.3f} Hz.".format(self.signal['f00']))
         
         self.report.append(" ".join(new_report))
 
@@ -562,17 +562,22 @@ class Signal(object):
                  
         self.report.append(" ".join(new_report))       
                        
-    def plot_phase_fit(self,delta="no"):
+    def plot_phase_fit(self, delta="no", baseline=0):
        
         """
         Plot the frequency [Hz] *vs* time [s].   
         
-        :param str delta: plot the frequency shift ("yes") of the
-           absolute frequency ("no"; default "no".
+        :param str delta: plot the frequency shift ("yes") or the
+           absolute frequency ("no"; default "no").
+        :param float baseline: the duration of time used to compute the 
+           baseline frequency
            
         In the "yes" case, the frequency shift is calculated by subtracting
-        the peak frequency **.signal['f0']** determined by the *filter()* 
-        function from the best-fit frequency.
+        the peak frequency **.signal['f00']** determined by the *filter()* 
+        function from the best-fit frequency.  If a non-zero number if given
+        for ``baseline``, then the first ``baseline`` seconds of frequency shift
+        is used as the baseline from which the frequency shift if computed.
+        
         
         """
         
@@ -581,11 +586,41 @@ class Signal(object):
         if delta == "no": 
             
             y = self.signal['fit_freq']
+            y_labelstr = r"$f \: \mathrm{[Hz]}$"
+            titlestr = ""
         
         elif delta == "yes":
             
-            y = self.signal['fit_freq'] - self.signal['f00']
+            y = self.signal['fit_freq']
+            y_labelstr = r"$\Delta f \: \mathrm{[Hz]}$"
             
+            if baseline == 0:
+            
+                self.signal['f_baseline'] = self.signal['f00']                            
+
+            elif baseline != 0:
+                
+                # a = array([True, True, ... False,  False,  ...], dtype=bool)
+                # ~a = array([False, False, ... True,  True,  ...], dtype=bool)
+                # 
+                # np.arange(0,len(a))[~a].min() is then the index of the first
+                #  element in the array a at which time S.signal['fit_time'] is 
+                #  baseline seconds larger than S.signal['fit_time'][0]
+                #
+                
+                a = self.signal['fit_time'] - \
+                    self.signal['fit_time'][0] < baseline
+                    
+                a_first = np.arange(0,len(a))[~a].min()
+                
+                self.signal['f_baseline'] = y[0:a_first].mean()
+                
+            y = y - self.signal['f_baseline']
+                                
+            titlestr = r"$f_{\textrm{baseline}} = " + \
+                        "{0:.3f}".format(self.signal['f_baseline']) + \
+                        r" \: \mathrm{Hz}$"
+                                                
         else:
             
             print r"delta option not understood -- should be 'no' or 'yes' "
@@ -605,7 +640,8 @@ class Signal(object):
         
         plt.xlim([self.signal['t_original'][0],self.signal['t_original'][-1]])
         plt.xlabel(r"$t \: \mathrm{[s]}$")
-        plt.ylabel(r"$f \: \mathrm{[Hz]}$")
+        plt.ylabel(y_labelstr)
+        plt.title(titlestr)
         
         # set text spacing so that the plot is pleasing to the eye
 
