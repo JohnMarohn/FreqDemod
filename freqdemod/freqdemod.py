@@ -567,10 +567,10 @@ class Signal(object):
         """
         Plot the frequency [Hz] *vs* time [s].   
         
-        :param str delta: plot the frequency shift ("yes") or the
-           absolute frequency ("no"; default "no").
-        :param float baseline: the duration of time used to compute the 
-           baseline frequency
+        :param str delta: plot the frequency shift :math:`\\Delta f` ("yes") or 
+            the absolute frequency :math:`f` ("no"; default "no").
+        :param float baseline: the duration of time used to compute the
+            baseline frequency
            
         In the "yes" case, the frequency shift is calculated by subtracting
         the peak frequency **.signal['f00']** determined by the *filter()* 
@@ -578,9 +578,8 @@ class Signal(object):
         first ``baseline`` seconds of frequency shift is used as the reference
         from which the frequency shift is computed.  Display the baseline
         frequency used to compute the frequency shift in the plot title.  
-        If ``delta`` is set to "no" then plot the frequency shift in 
-        units of kHz; if ``delta`` is "yes", then plot the frequency 
-        shift in Hz.
+        If ``delta="no"`` then plot the frequency shift in units of kHz; if
+        ``delta="yes"``, then plot the frequency shift in Hz.
         
         """
         
@@ -666,6 +665,25 @@ class Signal(object):
         
         """
         Plot the phase *vs* time.
+        
+        :param str delta: plot the phase shift :math:`\\Delta\\phi/2\\pi`
+            ("yes") [cycles] or the absolute phase :math:`\\phi/2\\pi` 
+            [kilocycles] ("no"; default "no").
+           
+        The phase shift :math:`\\Delta\\phi/2\\pi` is calculated by fitting
+        the phase *vs* time data to a line and subtracting off the best-fit
+        line as follows:
+            
+        .. math::
+        
+            \\begin{equation}
+            \\Delta\\phi/2 \\pi = \\phi/2 \\pi - (c_0 \\: t + c_1)
+            \\end{equation}
+            
+        where :math:`c_0` is the best-fit phase at :math:`t=0` and :math:`c_1` 
+        is the best-fit frequency [Hz].  If ``delta="yes"``, then display the 
+        best-fit line in the plot title.    
+           
         """ 
  
         # decide that  plot
