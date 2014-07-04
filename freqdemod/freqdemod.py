@@ -349,6 +349,18 @@ class Signal(object):
         self.signal['bp'] = 1.0/(1.0+np.power(abs(f_scaled),order))
         self.signal['swFTfilt'] = swFTrh*self.signal['bp']
         
+        # an improved estimate of the center frequency
+        #  empirically, recentering 5x seems to converge
+        
+        f0 = self.signal['f0']
+        for k in np.arange(5):
+        
+            f0_del = ((self.signal['f']-f0)*abs(self.signal['swFTfilt'])).mean()
+            f0 = f0 + f0_del
+            self.signal['f0'] = np.append(self.signal['f0'],f0)
+            
+        self.signal['f00'] = self.signal['f0'][-1]
+                                
         # the estimated delay time
         
         self.signal['td'] = 1.25/bw
@@ -550,11 +562,33 @@ class Signal(object):
                  
         self.report.append(" ".join(new_report))       
                        
-    def plot_phase_fit(self):
+    def plot_phase_fit(self,delta="no"):
        
         """
-        Plot the frequency [Hz] *vs* time [s].
+        Plot the frequency [Hz] *vs* time [s].   
+        
+        :param str delta: plot the frequency shift ("yes") of the
+           absolute frequency ("no"; default "no".
+           
+        In the "yes" case, the frequency shift is calculated by subtracting
+        the peak frequency **.signal['f0']** determined by the *filter()* 
+        function from the best-fit frequency.
+        
         """
+        
+        # decide what data to plot
+        x = self.signal['fit_time']
+        if delta == "no": 
+            
+            y = self.signal['fit_freq']
+        
+        elif delta == "yes":
+            
+            y = self.signal['fit_freq'] - self.signal['f00']
+            
+        else:
+            
+            print r"delta option not understood -- should be 'no' or 'yes' "
         
         # plotting using tex is nice, but slow
         #  so only use it temporarily for this plot
@@ -565,7 +599,7 @@ class Signal(object):
         # create the plot
         
         fig=plt.figure(facecolor='w',figsize=(6,3))
-        plt.plot(self.signal['fit_time'],self.signal['fit_freq'])
+        plt.plot(x,y)
         
         # axes limits and labels
         
