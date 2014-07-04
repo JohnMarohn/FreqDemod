@@ -68,10 +68,10 @@ from util import eng
 
 font = {'family' : 'serif',
         'weight' : 'normal',
-        'size'   : 24}
+        'size'   : 18}
 
 plt.rc('font', **font)
-plt.rcParams['figure.figsize'] = 10, 8
+plt.rcParams['figure.figsize'] =  8.31,5.32
 
 class Signal(object):
 
@@ -575,18 +575,24 @@ class Signal(object):
         In the "yes" case, the frequency shift is calculated by subtracting
         the peak frequency **.signal['f00']** determined by the *filter()* 
         function.  If a non-zero number is given for ``baseline``, then the
-        first ``baseline`` seconds of frequency shift is used as the baseline
+        first ``baseline`` seconds of frequency shift is used as the reference
         from which the frequency shift is computed.  Display the baseline
-        frequency used to compute the frequency shift in the plot title.
+        frequency used to compute the frequency shift in the plot title.  
+        If ``delta`` is set to "no" then plot the frequency shift in 
+        units of kHz; if ``delta`` is "yes", then plot the frequency 
+        shift in Hz.
         
         """
         
         # decide what data to plot
+        
         x = self.signal['fit_time']
+        
         if delta == "no": 
             
-            y = self.signal['fit_freq']
-            y_labelstr = r"$f \: \mathrm{[Hz]}$"
+            y = self.signal['fit_freq']/1E3
+            y_labelstr = r"$f \: \mathrm{[kHz]}$"
+            y_lim = [0,1.5*self.signal['fit_freq'].max()/1E3]
             titlestr = ""
         
         elif delta == "yes":
@@ -616,8 +622,9 @@ class Signal(object):
                 self.signal['f_baseline'] = y[0:a_first].mean()
                 
             y = y - self.signal['f_baseline']
-                                
-            titlestr = r"$f_{\textrm{baseline}} = " + \
+            y_value = max(abs(y.min()),abs(y.max()))
+            y_lim = [-1.5*y_value,1.5*y_value]                    
+            titlestr = r"$f_0 = " + \
                         "{0:.3f}".format(self.signal['f_baseline']) + \
                         r" \: \mathrm{Hz}$"
                                                 
@@ -633,12 +640,13 @@ class Signal(object):
         
         # create the plot
         
-        fig=plt.figure(facecolor='w',figsize=(6,3))
+        fig=plt.figure(facecolor='w')
         plt.plot(x,y)
         
         # axes limits and labels
         
         plt.xlim([self.signal['t_original'][0],self.signal['t_original'][-1]])
+        plt.ylim(y_lim)
         plt.xlabel(r"$t \: \mathrm{[s]}$")
         plt.ylabel(y_labelstr)
         plt.title(titlestr)
@@ -649,15 +657,71 @@ class Signal(object):
         plt.locator_params(axis = 'y', nbins = 4)
         fig.subplots_adjust(bottom=0.15,left=0.12) 
         
-        # don't forget to show the plot
+        # don't forget to show the plot abd reset the tex option
         
         plt.show()
-
-        # don't forget to reset the tex option
-
         plt.rcParams['text.usetex'] = old_param
-                                                                             
-                                                                                      
+
+    def plot_phase(self, delta="no"):
+        
+        """
+        Plot the phase *vs* time.
+        """ 
+ 
+        # decide that  plot
+        
+        x = self.signal['t']
+ 
+        if delta == "no": 
+            
+            y = self.signal['theta']/1E3
+            
+            y_labelstr = r"$\phi /2 \pi \: \mathrm{[kilocycles]}$"
+            y_lim = [0,self.signal['theta'].max()/1E3]
+            titlestr = ""  
+       
+        elif delta == "yes":
+       
+            coeff = np.polyfit(self.signal['t'], self.signal['theta'], 1)
+            y_calc = coeff[0]*self.signal['t'] + coeff[1]
+            y = self.signal['theta'] - y_calc
+       
+            y_labelstr = r"$\Delta\phi /2 \pi \: \mathrm{[cycles]}$"
+            y_value = max(abs(y.min()),abs(y.max()))
+            y_lim = [-1.5*y_value,1.5*y_value]                    
+            titlestr = r"$\phi_0 = " + \
+                        "{0:.3f} t  {1:+.3f}".format(coeff[0],coeff[1]) + \
+                        r" \: \mathrm{cycles}$"
+                        
+        # use tex-formatted axes labels temporarily for this plot
+        
+        old_param = plt.rcParams['text.usetex']
+        plt.rcParams['text.usetex'] = True
+        
+        # create the plot
+        
+        fig=plt.figure(facecolor='w')
+        plt.plot(x,y)
+                        
+        # axes limits and labels
+        
+        plt.xlim([self.signal['t_original'][0],self.signal['t_original'][-1]])
+        plt.ylim(y_lim)
+        plt.xlabel(r"$t \: \mathrm{[s]}$")
+        plt.ylabel(y_labelstr)
+        plt.title(titlestr)
+                
+        # set text spacing so that the plot is pleasing to the eye
+
+        plt.locator_params(axis = 'x', nbins = 4)
+        plt.locator_params(axis = 'y', nbins = 4)
+        fig.subplots_adjust(bottom=0.15,left=0.12)         
+                        
+        # don't forget to show the plot abd reset the tex option
+        
+        plt.show()
+        plt.rcParams['text.usetex'] = old_param                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                            
     def __repr__(self):
 
         """
@@ -723,32 +787,40 @@ def main():
 
     # Plot the signal
     
-    plt.plot(R.signal['t'][0:100],R.signal['z'].real[0:100])
-    plt.plot(R.signal['t'][0:100],R.signal['z'].imag[0:100])
-    plt.ylabel(R.signal['s_name'] + " [" + R.signal['s_unit'] + "]")
-    plt.xlabel("t [s]")
-    plt.show()
-    
-    plt.plot(R.signal['t'],R.signal['theta'])
-    plt.xlim(0,R.signal['t_original'][-1])
-    plt.ylabel("phase [cycles]")
-    plt.xlabel("t [s]")
-    plt.show()
-    
-    plt.plot(R.signal['t'],R.signal['a'])
-    plt.xlim(0,R.signal['t_original'][-1])
-    plt.ylabel("amplitude [" + R.signal['s_unit'] + "]")
-    plt.xlabel("t [s]")
-    plt.show()    
+#    plt.plot(R.signal['t'][0:100],R.signal['z'].real[0:100])
+#    plt.plot(R.signal['t'][0:100],R.signal['z'].imag[0:100])
+#    plt.ylabel(R.signal['s_name'] + " [" + R.signal['s_unit'] + "]")
+#    plt.xlabel("t [s]")
+#    plt.show()
+#    
+#    plt.plot(R.signal['t'],R.signal['theta'])
+#    plt.xlim(0,R.signal['t_original'][-1])
+#    plt.ylabel("phase [cycles]")
+#    plt.xlabel("t [s]")
+#    plt.show()
+#    
+#    plt.plot(R.signal['t'],R.signal['a'])
+#    plt.xlim(0,R.signal['t_original'][-1])
+#    plt.ylabel("amplitude [" + R.signal['s_unit'] + "]")
+#    plt.xlabel("t [s]")
+#    plt.show()    
+#
+#    plt.plot(R.signal['fit_time'],R.signal['fit_freq'])
+#    plt.xlim(0,R.signal['t_original'][-1])
+#    plt.ylabel("best-fit frequency [Hz]")
+#    plt.xlabel("t [s]")
+#    plt.show()                    
+#                       
 
-    plt.plot(R.signal['fit_time'],R.signal['fit_freq'])
-    plt.xlim(0,R.signal['t_original'][-1])
-    plt.ylabel("best-fit frequency [Hz]")
-    plt.xlabel("t [s]")
-    plt.show()                    
-                       
-    R.plot_phase_fit()                                            
-                                                                                                  
+    R.plot_phase()
+    R.plot_phase(delta="yes")
+    
+    # R.plot_phase_fit()
+    # R.plot_phase_fit(delta="yes")
+    # R.plot_phase_fit(delta="yes",baseline=0.1)                                            
+    
+     
+                                                                                                                                                                                                                                                                                                                                                                                                   
     return(R)
 
 if __name__ == "__main__":
