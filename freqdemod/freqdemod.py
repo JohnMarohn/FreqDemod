@@ -574,10 +574,10 @@ class Signal(object):
            
         In the "yes" case, the frequency shift is calculated by subtracting
         the peak frequency **.signal['f00']** determined by the *filter()* 
-        function from the best-fit frequency.  If a non-zero number if given
-        for ``baseline``, then the first ``baseline`` seconds of frequency shift
-        is used as the baseline from which the frequency shift if computed.
-        
+        function.  If a non-zero number is given for ``baseline``, then the
+        first ``baseline`` seconds of frequency shift is used as the baseline
+        from which the frequency shift is computed.  Display the baseline
+        frequency used to compute the frequency shift in the plot title.
         
         """
         
