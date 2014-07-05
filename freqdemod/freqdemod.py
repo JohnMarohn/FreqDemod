@@ -608,8 +608,8 @@ class Signal(object):
             
             if baseline == 0:
             
-                self.signal['f_baseline'] = self.signal['f00']                            
-
+                self.signal['f_baseline'] = self.signal['f00']
+                
             elif baseline != 0:
                 
                 # a = array([True, True, ... False,  False,  ...], dtype=bool)
@@ -713,7 +713,7 @@ class Signal(object):
        
             y_labelstr = r"$\Delta\phi /2 \pi \: \mathrm{[cycles]}$"
             y_value = max(abs(y.min()),abs(y.max()))
-            y_lim = [-1.5*y_value,1.5*y_value]                    
+            y_lim = [-1.5*y_value,1.5*y_value]
             titlestr = r"$\phi_0 = " + \
                         "{0:.3f} t  {1:+.3f}".format(coeff[0],coeff[1]) + \
                         r" \: \mathrm{cycles}$"
@@ -745,39 +745,40 @@ class Signal(object):
         # don't forget to show the plot abd reset the tex option
         
         plt.show()
-        plt.rcParams['text.usetex'] = old_param                                                                                                                                
-
+        plt.rcParams['text.usetex'] = old_param
+        
     def plot_signal(self):
         
         """Plot the windowed signal *vs* time.  Before you call this function,
         you must have run the ``.window()`` function first.  Because the signal
         is likely to have many oscillations that would be too difficult to see
-        if we plotted the all the signal, instead draw subplots that zoom in 
-        to the beginning, middle, and end of the data, respectively. 
+        if we plotted all the signal, instead draw subplots that zoom in 
+        to the beginning, middle, and end of the data. 
         
-        To decide what duration of data to plot as follows: 
+        Decide what duration of data to plot as follows: 
         
         * beginning and end: use twice the window rise/fall time, 
           **signal['tw_actual']**
           
         * middle: use 10 times the period of the primary oscillation. Determine 
-          this period by taking a Fourier tranform of a short, 1024-point, 
-          initial segment of the signal, identify the primary oscillation 
-          frequency as the peak in the Fourier tranform, and determine the
-          oscillation period as the inverse of the oscillation frequency.
+          this period by taking a Fourier transform of a short, 1024-point, 
+          initial segment of the signal.  Identify the primary oscillation 
+          frequency as the peak in the Fourier tranform.  Determine the
+          oscillation period as the inverse of this oscillation frequency.
             
         The x-axis of each plot is the *relative* time in milliseconds; 
         display in the plot title the relevant time offsets used to create
-        each subplot. The y-axis is the signal, plotted using the variable name
+        each subplot.  The y-axis is the signal, plotted using the variable name
         and units given at initialization time. 
         
-        *Programming notes*: The reason for using the relative time is that it 
-        resuls in saner axis labels.  If the absolute time in seconds used 
-        instead, then matplotlib will create axis-axis plot labels for middle 
-        and end plots like "0.000", "0.001", and put a "+4.567831" below 
-        -- very ugly. So instead we plot the relative time is milliseconds,
-        which gives plot labels like "0", "1", etc, with the time offest
-        "4.5673" reported in the plot title.
+        *Programming notes*: We use the relative time as the x-axis because it
+        results in much nicer axis labels.  If instead we use the absolute time 
+        in seconds as the x-axis, then matplotlib will create x-axis plot labels
+        for the middle and end plots like "0.000", "0.001", and put a
+        "+4.567831" below -- very ugly. So instead we plot the relative time in
+        milliseconds, which yields x-axis plot labels like "0", "1", etc.  It is 
+        a small chore for us to now report the relevant time offset ("4.5673" in 
+        this example) in the plot title.
         
         """
 
