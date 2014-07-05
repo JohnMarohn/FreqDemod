@@ -751,8 +751,33 @@ class Signal(object):
         
         """Plot the windowed signal *vs* time.  Before you call this function,
         you must have run the ``.window()`` function first.  Because the signal
-        is likely to have many oscillations, draw subplots that zoom in to the
-        beginning, middle, and end of the data, respectively.  
+        is likely to have many oscillations that would be too difficult to see
+        if we plotted the all the signal, instead draw subplots that zoom in 
+        to the beginning, middle, and end of the data, respectively. 
+        
+        To decide what duration of data to plot as follows: 
+        
+        * beginning and end: use twice the window rise/fall time, 
+          **signal['tw_actual']**
+          
+        * middle: use 10 times the period of the primary oscillation. Determine 
+          this period by taking a Fourier tranform of a short, 1024-point, 
+          initial segment of the signal, identify the primary oscillation 
+          frequency as the peak in the Fourier tranform, and determine the
+          oscillation period as the inverse of the oscillation frequency.
+            
+        The x-axis of each plot is the *relative* time in milliseconds; 
+        display in the plot title the relevant time offsets used to create
+        each subplot. The y-axis is the signal, plotted using the variable name
+        and units given at initialization time. 
+        
+        *Programming notes*: The reason for using the relative time is that it 
+        resuls in saner axis labels.  If the absolute time in seconds used 
+        instead, then matplotlib will create axis-axis plot labels for middle 
+        and end plots like "0.000", "0.001", and put a "+4.567831" below 
+        -- very ugly. So instead we plot the relative time is milliseconds,
+        which gives plot labels like "0", "1", etc, with the time offest
+        "4.5673" reported in the plot title.
         
         """
 
