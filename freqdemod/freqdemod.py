@@ -860,22 +860,23 @@ class Signal(object):
         
         """
         Plot on a logarithmic scale the absolute value of the FT-ed signal, 
-        the filtered FT-ed signal, and the filter function *vs* frequency
-        in kilohertz. Before you call this function, you must have run
-        the ``.fft()`` and ``.filter()`` functions first.  
+        the bandpass-filtered FT-ed signal, and the band-pass filter function
+        *vs* frequency in kilohertz. Before you call this function, you must
+        have run the ``.fft()`` and ``.filter()`` functions first.  
         
         :param str autozoom: zoom into a region of interest near the primary 
-            peak in the FT-ed signal ("yes; defalt) or dusplay the FT-ed signal
-            over the full range of positive frequencies ("no).
+            peak in the FT-ed signal ("yes; default) or display the FT-ed signal
+            over the full range of positive frequencies ("no").
             
         If ``autozoom="yes"``, then determine the region of interest using 
-        **.signal['bw']** and **.self.signal['f0']**.  Only plot data at 
-        positive frequencies -- we are plotting using a logarithmic 
-        y scale, the filter function sets to zero the data at negative 
-        frequencies, and the log of zero is minus infinity; the negative-
-        frequency data will therefore not show up on a semilog plot. For
-        purposes of display, the filter is scaled to the maximum of the 
-        FT-ed signal.
+        **.signal['bw']** and **.self.signal['f0']**.  For purposes of display,
+        the filter is scaled to the maximum of the FT-ed signal.
+        
+        Only plot data at positive frequencies, because (1) we are plotting
+        using a logarithmic y scale, (2) the filter function sets to zero the
+        data at negative frequencies, and (3) the log of zero is minus infinity.
+        For these reasons the negative-frequency data will not show up on a
+        semilog plot. 
                 
         """
 
@@ -902,14 +903,17 @@ class Signal(object):
         
         nc = self.signal['dt']
         
-        # create the appro1/priate data subsets     
+        # create the appropriate data subsets --
+        #  since we only want to plot the band-pass filtered data, 
+        #  scale signal['swFTfilt'] by a factor of 0.5 to "undo"
+        #  the rh filter.      
                     
         x = 1E-3*self.signal['f'][sub_indices]
         y1 = abs(nc*self.signal['swFT'])[sub_indices]
         y1_max = y1.max()
         
-        y2 = (y1_max*self.signal['bp']*self.signal['rh'])[sub_indices]        
-        y3 = abs(nc*self.signal['swFTfilt'])[sub_indices] 
+        y2 = (y1_max*self.signal['bp'])[sub_indices]        
+        y3 = abs(nc*0.5*self.signal['swFTfilt'])[sub_indices] 
             
         # use tex-formatted axes labels temporarily for this plot
         
@@ -923,6 +927,8 @@ class Signal(object):
         plt.plot(x,y1, label=r"$\mathrm{fft}$")
         plt.plot(x,y2, label=r"$\mathrm{filter}$")
         plt.plot(x,y3, label=r"$\mathrm{fft, filtered}$")
+        
+        # add legend, labels, and y-axis limits
         
         plt.legend(loc='upper right')
         plt.xlabel(x_label, labelpad=20)
