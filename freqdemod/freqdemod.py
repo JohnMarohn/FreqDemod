@@ -758,7 +758,7 @@ class Signal(object):
         Decide what duration of data to plot as follows: 
         
         * beginning and end: use twice the window rise/fall time, 
-          **signal['tw_actual']**
+          **.signal['tw_actual']**
           
         * middle: use 10 times the period of the primary oscillation. Determine 
           this period by taking a Fourier transform of a short, 1024-point, 
@@ -810,7 +810,7 @@ class Signal(object):
         
         x_label = r"$\Delta t \: \mathrm{[ms]}$"
         y_label = r"$" + "{}".format(self.signal['s_name']) + \
-            "\mathrm{[" + "{}".format(self.signal['s_unit']) + "]}$"
+            "\: \mathrm{[" + "{}".format(self.signal['s_unit']) + "]}$"
         
         # create the plot
         
@@ -855,7 +855,87 @@ class Signal(object):
         fig.subplots_adjust(bottom=0.15,left=0.12)    
         plt.show()
         plt.rcParams['text.usetex'] = old_param  
+
+    def plot_fft(self, autozoom="yes"):
+        
+        """
+        Plot on a logarithmic scale the absolute value of the FT-ed signal, 
+        the filtered FT-ed signal, and the filter function *vs* frequency
+        in kilohertz. Before you call this function, you must have run
+        the ``.fft()`` and ``.filter()`` functions first.  
+        
+        :param str autozoom: zoom into a region of interest near the primary 
+            peak in the FT-ed signal ("yes; defalt) or dusplay the FT-ed signal
+            over the full range of positive frequencies ("no).
+            
+        If ``autozoom="yes"``, then determine the region of interest using 
+        **.signal['bw']** and **.self.signal['f0']**.  Only plot data at 
+        positive frequencies -- we are plotting using a logarithmic 
+        y scale, the filter function sets to zero the data at negative 
+        frequencies, and the log of zero is minus infinity; the negative-
+        frequency data will therefore not show up on a semilog plot. For
+        purposes of display, the filter is scaled to the maximum of the 
+        FT-ed signal.
                 
+        """
+
+        f = self.signal['f']
+        f_lower = self.signal['f0'] - 1.50*self.signal['bw']
+        f_upper = self.signal['f0'] + 1.50*self.signal['bw']
+        
+        x_label = r"$f \: \mathrm{[kHz]}$"
+        y_label = r"$\hat{" + "{}".format(self.signal['s_name']) + \
+            "}(f) \: \mathrm{[" + "{}".format(self.signal['s_unit']) + \
+            "/\mathrm{Hz}]}$"
+                        
+        if autozoom == "yes":
+            
+            test = (f >= 0) & (f <= f_upper) & (f >= f_lower)
+        
+        elif autozoom == "no":
+            
+            test = (f >= 0)
+            
+        sub_indices = np.arange(0,self.signal['f'].size)[test]
+        
+        # normalization constant
+        
+        nc = self.signal['dt']
+        
+        # create the appro1/priate data subsets     
+                    
+        x = 1E-3*self.signal['f'][sub_indices]
+        y1 = abs(nc*self.signal['swFT'])[sub_indices]
+        y1_max = y1.max()
+        
+        y2 = (y1_max*self.signal['bp']*self.signal['rh'])[sub_indices]        
+        y3 = abs(nc*self.signal['swFTfilt'])[sub_indices] 
+            
+        # use tex-formatted axes labels temporarily for this plot
+        
+        old_param = plt.rcParams['text.usetex']
+        plt.rcParams['text.usetex'] = True
+
+        # create the plot
+        
+        fig=plt.figure(facecolor='w')
+        
+        plt.plot(x,y1, label=r"$\mathrm{fft}$")
+        plt.plot(x,y2, label=r"$\mathrm{filter}$")
+        plt.plot(x,y3, label=r"$\mathrm{fft, filtered}$")
+        
+        plt.legend(loc='upper right')
+        plt.xlabel(x_label, labelpad=20)
+        plt.ylabel(y_label)
+        plt.yscale('log')
+        plt.ylim([1E-6*y1_max,10*y1_max])
+        
+        # clean up label spacings, show the plot, and reset the tex option
+          
+        fig.subplots_adjust(bottom=0.15,left=0.12)   
+        plt.show()
+        plt.rcParams['text.usetex'] = old_param  
+                                                      
     
     def __repr__(self):
 
@@ -894,70 +974,64 @@ def main():
     # f0 = signal frequency
     # fd = digitization frequency
     # nt = number of signal points
+    # sn_rms = root-mean-square of noise
+    # sn = signal amplitude
     
     f0 = 5.00E3  
     fd = 50.0E3 
     # nt = 512*1024
     nt = 600E3
     
+    sn = 1.0
+    sn_rms = 0.20
+    
     dt = 1/fd
     t = dt*np.arange(nt)
-    s = np.sin(2*np.pi*f0*t)
+    s = sn*np.sin(2*np.pi*f0*t) + np.random.normal(0,sn_rms,t.size)
+    
+
+    # Create the signal, force its lenth to be 
+    #  a power of two, apply a winodwing function,
+    #  and plot the winowed signal
     
     R = Signal(s,"x","nm",1/fd)
-    
-    # Analyze the signal
-    
     R.binarate("middle")
-    R.window(1E-3)
-    R.fft()
-    R.filter(bw=4E3)
-    R.ifft()
-    R.trim()
-    R.fit(201.34E-6)
-
-    # Print out a report
-
-    print(R)
-
-    # Plot the signal
-    
-#    plt.plot(R.signal['t'][0:100],R.signal['z'].real[0:100])
-#    plt.plot(R.signal['t'][0:100],R.signal['z'].imag[0:100])
-#    plt.ylabel(R.signal['s_name'] + " [" + R.signal['s_unit'] + "]")
-#    plt.xlabel("t [s]")
-#    plt.show()
-#    
-#    plt.plot(R.signal['t'],R.signal['theta'])
-#    plt.xlim(0,R.signal['t_original'][-1])
-#    plt.ylabel("phase [cycles]")
-#    plt.xlabel("t [s]")
-#    plt.show()
-#    
-#    plt.plot(R.signal['t'],R.signal['a'])
-#    plt.xlim(0,R.signal['t_original'][-1])
-#    plt.ylabel("amplitude [" + R.signal['s_unit'] + "]")
-#    plt.xlabel("t [s]")
-#    plt.show()    
-#
-#    plt.plot(R.signal['fit_time'],R.signal['fit_freq'])
-#    plt.xlim(0,R.signal['t_original'][-1])
-#    plt.ylabel("best-fit frequency [Hz]")
-#    plt.xlabel("t [s]")
-#    plt.show()                    
-#                       
+    R.window(3E-3)
 
     R.plot_signal()
 
+    # FFT the data, filter it, and plot the
+    #  result
+
+    R.fft()
+    R.filter(bw=1E3)
+    R.plot_fft(autozoom="no")
+    R.plot_fft(autozoom="yes")
+
+    # IFFT the frequency-domain signal, trim away
+    #  the leading and lagging ripple, plot the phase
+    #  *vs* time
+
+    R.ifft()
+    R.trim()
+    
     # R.plot_phase()
     # R.plot_phase(delta="yes")
-    
+
+    # Divide the phase *vs* time data into chunks,
+    #  fit each chunk to obtain the frequency,
+    #  and plot the result   
+            
+    R.fit(201.34E-6)
+
     # R.plot_phase_fit()
     # R.plot_phase_fit(delta="yes")
     # R.plot_phase_fit(delta="yes",baseline=0.1)                                            
-    
-     
-                                                                                                                                                                                                                                                                                                                                                                                                   
+
+
+    # Print out a report
+
+    print(R)                                                                                                                                                                                                                                                                                                                                                                                                   
     return(R)
 
 if __name__ == "__main__":
