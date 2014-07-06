@@ -1,98 +1,72 @@
-.. NOTES
-.. =====
-..
-.. with  20080223-Marohn-Group_Report-Frequency_Noise_Tutorial-ver1 
-..  = fnt.tex 
-.. pandoc --output=fnt.rst --from=latex --to=rst fnt.tex
-.. the conversion generated no errors
-.. copy the contents of fnt.rst below and manually change === to --- etc
-.. delete \color{Blue} everywhere
-.. add the :label: Eq:xxx role everywhere we want numbered equation
-.. can not have underscores in equation labels
-.. refer to equations inline using :eq:`Eq:xxx`
-
-.. with 20080223-Marohn-Group_Report-Frequency_Noise_Tutorial-ver1.tex 
-..  = hobm.tex
-.. pandoc --output=hobm.rst --from=latex --to=rst hobm.tex
-.. the conversion generated no errors
-.. then hand-edit as indicated above
-.. copy the contents of hobm.rst below and hand edit as follows
-
-Harmonic Oscillator Brownian Motion Tutorial
-============================================
-
-This tutorial discusses the steady-state response of a cantilever to both
+This report discusses the steady-state response of a cantilever to both
 a coherent and an incoherent driving force. The cantilever is modeled
-classically as a damped harmonic oscillator.  This tutorial is organized as
-follows.
+classically as a damped harmonic oscillator.
 
-In :ref:`sect:equation-of-motion` the equation of motion for a damped
-harmonic oscillator is summarized. When a *coherent* force is driving the
+In section [sect:equation-of-motion] the equation of motion for a damped
+harmonic oscillator is summarized. When a coherent force is driving the
 oscillator, the solution of the equation of motion is greatly simplified
 by recasting the equation in terms of a complex variable whose real and
-imaginary parts track the in-phase and out-of-phase response, respectively. 
-This recasting is done in section :ref:`sect:phasors`. The steady-state response 
-of a damped harmonic oscillator is derived in
-:ref:`sect:steady-state-response-I`.
+imaginary parts track the in phase and out of phase response. This is
+done in section [sect:phasors]. The steady-state response of a damped
+harmonic oscillator is derived in section
+[sect:steady-state-response-I].
 
-Understanding the response of a damped oscillator to an *incoherent*
+Understanding the response of a damped oscillator to an incoherent
 driving force is greatly simplified by thinking in terms of correlation
-functions, introduced below in :ref:`sect:correlation-functions-I`. In this 
-section we establish a link between the time-domain correlation function and the
-frequency-domain power spectrum. In  :ref:`sect:correlation-functions-II`, a
-slightly more sophisticated correlation function is introduced which is more
-suitable for understanding physical phenomena.
+functions, introduced in section [sect:correlation-functions-I]. This
+section introduces correlation functions and establishes a link between
+the time-domain correlation function and the frequency-domain power
+spectrum. In section [sect:correlation-functions-II], a slightly more
+sophisticated correlation function is introduced which is more suitable
+for understanding physical phenomena.
 
 The steady-state-response of a damped harmonic oscillator to an
-incoherent is derived in :ref:`sect:steady-state-response-II`. The
+incoherent is derived in section [sect:steady-state-response-II]. The
 solution relates the power spectrum of the response to the power
-spectrum of the incoherent force.  The soluton is examined in the limit where
-the incoherent driving force has a flat frequency content. In
-:ref:`sect:analyzing-data` the fitting of a cantilever power-spectrum is
+spectrum of the incoherent force, and is examined in the limit where the
+incoherent driving force has a flat frequency content. In section
+[sect:analyzing-data] the fitting of a cantilever power-spectrum is
 discussed.
 
 In the case where the incoherent driving force represents the oscillator
 in thermal contact with a bath of modes at a definite temperature, the
 form of the force can be derived using the equipartition theorem of
-statistical mechanics. This is accomplished in
-:ref:`sect:equipartition-theorem`, where it is also shown that if oscillator
+statistical mechanics. This is accomplished in section
+[sect:equipartition-theorem], where it is also shown that if oscillator
 temperature is known, then from the area under the cantilever power
 spectrum the cantilever spring constant can be determined.
 
-In :ref:`sect:minimum-detectable-force`, it is shown that the thus
+In section [sect:minimum-detectable-force], it is shown that the thus
 derived thermomechanical cantilever fluctuations limit the minimum
 applied force that can be detected by measuring cantilever displacement.
 Designing an experiment to achieve the smallest possible detectable
-force is discussed. In :ref:`sect:cantilever-design` a scaling
+force is discussed. In section [sect:cantilever-design] a scaling
 analysis is done to show the dependence of the minimum detectable force
 on cantilever parameters such as length, width, and thickness.
 
-.. _sect:equation-of-motion:
-
-Equation of Motion
-------------------
+[sect:equation-of-motion]
 
 The equation of motion for a **damped harmonic oscillator** is
 
 .. math::
-    :label: eq:HO
-    
-    m \: \ddot{x} + \alpha \: \dot{x} + k \: x = F
+
+   m \: \ddot{x} + \alpha \: \dot{x} + k \: x = F
+   \label{eq:HO}
 
 The variables are
 
 .. math::
 
    \begin{array}{lll}
-    x & \mbox{oscillator position} & [\mathrm{meter}] \\ 
-    m & \mbox{mass} & [\mathrm{kilogram}] \\
-    \alpha & \mbox{friction parameter} & [\mathrm{kilogram} \: {\mathrm{second}}^{-1} = \mathrm{newton} \: \mathrm{second} \: {\mathrm{meter}}^{-1}] \\
-    k & \mbox{spring constant} & [\mathrm{newton} \: {\mathrm{meter}}^{-1}] \\
-    F & \mbox{applied force} & [\mathrm{newton}]
+    x & \mbox{oscillator position} & [\meter] \\ 
+    m & \mbox{mass} & [\kilo \gram] \\
+    \alpha & \mbox{friction parameter} & [\kilo \gram \: {\second}^{-1} = \newton \: \second \: {\meter}^{-1}] \\
+    k & \mbox{spring constant} & [\newton \: {\meter}^{-1}] \\
+    F & \mbox{applied force} & [\newton]
    \end{array}
 
 It is useful to rewrite this equation in a more canonical form. Divide
-:eq:`eq:HO` by :math:`m`, and define new variables according to the
+eq. [eq:HO] by :math:`m`, and define new variables according to the
 following equations.
 
 .. math:: \frac{\alpha}{m} = \frac{\omega_0}{Q}, \: \: \frac{k}{m} = \omega_0^2, \: \mbox{and} \: \frac{F}{m} = \frac{\omega_0^2 F}{k} = A
@@ -102,24 +76,20 @@ The new variables are
 .. math::
 
    \begin{array}{lll}
-    \omega_0 &\mbox{resonance frequency} & [\mathrm{rad} \: {\mathrm{second}}^{-1}] \\
+    \omega_0 &\mbox{resonance frequency} & [\rad \per \sec] \\
     Q & \mbox{quality factor} & [\mbox{unitless}] \\
-    A & \mbox{applied force amplitude} & [\mathrm{meter} \: {\mathrm{second}}^{-2}]
+    A & \mbox{applied force amplitude} & [\meter \: \second^{-2}]
    \end{array}
 
 The canonical equation of motion for a classical harmonic oscillator is
 thus
 
 .. math::
-    :label: eq:HO-canonical
 
-    \ddot{x} + \frac{\omega_0}{Q} \: \dot{x} + \omega_0^2 \: x 
-        = A = \frac{\omega_0^2 \: F}{k}
+   \ddot{x} + \frac{\omega_0}{Q} \: \dot{x} + \omega_0^2 \: x = A = \frac{\omega_0^2 \: F}{k}
+   \label{eq:HO-canonical}
 
-.. _sect:phasors:
-
-Phasors
--------
+[sect:phasors]
 
 We wish to calculate the response of the oscillator to a resonant force,
 
@@ -134,16 +104,16 @@ response must also be periodic, of the general form
 We wish to solve for :math:`x_c` and :math:`x_s` as a function of
 driving frequency. It is convenient to introduce a complex number
 :math:`z` that tracks cantilever displacement,
-:math:`x = \mathrm{Re}(z)`. If we make the ansatz that
+:math:`x = {\ensuremath{\mbox{Re}\{z\}}}`. If we make the ansatz that
 :math:`z = z_0 \exp{(\imath \: \omega t)}` then
 
 .. math::
-    
-    x(t) = \mathrm{Re}(z) = \mathrm{Re} \{ z_0 \: e^{\imath \: \omega t} \}
-         = \underbrace{\mathrm{Re}(z_0)}_{x_c} \cos{\omega t}  
-         - \underbrace{\mathrm{Im}(z_0)}_{x_s} \sin{\omega t}
 
-If we can recast :eq:`eq:HO-canonical` in terms of the complex variable
+   \begin{aligned}
+   x(t) & = & {\ensuremath{\mbox{Re}\{z\}}} = {\ensuremath{\mbox{Re}\{z_0 \: e^{\imath \: \omega t}\}}} \\
+        & = & \underbrace{{\ensuremath{\mbox{Re}\{z_0\}}}}_{x_c} \cos{\omega t} - \underbrace{{\ensuremath{\mbox{Im}\{z_0\}}}}_{x_s} \sin{\omega t}\end{aligned}
+
+If we can recast eq. [eq:HO-canonical] in terms of the complex variable
 :math:`z` then we can reduce the problem of solving for two real
 variables, :math:`x_c` and :math:`x_s`, to solving for one complex
 variable, :math:`z_0`.
@@ -151,28 +121,25 @@ variable, :math:`z_0`.
 Towards this end, we introduce another complex variable :math:`F_c`
 which tracks the applied force. If the force is a sinusoidal function of
 time, then :math:`F_c = F_0 \exp{(\imath \: \omega t)}` where
-:math:`F_0 = | F_0 | \: \exp{(\imath \: \phi)}` is complex number that 
-describes the magnitude and phase of the harmonic driving force:
+:math:`F_0 = | F_0 |
+\: \exp{(\imath \: \phi)}` is complex number that describes the
+magnitude and phase of the harmonic driving force:
 
 .. math::
-    
-    F(t) = \mathrm{Re}(F_c) = \mathrm{Re} \{ F_0 \: e^{\imath \: \omega t} \}
-         = \mathrm{Re}(F_0) \cos{\omega t} - \mathrm{Im}(F_0) \sin{\omega t}
-         = | F_0 | \cos{(\omega t + \phi)}
+
+   \begin{aligned}
+   F(t) & = & {\ensuremath{\mbox{Re}\{F_c\}}} = {\ensuremath{\mbox{Re}\{F_0 \: e^{\imath \: \omega t}\}}} \\
+        & = & {\ensuremath{\mbox{Re}\{F_0\}}} \cos{\omega t} - {\ensuremath{\mbox{Im}\{F_0\}}} \sin{\omega t} \\
+        & = & | F_0 | \cos{(\omega t + \phi)}\end{aligned}
 
 The equation of motion for :math:`z` in terms of **phasors** is
 
 .. math::
-    :label: eq:z
-    
-    \ddot{z} + \frac{\omega_0}{Q} \: \dot{z} + \omega_0^2 \: z 
-    = \frac{\omega_0^2 \: F_c}{k}
 
+   \ddot{z} + \frac{\omega_0}{Q} \: \dot{z} + \omega_0^2 \: z = \frac{\omega_0^2 \: F_c}{k}
+   \label{eq:z}
 
-.. _sect:steady-state-response-I: 
-
-Steady State Response I
------------------------
+[sect:steady-state-response-I]
 
 It is convenient to work with frequency in experimental units of
 :math:`[\mbox{cyc}/\sec] = [\hertz]` instead of
@@ -251,11 +218,7 @@ We can see this immediately from
 
 .. math:: z_0(\omega_0) = - \imath \: \frac{Q \: F_0}{k}
 
-
-.. _sect:correlation-functions-I:
-
-Correlation Functions I
------------------------
+[sect:correlation-functions-I]
 
 The section explores a connection between a function’s associated
 correlation function and power spectrum. The correlation function of
@@ -316,10 +279,7 @@ then
 
 .. math:: C_x(\tau) = \int_{0}^{\infty} df \: \hat{P}_x(f) \: e^{-\imath \: 2 \pi f \tau}
 
-.. _sect:correlation-functions-II:
-
-Correlation Functions II
-------------------------
+[sect:correlation-functions-II]
 
 The correlation function considered above is not suitable for
 considering physical phenomena. The physically-relevant correlation
@@ -460,11 +420,7 @@ We conclude that
 We note that this connection is not valid for the mathematically-defined
 power-spectrum of the last section.
 
-
-.. _sect:steady-state-response-II:
-
-Steady State Response II
-------------------------
+[sect:steady-state-response-II]
 
 In this section we explore the response of the harmonic oscillator to an
 **incoherent** driving force. If the force is random, it will have zero
@@ -590,10 +546,7 @@ If the cantilever is being driven by white noise, then
    \underbrace{\frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}}_{\mbox{\small freq. \emph{dependent}}}
    \label{eq:PzPFconst}
 
-.. _sect:analyzing-data:
-
-Analyzing Data
---------------
+[sect:analyzing-data]
 
 As a practical matter, the the position fluctuation is fit to:
 
@@ -637,10 +590,7 @@ are described by a bath of modes at a well defined *temperature*, then
 statistical mechanics constrains what :math:`P_F(0)` *must* be, as will
 now be discussed.
 
-.. _sect:equipartition-theorem:
-
-Equipartition Theorem
----------------------
+[sect:equipartition-theorem]
 
 As may be derived using statistical mechanics, a harmonic oscillator in
 equilibrium with a bath of temperature :math:`T` has a energy
@@ -693,10 +643,7 @@ desired relation
    k = \frac{2 \: k_B T}{\pi P_z(0) \: Q \: f_0} \: \sim \: [\frac{\newton}{\meter}]
    \label{eq:k2}
 
-.. _sect:minimum-detectable-force:
-
-Minimum Detectable Force
-------------------------
+[sect:minimum-detectable-force]
 
 We can turn eq. [eq:k2] around to read
 
@@ -835,10 +782,7 @@ Another way to achieve the best possible force sensitivity is to:
 
 -  maximize cantilever damping times :math:`\tau`
 
-.. _sect:cantilever-design:
-
-Cantilever Design
------------------
+[sect:cantilever-design]
 
 The resonance frequency and spring constant for a beam cantilever of
 length :math:`l`, width :math:`w`, and thickness :math:`t` are:
@@ -863,10 +807,7 @@ next best cantilever property to optimize is the width to length ratio,
 because they appear in :math:`S_F` to the 1/4 power, are the least
 important parameters to optimize.
 
-.. _sect:appendix-an-integral:
-
-Appendix
---------
+[sect:appendix-an-integral]
 
 We wish to compute the following integral
 
@@ -901,393 +842,3 @@ We conclude that
 .. math:: P = \frac{\pi}{2} \: P_z (0) \: Q \: f_0
 
 
-Oscillator Frequency Noise Tutorial
-===================================
-
-Detection of Instantaneous Phase
---------------------------------
-
-The cantilever signal is
-
-.. math:: 
-    :label: Eq:x
-
-    \boxed{x(t) = \sqrt{2} \: x_{\text{rms}} \cos{(\omega_0 t + \phi)} +
-     \delta x(t)}
-
-where :math:`x_{\text{rms}}` is the cantilever root mean square
-amplitude, :math:`\omega_0` is the cantilever frequency, and
-:math:`\phi` is the cantilever phase. Here :math:`\delta x(t)` is random
-noise which includes contributions from cantilever thermomechanical
-fluctuations as well as detector noise.
-
-In order to detect the cantilever frequency we create a quadrature
-signal by taking the Hilbert transform of the cantilever signal. This
-procedure gives
-
-.. math:: 
-    :label: Eq:y
-    
-    y(t) = \sqrt{2} \: x_{\text{rms}} \sin{(\omega_0 t + \phi)} 
-    + \delta y(t)
-
-where :math:`\delta y(t)` is the Hilbert transform of
-:math:`\delta x(t)`. An expression for :math:`\delta y(t)` can be
-written down, but it is not instructive. There is a simple relation,
-however, between :math:`y` and :math:`x` in the Fourier domain:
-
-.. math:: 
-
-    \widehat{\delta y}(f) = H(f) \: \widehat{\delta x}(f)
-
-where :math:`\widehat{\delta x}(f)` indicates the Fourier transform of
-:math:`\delta x(t)`. The function :math:`H` implements the Hilbert
-transform in Fourier space:
-
-.. math::
-
-   H(f) = \begin{cases}
-   +j & \text{if } f < 0 \\
-   0 & \text{if } f = 0 \\
-   -j & \text{if} f > 0
-   \end{cases}
-
-Since :math:`H(f) H^{*}(f) = 1` (except for the single point at
-:math:`f=0`), it follows that :math:`\delta y(t)` has essentially the
-same power spectrum as :math:`\delta x(t)`.
-
-In our frequency-detection algorithm we measure the instantaneous phase
-of the cantilever using
-
-.. math:: 
-    :label: Eq:phidef
-
-    \phi(t) = \arctan{(\frac{y(t)}{x(t)})}
-
-Substituting :eq:`Eq:x` and :eq:`Eq:y` into :eq:`Eq:phidef`,
-
-.. math::
-
-   \phi(t) = \arctan{(\frac{\sqrt{2} \: x_{\text{rms}} \sin{(\omega_0 t + \phi)} + \delta y(t)}{\sqrt{2} \: x_{\text{rms}} \cos{(\omega_0 t + \phi)} + \delta x(t)})}
-
-Let us now, with the help of Mathematica, expand :math:`\phi(t)` in a
-Taylor series to first order in *both* :math:`\delta y(t)` and
-:math:`\delta x(t)`. The result is
-
-.. math::
-
-   \phi(t) \approx \phi + \omega_0 t
-    - \frac{\delta x(t)}{\sqrt{2} \: x_{\text{rms}}} \sin{(\omega_0 t + \phi)}
-    + \frac{\delta y(t)}{\sqrt{2} \: x_{\text{rms}}} \cos{(\omega_0 t + \phi)}
-
-We can extract the instantaneous frequency as the slope of the
-:math:`\phi(t)` versus :math:`t` line. After subtracting away the
-best-fit line, we are left with phase noise
-
-.. math:: \delta \phi(t) = \phi(t) - \omega_0 t - \phi
-
-given by
-
-.. math:: 
-    :label: Eq:dphi
-    
-    \delta \phi(t) = 
-    - \frac{\delta x(t)}{\sqrt{2} \: x_{\text{rms}}} \sin{(\omega_0 t + \phi)}
-    + \frac{\delta y(t)}{\sqrt{2} \: x_{\text{rms}}} \cos{(\omega_0 t + \phi)}
-
-Phase Noise Power Spectrum
---------------------------
-
-Taking the Fourier transform of :math:`\delta \phi(t)`, and switching
-frequency units
-
-.. math::
-
-    \begin{gathered}
-    \widehat{\delta \phi}(f) = \frac{1}{\sqrt{2} \: x_{\text{rms}}}
-    \int_{-\infty}^{+\infty} dt \: e^{j \: 2 \pi f t} (- \delta x(t))
-    \frac{1}{2 j} \left( e^{j \: 2 \pi f_0 t} e^{j \: \phi} 
-                        - e^{-j \: 2 \pi f_0 t} e^{-j \: \phi} \right)
-    \\
-    + \frac{1}{\sqrt{2} \: x_{\text{rms}}}
-    \int_{-\infty}^{+\infty} dt \: e^{j \: 2 \pi f t} (\delta y(t))
-    \frac{1}{2} \left( e^{j \: 2 \pi f_0 t} e^{j \: \phi} 
-                    + e^{-j \: 2 \pi f_0 t} e^{-j \: \phi} \right)
-    \end{gathered}
-
-Which can be simplified to
-
-.. math:: 
-    :label: Eq:deltaphiintermediate
-    
-    \begin{gathered}
-    \widehat{\delta \phi}(f) = \frac{1}{\sqrt{2} \: x_{\text{rms}}}
-    \left( -\frac{e^{j \: \phi}}{2 j} \: \widehat{\delta x}(f+f_0) + \frac{e^{-j \: \phi}}{2 j} \: \widehat{\delta x}(f-f_0) \right. \\
-    \left. + \frac{e^{j \: \phi}}{2} \: \widehat{\delta y}(f+f_0) + \frac{e^{-j \: \phi}}{2} \: \widehat{\delta y}(f-f_0) \right)
-    \end{gathered}
-
-We can eliminate :math:`\widehat{\delta y}` from :eq:`Eq:deltaphiintermediate` by recognizing
-
-.. math::
-    :label: Eq:deltaysimp1
-
-    \widehat{\delta y}(f+f_0)
-        = \widehat{H}(f+f_0) \: \widehat{\delta x}(f+f_0) 
-        = -\frac{1}{j} \: \widehat{\delta x}(f+f_0)
-        
-.. math::
-    :label: Eq:deltaysimp2        
-        
-    \widehat{\delta y}(f-f_0) 
-        = \widehat{H}(f-f_0) \: \widehat{\delta x}(f-f_0) 
-        = \frac{1}{j} \: \widehat{\delta x}(f-f_0)
-
-which holds for frequencies :math:`f \leq f_0`, which is the case here.
-Substituting :eq:`Eq:deltaysimp1` and :eq:`Eq:deltaysimp2` into :eq:`Eq:deltaphiintermediate` gives
-
-.. math::
-    :label: Eq:FTdeltaphi
-    
-    \widehat{\delta \phi}(f) = 
-        - \frac{1}{j} \frac{1}{\sqrt{2} \: x_{\text{rms}}} 
-        \left( e^{j \: \phi} \: \widehat{\delta x}(f+f_0) + e^{-j \: \phi} \:
-            \widehat{\delta x}(f-f_0) \right)
-
-Passing to the power spectrum requires a limiting procedure, as follows.
-We should consider that :math:`x(t)` is only sampled for a finite amount
-of time :math:`T`, which we can indicate with a subscript:
-:math:`x(t) \rightarrow x_{T}(t)` where
-
-.. math::
-    :label: Eq:xT
-    
-    x_{T}(t) = \begin{cases}
-    0 & \text{for } t > T \\
-    x(t) & \text{for } -T \leq t < T \\
-    0 & \text{for } t < -T
-    \end{cases}
-
-Equation :eq:`Eq:dphi` holds with
-:math:`\delta x \rightarrow \delta x_T`,
-:math:`\delta x \rightarrow \delta y_T`, and
-:math:`\delta \phi \rightarrow \delta \phi_T`. Time correlation
-functions are defined in terms of :math:`x_T(t)`, not :math:`x(t)`,
-
-.. math::
-
-   \begin{gathered}
-   C_x(\tau) = \lim_{T \rightarrow \infty} \frac{1}{2 T}
-   \int_{-T}^{+T} \langle x(t) \: x(t + \tau) \rangle \: dt \\
-   = \lim_{T \rightarrow \infty} \frac{1}{2 T}
-   \int_{-\infty}^{+\infty} \langle x_{T}(t) \: x_{T}(t + \tau) \rangle \: dt\end{gathered}
-
-where :math:`\langle \cdots \rangle` indicates a statistical average.
-The manipulations leading to :eq:`Eq:FTdeltaphi` are still valid with
-the :math:`T`-subscripted variables, with the result that
-
-.. math:: 
-    :label: Eq:FTdeltaphiT
-    
-    \widehat{\delta \phi_{T}}(f) = 
-    - \frac{1}{j} \frac{1}{\sqrt{2} \: x_{\text{rms}}} 
-        \left( e^{j \: \phi} \: \widehat{\delta x_{T}}(f+f_0) + e^{-j \: \phi} 
-            \: \widehat{\delta x_{T}}(f-f_0) \right)
-
-The next step to computing the power spectrum is to calculate
-
-.. math::
-    :label: Eq:PdeltaphiTintermediate
-
-    \widehat{\delta \phi_{T}}(f) \: \widehat{\delta \phi_{T}}^{*}\!\!(f) =
-    \frac{1}{2 \: x_{\text{rms}}} 
-    \left( e^{j \: \phi} \: \widehat{\delta x_{T}}(f+f_0)
-     + e^{-j \: \phi} \: \widehat{\delta x_{T}}(f-f_0) \right)
-     
-    \left( e^{-j \: \phi} \: \widehat{\delta x_{T}}^{*}\!\!(f+f_0)
-     + e^{j \: \phi} \: \widehat{\delta x_{T}}^{*}\!\!(f-f_0) \right)
-
-We may now pass to the power spectrum by taking the limit
-
-.. math::
-
-    P_{\delta x}(f) = \lim_{T \rightarrow \infty} \frac{1}{2 T} \:
-    \widehat{\delta x_{T}}(f) \: \widehat{\delta x_{T}}^{*}\!\!(f)
-
-with the power spectrum :math:`P_{\delta \phi}(f)` analogously defined.
-Carrying out this limiting procedure on both sides of
-:eq:`Eq:PdeltaphiTintermediate` yields
-
-.. math::
-
-   \begin{gathered}
-   P_{\delta \phi}(f) = \frac{1}{2 x_{\text{rms}}^2} \left( P_{\delta x}(f+f_0) + P_{\delta x}(f-f_0) \right) \\
-    + \frac{1}{2 x_{\text{rms}}^2} \lim_{T \rightarrow \infty} \frac{1}{2 T} \text{Re} \! \left( \widehat{\delta x_{T}}^{*}\!\!(f-f_0) \: \widehat{\delta x_{T}}(f+f_0) \: e^{j \: 2 \phi} \right)\end{gathered}
-
-where :math:`\text{Re} \! \left( \cdots \right)` indicates taking the
-real part. The last term will not survive statistical averaging over the
-phase :math:`\phi` since
-
-.. math:: \frac{1}{2 \pi} \int_{0}^{2 \pi} e^{j \: 2 \phi} \: d\phi = 0
-
-Implicit in this average is the assumption that :math:`\phi` is randomly
-distributed, that is, there is no correlation between the phase of the
-cantilever and the cantilever noise. After statistical averaging over
-:math:`\phi`, the power spectrum of cantilever phase noise becomes
-
-.. math::
-    :label: Eq:Pdeltaphi
-
-    \boxed{P_{\delta \phi}(f) = 
-    \dfrac{1}{2 x_{\text{rms}}^2} 
-        \left( P_{\delta x}(f+f_0) + P_{\delta x}(f-f_0) \right)}
-
-Frequency Shift Power Spectrum
-------------------------------
-
-Let us define the instantaneous frequency shift as
-
-.. math:: \delta f(t)= \frac{1}{2 \pi} \frac{d}{d t} \: \delta \phi(t) = \frac{1}{2 \pi} \delta \dot{\phi}
-
-and the compute the power spectrum of the instantaneous frequency shift.
-Let us define :math:`\delta f_{T}(t)` as in :eq:`Eq:xT`. The
-time-correlation function of the frequency shift is then
-
-.. math::
-
-   C_{\delta f}(\tau) = \lim_{T \rightarrow \infty} \: \frac{1}{2 T}
-   \int_{-\infty}^{+\infty} \langle \delta f_{T}(t) \: \delta f_{T}(t+\tau) \rangle \: dt
-
-with :math:`C_{\delta \phi}` defined likewise. Substituting, and
-dropping :math:`\langle \cdots \rangle` for notational convenience,
-
-.. math::
-    :label: Eq:Cdeltaf
-
-    C_{\delta f}(\tau) = 
-    \frac{1}{4 \pi^2} \lim_{T \rightarrow \infty} \: \frac{1}{2 T}
-    \int_{-\infty}^{+\infty} \langle \delta \dot{\phi}_{T}(t) 
-    \: \delta \dot{\phi}_{T}(t+\tau) \rangle \: dt
-
-The time derivative :math:`\delta \dot{\phi}` may be computing using its
-Fourier transform. With
-
-.. math:: \delta \phi_T(t) = \int_{-\infty}^{+\infty} \widehat{\delta \phi_T}(f) \: e^{-j \: 2 \pi f \: t} \: df
-
-we can compute the time derivative of the instantaneous phase shift as
-
-.. math::
-    :label: Eq:deltadotphiT
-
-    \delta \dot{\phi}_T(t) = \int_{-\infty}^{+\infty} \widehat{\delta \phi_T}(f) \: (-j \: 2 \pi f) \: e^{-j \: 2 \pi f \: t} \: df
-
-If we substitute :eq:`Eq:deltadotphiT` into :eq:`Eq:Cdeltaf` and use
-
-.. math:: \int_{-\infty}^{+\infty} e^{-j \: 2 \pi (f^{\prime}+f^{\prime\prime}) t } dt = \delta(f^{\prime}+f^{\prime\prime}),
-
-where :math:`\delta(t)` is the Kroenecker delta function, then
-
-.. math::
-
-    C_{\delta f}(\tau) = \int_{-\infty}^{+\infty}
-    f^2 \: e^{j \: 2 \pi f \tau} 
-    \left\{
-        \lim_{T \rightarrow \infty} 
-        \: \frac{1}{2 T} \: \widehat{\delta \phi_T}(f) 
-        \: \widehat{\delta \phi_T}(-f) 
-    \right\} \: df
-
-where we have passed the limit into the integral. Because
-:math:`\delta \phi_T(t)` is a real function,
-:math:`\widehat{\delta \phi_T}(-f) = \widehat{\delta \phi_T}^{*}\!\!(f)`.
-The term in braces is thus :math:`P_{\delta \phi}(f)`, the power
-spectrum of phase fluctuations. We find
-
-.. math:: C_{\delta f}(\tau) = \int_{-\infty}^{+\infty} f^2 \: P_{\delta \phi}(f) \: e^{j \: 2 \pi f \tau} \: df
-
-Comparing this to the usual relation between the correlation function
-and the power spectrum
-
-.. math:: C_{\delta f}(\tau) = \int_{-\infty}^{+\infty} P_{\delta f}(f) \: e^{-j \: 2 \pi f \tau} \: df,
-
-we see that
-
-.. math::
-    :label: Eq:PdeltafPdeltaphi
-    
-    \boxed{P_{\delta f}(f) =  f^2 \: P_{\delta \phi}(-f)}
-
-Substituting :eq:`Eq:PdeltafPdeltaphi` into :eq:`Eq:Pdeltaphi` we
-conclude
-
-.. math::
-    :label: Eq:Pdeltafresult
-    
-    \boxed{P_{\delta f}(f) =
-    \dfrac{f^2}{2 x_{\text{rms}}^2}
-    \left( P_{\delta x}(f_0+f) + P_{\delta x}(f_0-f) \right)}
-
-where we have used that
-:math:`P_{\delta x}(\Omega) = P_{\delta x}(-\Omega)`.
-
-Instrument Noise
-----------------
-
-Equation :eq:`Eq:Pdeltafresult` is a general relation between the
-position-fluctuation power spectrum and the frequency-fluctuation power
-spectrum. The power spectrum of detector noise is typically flat:
-
-.. math:: P_{\delta x}(f_0+f) = P_{\delta x}(f_0-f) \equiv P_{\delta x}^{\text{det}}
-
-Thus
-
-.. math::
-    :label: Eq:PdeltaxDet
-
-    \boxed{P_{\delta f}^{\text{det}}(f) = \dfrac{f^2 \: P_{\delta x}^{\text{det}}}{x_{\text{rms}}^2} }
-
-This relation holds whether the power spectra are defined as one-sided
-or two-sided, as long as the power spectrum is computed consistently on
-both sides of equation. We typically work up data using one-sided power
-spectra.
-
-Cantilever Noise
-----------------
-
-We have previously shown that the (one sided) power spectrum of
-cantilever position fluctuation is
-
-.. math:: P_{\delta x}^{\text{one}}(f) = \frac{2 k_B T}{\pi k Q f_0} \frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}
-
-where :math:`T` is temperature, :math:`k_B` is Boltzmann’s constant, and
-:math:`f_0`, :math:`k`, and :math:`Q` are cantilever frequency, spring
-constant, and mechanical quality factor, respectively. We can see that,
-for frequencies :math:`f \gg f_0 / Q`
-
-.. math:: P_{\delta x}^{\text{one}}(f_0 \pm f) \approx  \frac{2 k_B T}{\pi k Q f_0} \times \frac{f_0^2}{4 f^2}
-
-Substituting this result into :eq:`Eq:Pdeltafresult` gives
-
-.. math:: P_{\delta x}^{\text{therm}}(f) = \frac{k_B T f_0}{2 \pi \: x_{\text{rms}}^2 k Q}
-
-Using
-
-.. math:: Q = \pi f_0 \tau_0,
-
-where :math:`\tau_0` is the cantilever ringdown time, we can rewrite the
-one-sided power spectrum of cantilever frequency fluctuations as
-
-.. math::
-    :label: Eq:PdeltaxTherm
-    
-    \boxed{P_{\delta x}^{\text{therm}}(f) = \dfrac{k_B T}{2 \pi^2 \: x_{\text{rms}}^2 k \: \tau_0} }
-
-Discussion
-----------
-
-Equations :eq:`Eq:PdeltaxDet` and :eq:`Eq:PdeltaxTherm` agree *exactly* with
-what Loring and co-workers have derived [#Yazdanian2008jun]_.
-
-References
-----------
-
-.. [#Yazdanian2008jun] Yazdanian, S. M.; Marohn, J. A. & Loring, R. F. Dielectric Fluctuations in Force Microscopy: Noncontact Friction and Frequency Jitter. *J. Chem. Phys.*,  **2008**, *128*: 224706 [http://dx.doi.org/10.1063/1.2932254].  See equations 6.7 through 6.9.
