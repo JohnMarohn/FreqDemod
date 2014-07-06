@@ -8,6 +8,7 @@ Contents:
 
    intro.rst
    quickstart.rst
+   background.rst
    freqdemod.rst
    util.rst
    develop.rst
