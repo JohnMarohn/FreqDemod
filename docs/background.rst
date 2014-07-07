@@ -17,6 +17,14 @@
 .. the conversion generated no errors
 .. then hand-edit as indicated above
 .. copy the contents of hobm.rst below and hand edit as follows
+.. replace all the unit macros: \sec with {\mathrm{s}} and etc
+.. add back in the section headings manually
+.. add reference labels for the sections manually
+.. edit out the macros involving \ensuremath 
+.. remove \tiny and \small
+.. remove \lefteqn
+.. remove as many as possible \begin{aligned} since we have a wider page here
+.. 
 
 Harmonic Oscillator Brownian Motion Tutorial
 ============================================
@@ -175,12 +183,12 @@ Steady State Response I
 -----------------------
 
 It is convenient to work with frequency in experimental units of
-:math:`[\mbox{cyc}/\sec] = [\hertz]` instead of
-:math:`[\mbox{rad}/\sec]`. Therefore we’ll define
+:math:`[\mathrm{cyc}/{\mathrm{s}}] = [{\mathrm{Hz}}]` instead of
+:math:`[\mathrm{rad}/{\mathrm{s}}]`. Therefore we’ll define
 
-.. math:: f_0 = \frac{\omega_0}{2 \pi} \: \sim \: [\frac{\mbox{cyc}}{\sec}] = [\hertz]
+.. math:: f_0 = \frac{\omega_0}{2 \pi} \: \sim \: [\frac{\mathrm{cyc}}{{\mathrm{s}}}] = [{\mathrm{Hz}}]
 
-and work throughout with frequencies in :math:`\hertz`.
+and work throughout with frequencies in :math:`{\mathrm{Hz}}`.
 
 In this section we explore the response of the harmonic oscillator to a
 **coherent sinusoidal driving force**. Substitute :math:`F_c = F_0
@@ -207,11 +215,9 @@ It is useful to write :math:`z` as follows:
 
 .. math::
 
-   \begin{aligned}
-   \lefteqn{z(f) = \frac{| F_0 |}{k} \left( \frac{f_0^2 (f_0^2 - f^2)}{(f_0^2 - f^2)^2 + f^2 \: f_0^2 / Q^2} \right. \nonumber}\\
-   &  & \left. - \imath \: \frac{f \: f_0^3 / Q}{(f_0^2 - f^2)^2 + f^2 \: f_0^2 / Q^2} \right) \: e^{\imath \: ( 2 \pi f t + \phi)}\end{aligned}
+    z(f) = \frac{| F_0 |}{k} \left( \frac{f_0^2 (f_0^2 - f^2)}{(f_0^2 - f^2)^2 + f^2 \: f_0^2 / Q^2} - \imath \: \frac{f \: f_0^3 / Q}{(f_0^2 - f^2)^2 + f^2 \: f_0^2 / Q^2} \right) \: e^{\imath \: ( 2 \pi f t + \phi)}
 
-Using :math:`x = {\ensuremath{\mbox{Re}\{z\}}}` we can infer that
+Using :math:`x = \mathrm{Re} \{ z \}` we can infer that
 :math:`x(t)` is of the form
 
 .. math:: x(t) = x_c \: \cos{(2 \pi f t + \phi)} + x_s \: \sin{(2 \pi f t + \phi)}
@@ -261,7 +267,7 @@ The section explores a connection between a function’s associated
 correlation function and power spectrum. The correlation function of
 :math:`x(t)` is defined as
 
-.. math:: C_x(\tau) = \int_{-\infty}^{\infty} dt \: x(t) \: x(t+\tau) \: \sim \: [\frac{\meter^2}{\hertz}]
+.. math:: C_x(\tau) = \int_{-\infty}^{\infty} dt \: x(t) \: x(t+\tau) \: \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
 
 The Fourier and inverse Fourier transforms are taken as in the following
 text.
@@ -283,9 +289,7 @@ Fourier transform relation
 
 .. math::
 
-   \begin{aligned}
-   \lefteqn{C_x(\tau) = \int df  \int df^{\prime}  \: \hat{x}(f^{\prime}) \: \hat{x}(f) \: e^{-\imath \: 2 \pi f \tau}}\\
-   & & \underbrace{\int dt \: e^{-\imath \: 2 \pi f t}  e^{-\imath \: 2 \pi f^{\prime} t}}_{\delta(f+f^{\prime}) \Longrightarrow f^{\prime} = -f} \end{aligned}
+    C_x(\tau) = \int df  \int df^{\prime}  \: \hat{x}(f^{\prime}) \: \hat{x}(f) \: e^{-\imath \: 2 \pi f \tau} \underbrace{\int dt \: e^{-\imath \: 2 \pi f t}  e^{-\imath \: 2 \pi f^{\prime} t}}_{\delta(f+f^{\prime}) \Longrightarrow f^{\prime} = -f}
 
 The integral over time involving exponentials reduces to a delta
 function. Only frequencies :math:`f^{\prime} = -f` contribute to the
@@ -310,7 +314,7 @@ This is an important result:
 
 If we define the one-sided power spectral density as
 
-.. math:: \hat{P}_x(f) = | \hat{x}(f) |^2 + | \hat{x}(-f) |^2  \: \sim \: [\frac{\meter^2}{\hertz^2}]
+.. math:: \hat{P}_x(f) = | \hat{x}(f) |^2 + | \hat{x}(-f) |^2  \: \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}^2}]
 
 then
 
@@ -336,22 +340,22 @@ Following Weissbluth, we define the correlation function as follows.
 
 .. math::
 
-   G(\tau) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} x(t) x(t+\tau) \: dt \: \sim \: [\meter^2]
+   G(\tau) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} x(t) x(t+\tau) \: dt \: \sim \: [{\mathrm{m}}^2]
    \label{eq:CF}
 
-The units of this correlation function are :math:`[\meter^2]`, if the
-units of x are :math:`[\meter]`. This is quite different from the
+The units of this correlation function are :math:`[{\mathrm{m}}^2]`, if the
+units of x are :math:`[{\mathrm{m}}]`. This is quite different from the
 mathematically-defined correlation function :math:`C(\tau)` above, whose
-units are :math:`[\meter^2 \per \hertz]`.
+units are :math:`[{\mathrm{m}}^2/{\mathrm{Hz}}]`.
 
 The correlation function at :math:`\tau=0`, zero delay, has special
 significance:
 
-.. math:: G(0) = \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} x^2(t) \: dt = {\ensuremath{x_{\mbox{\tiny rms}}}}^2
+.. math:: G(0) = \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} x^2(t) \: dt = {{x_{\mathrm{rms}}}}^2
 
 Thus :math:`G(0)` is the square of the root-mean-square value of
 :math:`x(t)` and
-:math:`{\ensuremath{x_{\mbox{\tiny rms}}}}= \sqrt{G(0)}`.
+:math:`{{x_{\mathrm{rms}}}}= \sqrt{G(0)}`.
 
 We will now reproduce Weissbluth’s treatment relating the
 (physically-relevant) correlation function :math:`G(\tau)` to an
@@ -359,7 +363,7 @@ analogous power spectrum. So following Weissbluth, define the function
 :math:`x_{T}(t)` which is equal to :math:`x(t)` on the time interval
 :math:`(-T,+T)` and is zero at all other times:
 
-.. math:: x_{T}(t) = \left\{ \begin{array}{cc} x(t) & -T \leq t \leq +T \\ 0 & \mbox{otherwise} \end{array} \right.
+.. math:: x_{T}(t) = \left\{ \begin{array}{cc} x(t) & -T \leq t \leq +T \\ 0 & \mathrm{otherwise} \end{array} \right.
 
 Define too a correlation function for :math:`x_T` as follows.
 
@@ -375,11 +379,16 @@ Fourier transform of :math:`G_{T}(\tau)`:
 
 .. math::
 
-   \begin{aligned}
-   \lefteqn{\int_{-\infty}^{+\infty} G_{T}(\tau) \: e^{\imath \: 2 \pi f \tau} \: d\tau =} \\
-   & = & \frac{1}{2 T} \int_{-\infty}^{+\infty} d\tau \: e^{\imath \: 2 \pi f \tau} \int_{-\infty}^{+\infty} dt \: x_{T}(t) \: x_{T}(t+\tau) \\
-   & = & \frac{1}{2 T} \int_{-\infty}^{+\infty} dt \: x_{T}(t) \: e^{-\imath \: 2 \pi f t} \\
-   &   & \hspace{0.5in}\int_{-\infty}^{+\infty} d\tau \:  x_{T}(t+\tau) \: e^{\imath \: 2 \pi f (t+\tau)}\end{aligned}
+    \begin{multline}
+    \int_{-\infty}^{+\infty} G_{T}(\tau) \: e^{\imath \: 2 \pi f \tau} \: d\tau 
+    =  \frac{1}{2 T} \int_{-\infty}^{+\infty} d\tau \: 
+        e^{\imath \: 2 \pi f \tau} \int_{-\infty}^{+\infty} dt 
+            \: x_{T}(t) \: x_{T}(t+\tau) \\
+    = \frac{1}{2 T} \int_{-\infty}^{+\infty} dt 
+            \: x_{T}(t) \: e^{-\imath \: 2 \pi f t} 
+        \int_{-\infty}^{+\infty} d\tau \:  
+            x_{T}(t+\tau) \: e^{\imath \: 2 \pi f (t+\tau)}
+   \end{multline}
 
 where we have inserted 1 in the form of
 :math:`\exp{(-\imath \: 2 \pi f t)}
@@ -389,10 +398,7 @@ write
 
 .. math::
 
-   \begin{aligned}
-   \lefteqn{\int_{-\infty}^{+\infty} G_{T}(\tau) \: e^{\imath \: 2 \pi f \tau} \: d\tau =} \\
-   & = & \frac{1}{2 T} \underbrace{\int_{-\infty}^{+\infty} dt \: x_{T}(t) \: e^{-\imath \: 2 \pi f t}}_{{\hat{x}}_T(-f) = {\hat{x}}^{*}_{T}(f)} \\
-   &   & \hspace{0.5in} \underbrace{\int_{-\infty}^{+\infty} dt^{\prime} \:  x_{T}(t^{\prime}) \: e^{\imath \: 2 \pi f t^{\prime}}}_{{\hat{x}}_T(f)}\end{aligned}
+    \int_{-\infty}^{+\infty} G_{T}(\tau) \: e^{\imath \: 2 \pi f \tau} \: d\tau = \frac{1}{2 T} \underbrace{\int_{-\infty}^{+\infty} dt \: x_{T}(t) \: e^{-\imath \: 2 \pi f t}}_{{\hat{x}}_T(-f) = {\hat{x}}^{*}_{T}(f)} = \underbrace{\int_{-\infty}^{+\infty} dt^{\prime} \:  x_{T}(t^{\prime}) \: e^{\imath \: 2 \pi f t^{\prime}}}_{{\hat{x}}_T(f)}
 
 Since :math:`x(t)` is a real function, it follows that
 :math:`{\hat{x}}_{T}(-f) = {\hat{x}}^{*}_{T}(f)`. This allows us to
@@ -413,7 +419,7 @@ motivate us to define
 
 .. math::
 
-   J(f) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \: | \hat{x}(f) |^{2} \: \sim \: [\frac{\meter^2}{\hertz}]
+   J(f) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \: | \hat{x}(f) |^{2} \: \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
    \label{eq:PS}
 
 as the *physically relevant spectral density*. It still holds that
@@ -449,7 +455,7 @@ of :math:`x(t)` given a measured one-sided power spectral density:
 
 .. math::
 
-   {\ensuremath{x_{\mbox{\tiny rms}}}}^2 = \langle x^2(t) \rangle = G(0) = \int_{0}^{+\infty} P(f) \: df.
+   {{x_{\mathrm{rms}}}}^2 = \langle x^2(t) \rangle = G(0) = \int_{0}^{+\infty} P(f) \: df.
    \label{eq:xrmsP}
 
 We conclude that
@@ -480,17 +486,17 @@ system – we will not follow such a Langevin treatment.
 
 Define correlation functions for :math:`z` and :math:`F` as above.
 
-.. math:: G_z(\tau) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} z(t) z(t+\tau) \: dt \: \sim \: [\meter^2]
+.. math:: G_z(\tau) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} z(t) z(t+\tau) \: dt \: \sim \: [{\mathrm{m}}^2]
 
-.. math:: G_F(\tau) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} F(t) F(t+\tau) \: dt \: \sim \: [\newton^2]
+.. math:: G_F(\tau) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} F(t) F(t+\tau) \: dt \: \sim \: [{\mathrm{N}}^2]
 
 With each of these correlation functions is associated a power spectrum:
 
 .. math::
 
    \begin{aligned}
-   G_z(\tau) & \Leftarrow \mbox{FT} \Rightarrow & J_z(f) \: \mbox{or} \: P_z(f) \\
-   G_F(\tau) & \Leftarrow \mbox{FT} \Rightarrow & J_F(f) \: \mbox{or} \: P_z(f)\end{aligned}
+   G_z(\tau) & \Leftarrow \mathrm{FT} \Rightarrow & J_z(f) \: \mbox{or} \: P_z(f) \\
+   G_F(\tau) & \Leftarrow \mathrm{FT} \Rightarrow & J_F(f) \: \mbox{or} \: P_z(f)\end{aligned}
 
 Because :math:`z` and :math:`F` are connected by an equation of motion,
 we can write :math:`J_z` in terms of :math:`J_F`, as we will now show.
@@ -498,19 +504,21 @@ we can write :math:`J_z` in terms of :math:`J_F`, as we will now show.
 Follow the motion by Fourier analysis:
 
 .. math::
+    :label: eq:FTF
+    
+    F(t) = \int_{-\infty}^{\infty} df \: \hat{F}(f) \: e^{-\imath \: 2 \pi f t}
+    
+.. math::
+    :label: eq:FTz
 
-   \begin{aligned}
-   F(t) & = & \int_{-\infty}^{\infty} df \: \hat{F}(f) \: e^{-\imath \: 2 \pi f t} \label{eq:FTF}\\
-   z(t) & = & \int_{-\infty}^{\infty} df \: \hat{z}(f) \: e^{-\imath \: 2 \pi f t} \label{eq:FTz}\end{aligned}
+    z(t) = \int_{-\infty}^{\infty} df \: \hat{z}(f) \: e^{-\imath \: 2 \pi f t}
 
-Substitute eq. [eq:FTF] and eq. [eq:FTz] into the equation of motion
+Substitute eqs. :eq:`eq:FTF` and :eq:`eq:FTz` into the equation of motion
 connecting :math:`F` and :math:`z`, eq. [eq:z].
 
 .. math::
 
-   \begin{aligned}
-   \lefteqn{\int_{-\infty}^{+\infty} (-f^2 - \imath f \: \frac{f_0}{Q} + f_0^2 ) \: \hat{z}(f) \: e^{-\imath \: 2 \pi f t} \: df} \\
-   & & \hspace{0.5in} = \int_{-\infty}^{+\infty} \frac{f_0^2}{k} \hat{F}(f) \: e^{-\imath \: 2 \pi f t} \: df\end{aligned}
+    \int_{-\infty}^{+\infty} (-f^2 - \imath f \: \frac{f_0}{Q} + f_0^2 ) \: \hat{z}(f) \: e^{-\imath \: 2 \pi f t} \: df = \int_{-\infty}^{+\infty} \frac{f_0^2}{k} \hat{F}(f) \: e^{-\imath \: 2 \pi f t} \: df
 
 For both sides to be equal, we must have that at each frequency
 
@@ -526,11 +534,11 @@ straightforward matter to introduce the time-averaging and limiting
 procedure employed above to obtain this result in terms of
 “physically-relevant” correlation functions:
 
-.. math:: P_z(f) = \lim_{T \rightarrow \infty} \frac{1}{2 T} \: ( | \hat{z}(f) |^{2} + | \hat{z}(-f) |^{2}) \: \sim \: [\frac{\meter^2}{\hertz}]
+.. math:: P_z(f) = \lim_{T \rightarrow \infty} \frac{1}{2 T} \: ( | \hat{z}(f) |^{2} + | \hat{z}(-f) |^{2}) \: \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
 
 .. math::
 
-   P_F(f) = \lim_{T \rightarrow \infty} \frac{1}{2 T} \: ( | \hat{F}(f) |^{2} + | \hat{F}(-f) |^{2}) \: \sim \: [\frac{\newton^2}{\hertz}]
+   P_F(f) = \lim_{T \rightarrow \infty} \frac{1}{2 T} \: ( | \hat{F}(f) |^{2} + | \hat{F}(-f) |^{2}) \: \sim \: [\frac{{\mathrm{N}}^2}{{\mathrm{Hz}}}]
    \label{eq:PF}
 
 The result, which we write in terms of *one-sided power spectral
@@ -568,12 +576,11 @@ gas molecules and fluctuating cantilever phonon populations, for
 example. Both of these processes have characteristic timescales on the
 order of nanoseconds, which implies (by Fourier transform of the
 associated correlation function) that
-:math:`f_m \sim 1 / \nano\sec = \giga
-\hertz`.
+:math:`f_m \sim 1 / {\mathrm{ns}} = \mathrm{GHz}`.
 
 Atomic force cantilever resonance frequencies are in the range of
 :math:`f_0
-\sim 1 - 500 \: \kilo \hertz`, so that :math:`f_0 << f_m`, and thus when
+\sim 1 - 500 \: \mathrm{kHz}`, so that :math:`f_0 << f_m`, and thus when
 considering a cantilever’s response to the above-mentioned force
 fluctuations the approximation of eq. [eq:whitenoise] is a good one. An
 example of a case where the white-noise approximation would not be valid
@@ -586,8 +593,8 @@ If the cantilever is being driven by white noise, then
 
 .. math::
 
-   P_z(f) = \underbrace{\frac{P_F(0)}{k^2}}_{\mbox{\small freq. independent}} 
-   \underbrace{\frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}}_{\mbox{\small freq. \emph{dependent}}}
+   P_z(f) = \underbrace{\frac{P_F(0)}{k^2}}_{\mathrm{\small freq. independent}} 
+   \underbrace{\frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}}_{\mathrm{\small freq. dependent}}
    \label{eq:PzPFconst}
 
 .. _sect:analyzing-data:
@@ -599,7 +606,7 @@ As a practical matter, the the position fluctuation is fit to:
 
 .. math::
 
-   P_z(f) = P_z(0) \underbrace{\frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}}_{\mbox{\small unitless}} + P_x^{\mbox{\tiny noise}}
+   P_z(f) = P_z(0) \underbrace{\frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}}_{\mathrm{\small unitless}} + P_x^{\mathrm{ noise}}
    \label{eq:Pzfit}
 
 The first term is the power spectrum of the cantilever, the form of
@@ -608,7 +615,7 @@ Here
 
 .. math::
 
-   P_z(0) = \frac{P_F(0)}{k^2} \: \sim \: [\frac{\meter^2}{\hertz}]
+   P_z(0) = \frac{P_F(0)}{k^2} \: \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
    \label{eq:Pz0}
 
 is the apparent position fluctuation at zero frequency. If the
@@ -616,17 +623,17 @@ cantilever and instrument-noise related fluctuations are uncorrelated –
 a good assumption – then the power spectrums just add.
 
 Over a narrow bandwidth centered at the cantilever frequency, the
-instrument noise power spectrum :math:`P_x^{\mbox{\tiny noise}}` can
+instrument noise power spectrum :math:`P_x^{\mathrm{ noise}}` can
 often be approximated as constant. If working with a low-Q cantilever
-near zero-frequency, “:math:`1/f`”instrument noise begins to contribute.
+near zero-frequency, “:math:`1/f`” instrument noise begins to contribute.
 In this case, the “:math:`1/f`” component can often be well-approximated
 by adding a linear term:
 
-.. math:: P_x^{\mbox{\tiny noise}} \approx P^{(0)} + P^{(0)} (f - f_0)
+.. math:: P_x^{\mathrm{ noise}} \approx P^{(0)} + P^{(0)} (f - f_0)
 
-Here :math:`P^{(0)} \: \sim \: [\meter^2/\hertz]` is the
+Here :math:`P^{(0)} \: \sim \: [{\mathrm{m}}^2/{\mathrm{Hz}}]` is the
 frequency-independent term and :math:`P^{(1)} \: \sim \:
-[\meter^2/\hertz^2]` approximates frequency-dependent noise sources,
+[{\mathrm{m}}^2/{\mathrm{Hz}}^2]` approximates frequency-dependent noise sources,
 including “:math:`1/f`” circuit noise.
 
 By fitting the observed :math:`P_z(f)` to eq. [eq:Pzfit], the cantilever
@@ -652,27 +659,27 @@ expectation value for each mode equal to :math:`k_B T/2`. Thus
    \label{eq:equip}
 
 where
-:math:`k_B = 1.38 \: \times \: {10}^{-23} \: \joule \: {\kelvin}^{-1}`
-is Boltzmann’s constant and :math:`T \: [\kelvin]` is the absolute
+:math:`k_B = 1.38 \: \times \: {10}^{-23} \: {\mathrm{J}} \: {{\mathrm{K}}}^{-1}`
+is Boltzmann’s constant and :math:`T \: [{\mathrm{K}}]` is the absolute
 temperature. Here :math:`\langle x^2 \rangle` is mean-square
-displacement :math:`x_{\mbox{\tiny rms}}^2`. If the oscillator is in
+displacement :math:`x_{\mathrm{ rms}}^2`. If the oscillator is in
 thermal equilibrium with a bath described by a temperature :math:`T`,
-then if :math:`x_{\mbox{\tiny rms}}^2` can be measured, the oscillator
+then if :math:`x_{\mathrm{ rms}}^2` can be measured, the oscillator
 spring constant can be inferred from
 
 .. math::
 
-   k = \frac{k_B T}{x_{\mbox{\tiny rms}}^2} \: \sim \: [\frac{\newton}{\meter}]
+   k = \frac{k_B T}{x_{\mathrm{ rms}}^2} \: \sim \: [\frac{{\mathrm{N}}}{{\mathrm{m}}}]
    \label{eq:k}
 
 The mean-square displacement can be measured directly from time-domain
 observations. An alternative and more accurate way to determine
-:math:`{\ensuremath{x_{\mbox{\tiny rms}}}}` is to employ eq. [eq:xrmsP]
-and calculate :math:`{\ensuremath{x_{\mbox{\tiny rms}}}}` as the area
+:math:`{{x_{\mathrm{ rms}}}}` is to employ eq. [eq:xrmsP]
+and calculate :math:`{{x_{\mathrm{ rms}}}}` as the area
 under the position-fluctuation power spectrum. In practice both circuit
 noise and cantilever fluctuations contribute to the power spectrum, and
 therefore, by eq. [eq:xrmsP], to the observed time-domain
-:math:`{\ensuremath{x_{\mbox{\tiny rms}}}}`. Having fit data to
+:math:`{{x_{\mathrm{ rms}}}}`. Having fit data to
 eq. [eq:Pzfit], the integral of the cantilever’s contribution to the
 power spectrum may be calculated analytically in from the fit parameters
 as follows (see the appendix):
@@ -680,17 +687,17 @@ as follows (see the appendix):
 .. math::
 
    \begin{aligned}
-   {\ensuremath{x_{\mbox{\tiny rms}}}}^2 & = & P_z(0) f\: _0^4 \: (\int_{0}^{\infty} df \frac{1}{(f^2 - f_0^2)^2 + f^2 f_0^2 / Q^2}) \nonumber \\
+   {{x_{\mathrm{ rms}}}}^2 & = & P_z(0) f\: _0^4 \: (\int_{0}^{\infty} df \frac{1}{(f^2 - f_0^2)^2 + f^2 f_0^2 / Q^2}) \nonumber \\
            & = & \frac{\pi}{2} \: P_z (0) \: Q \: f_0 \label{eq:xrmscalc}\end{aligned}
 
 Having thus employed correlation-function results to accurately
-:math:`{\ensuremath{x_{\mbox{\tiny rms}}}}`, the spring constant my be
+:math:`{{x_{\mathrm{ rms}}}}`, the spring constant my be
 inferred. Substituting eq. [eq:xrmscalc] into eq. [eq:k] gives the
 desired relation
 
 .. math::
 
-   k = \frac{2 \: k_B T}{\pi P_z(0) \: Q \: f_0} \: \sim \: [\frac{\newton}{\meter}]
+   k = \frac{2 \: k_B T}{\pi P_z(0) \: Q \: f_0} \: \sim \: [\frac{{\mathrm{N}}}{{\mathrm{m}}}]
    \label{eq:k2}
 
 .. _sect:minimum-detectable-force:
@@ -700,21 +707,27 @@ Minimum Detectable Force
 
 We can turn eq. [eq:k2] around to read
 
-.. math:: P_z(0) = \frac{2 \: k_B T}{\pi k Q f_0} \: \sim \: [\frac{\meter^2}{\hertz}]
+.. math:: 
+    :label: eq:Pz0therm
 
-    *This is what statistical mechanics says :math:`P_z(0)` must be for
-    a harmonic oscillator in thermal equilibrium with a bath at
-    temperature :math:`T`*
+    P_z(0) = \frac{2 \: k_B T}{\pi k Q f_0} \: 
+        \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
 
-if the harmonic oscillator is to satisfy the equipartition theorem
-(eq. [eq:equip]). The power spectral density at all frequencies for a
+We conclude from this equation that if the harmonic oscillator is to satisfy the equipartition theorem (eq. [eq:equip]) then:
+
+    A harmonic oscillator in thermal equilibrium at temperature
+    :math:`T` must have a  `:math:`P_z(0)` given by :eq:`eq:Pz0therm`.
+
+The power spectral density at all frequencies for a
 harmonic oscillator at thermal equilibrium is obtained by substituting
 this :math:`P_z(0)` into eq. [eq:Pzfit]:
 
-.. math:: P_z(f) =  (\frac{2 \: k_B T}{\pi k Q f_0})(\frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2})
+.. math:: 
 
-The first term in parenthesis has units of :math:`[\meter^2/\hertz]` and
-serves to fix the area under the power spectrum. The second term is
+    P_z(f) =  (\frac{2 \: k_B T}{\pi k Q f_0})(\frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2})
+
+The first term in parenthesis has units of :math:`[{\mathrm{m}}^2/{\mathrm{Hz}}]` 
+and serves to fix the area under the power spectrum. The second term is
 unitless and traces out the response versus frequency of the oscillator
 to thermal-bath fluctuations.
 
@@ -723,7 +736,7 @@ We can infer the thermal force-fluctuation spectral density using
 
 .. math::
 
-   P_F(0) = \frac{2 \: k \: k_B T}{\pi Q f_0} \: \sim \: [\frac{\newton^2}{\hertz}]
+   P_F(0) = \frac{2 \: k \: k_B T}{\pi Q f_0} \: \sim \: [\frac{{\mathrm{N}}^2}{{\mathrm{Hz}}}]
    \label{eq:PF0}
 
 Thermal cantilever position fluctuations can be treated as if due to a
@@ -731,7 +744,7 @@ Thermal cantilever position fluctuations can be treated as if due to a
 
 At resonance
 
-.. math:: P_z(f_0) = (\frac{2 \: k_B T}{\pi k Q f_0})(Q^2) = \frac{2 \: Q \: k_B T}{\pi k f_0} \: \sim \: [\frac{\meter^2}{\hertz}]
+.. math:: P_z(f_0) = (\frac{2 \: k_B T}{\pi k Q f_0})(Q^2) = \frac{2 \: Q \: k_B T}{\pi k f_0} \: \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
 
 We are interested in the position-noise power in a narrow bandwidth
 :math:`\Delta \!
@@ -740,63 +753,61 @@ would be measured with a lock-in amplifier. The noise power is:
 
 .. math::
 
-   \begin{aligned}
-   x_{\mbox{\tiny min}}^2(f_0) & = & \int_{f_0 - \Delta \! f / 2}^{f_0 + \Delta \! f / 2} P_z(f) \: df \approx P_z(f_0) \int_{f_0 - \Delta \! f/2}^{f_0 + \Delta \! f/2} df\\  
-   & = & \frac{2 \: Q \: k_B T}{\pi k f_0} \times \Delta \! f \: \sim \: [\meter^2]\end{aligned}
-
+    x_{\mathrm{ min}}^2(f_0) = \int_{f_0 - \Delta \! f / 2}^{f_0 + \Delta \! f / 2} P_z(f) \: df \approx P_z(f_0) \int_{f_0 - \Delta \! f/2}^{f_0 + \Delta \! f/2} df = \frac{2 \: Q \: k_B T}{\pi k f_0} \times \Delta \! f \: \sim \: [{\mathrm{m}}^2]
+   
 The root-mean-square detectable position at resonance is the square root
 of this quantity:
 
-.. math:: x_{\mbox{\tiny min}}(f_0) = \sqrt{ \frac{2 \: Q \: \Delta \! f \: k_B T}{\pi k f_0} } \: \sim \: [\meter]
+.. math:: x_{\mathrm{ min}}(f_0) = \sqrt{ \frac{2 \: Q \: \Delta \! f \: k_B T}{\pi k f_0} } \: \sim \: [{\mathrm{m}}]
 
 It is interesting to calculate the position-noise power in a narrow
 bandwidth centered at *zero* frequency. Calculate:
 
 .. math::
 
-   x_{\mbox{\tiny min}}^2(0) \approx P_z(0) \: \Delta \! f 
-   = \frac{2 \: k_B T}{\pi k Q f_0} \times \Delta \! f \: \sim \: [\meter^2]
+   x_{\mathrm{ min}}^2(0) \approx P_z(0) \: \Delta \! f 
+   = \frac{2 \: k_B T}{\pi k Q f_0} \times \Delta \! f \: \sim \: [{\mathrm{m}}^2]
 
 As we expect, there is less power in fluctuations far away from
 resonance. For completeness, the zero-frequency root-mean-square
 detectable position is:
 
-.. math:: x_{\mbox{\tiny min}}(0) = \sqrt{ \frac{2 \: \Delta \! f \: k_B T}{\pi k Q f_0} } \: \sim \: [\meter]
+.. math:: x_{\mathrm{ min}}(0) = \sqrt{ \frac{2 \: \Delta \! f \: k_B T}{\pi k Q f_0} } \: \sim \: [{\mathrm{m}}]
 
 The minimum detectable force is inferred from the force-noise power in a
 narrow band of frequency near resonance:
 
 .. math::
 
-   \begin{aligned}
-   F_{\mbox{\tiny min}}^2 & = & \int_{f_0 - \Delta \! f / 2}^{f_0 + \Delta \! f / 2} P_F(f) \: df =  P_F(0) \int_{f_0 - \Delta \! f/2}^{f_0 + \Delta \! f/2} df\\  
-   & = & \frac{2 \: k \: k_B T}{\pi Q f_0} \times \Delta \! f \: \sim \: [\newton^2]\end{aligned}
+    F_{\mathrm{ min}}^2 = \int_{f_0 - \Delta \! f / 2}^{f_0 + \Delta \! f / 2} P_F(f) \: df =  P_F(0) \int_{f_0 - \Delta \! f/2}^{f_0 + \Delta \! f/2} df 
+   = \frac{2 \: k \: k_B T}{\pi Q f_0} \times \Delta \! f \: \sim \: [{\mathrm{N}}^2]
 
 where we have taken :math:`P_F(f) = P_F(0)` from eq. [eq:PF0]. The
 root-mean-square detectable force is thus:
 
 .. math::
 
-   F_{\mbox{\tiny min}} = \sqrt{ \frac{2 \: k \: \Delta \! f \: k_B T}{\pi Q f_0} } \: \sim \: [\newton]
+   F_{\mathrm{ min}} = \sqrt{ \frac{2 \: k \: \Delta \! f \: k_B T}{\pi Q f_0} } \: \sim \: [{\mathrm{N}}]
    \label{eq:Fmin}
 
-Note that the :math:`x_{\mbox{\tiny min}}` calculated above is only
+Note that the :math:`x_{\mathrm{ min}}` calculated above is only
 valid near resonance, whereas eq. [eq:Fmin] for
-:math:`F_{\mbox{\tiny min}}` is valid at *all frequencies*.
+:math:`F_{\mathrm{ min}}` is valid at *all frequencies*.
 
-It is convenient to write :math:`x_{\mbox{\tiny min}}` in terms of a
+It is convenient to write :math:`x_{\mathrm{ min}}` in terms of a
 position-fluctuation spectral density at resonance
-:math:`S_x \sim [\meter
-\hertz^{-1/2}]` times the square root of the detection bandwidth, as
-follows. Similarly :math:`F_{\mbox{\tiny min}}` can be recast in terms
+:math:`S_x \sim [{\mathrm{m}}
+{\mathrm{Hz}}^{-1/2}]` times the square root of the detection bandwidth, as
+follows. Similarly :math:`F_{\mathrm{ min}}` can be recast in terms
 of a force-fluctuation spectral density
-:math:`S_F \sim [\newton \hertz^{-1/2}]`.
+:math:`S_F \sim [{\mathrm{N}} {\mathrm{Hz}}^{-1/2}]`.
 
 .. math::
 
    \begin{aligned}
-   x_{\mbox{\tiny min}} & = & S_x \: \sqrt{\Delta \! f} \\
-   F_{\mbox{\tiny min}} & = & S_F \: \sqrt{\Delta \! f}\end{aligned}
+   x_{\mathrm{ min}} & = & S_x \: \sqrt{\Delta \! f} \\
+   F_{\mathrm{ min}} & = & S_F \: \sqrt{\Delta \! f}
+   \end{aligned}
 
 Here the position- and force-fluctuation spectral density near resonance
 are:
@@ -804,8 +815,8 @@ are:
 .. math::
 
    \begin{aligned}
-   S_x & = & \sqrt{ \frac{2 \: Q \: k_B T}{\pi k f_0} } \: \sim \: [\frac{\meter}{\sqrt{\hertz}}] \\
-   S_F & = & \sqrt{ \frac{2 \: k \: k_B T}{\pi Q f_0} } \: \sim \: [\frac{\newton}{\sqrt{\hertz}}] \label{eq:SF}\end{aligned}
+   S_x & = & \sqrt{ \frac{2 \: Q \: k_B T}{\pi k f_0} } \: \sim \: [\frac{{\mathrm{m}}}{\sqrt{{\mathrm{Hz}}}}] \\
+   S_F & = & \sqrt{ \frac{2 \: k \: k_B T}{\pi Q f_0} } \: \sim \: [\frac{{\mathrm{N}}}{\sqrt{{\mathrm{Hz}}}}] \label{eq:SF}\end{aligned}
 
 The quantity :math:`S_F` is an especially useful figure of merit for
 force detection near resonance; it allows one to compare cantilevers
@@ -849,9 +860,9 @@ length :math:`l`, width :math:`w`, and thickness :math:`t` are:
 
 where :math:`E` is Young’s modulus and :math:`\rho` is density
 (:math:`E = 1.9 \times
-10^{11} \: \newton \: \meter^{-2}` and
+10^{11} \: {\mathrm{N}} \: {\mathrm{m}}^{-2}` and
 :math:`\rho = 2.3 \times 10^{3} \:
-\kilo\gram \: \meter^{-3}` for silicon). In terms of cantilever
+\mathrm{kg} \: {\mathrm{m}}^{-3}` for silicon). In terms of cantilever
 properties,
 
 .. math:: S_F = 1.588 \left( \frac{k_B T}{Q} \right)^{1/2} (\rho E)^{1/4} \left( \frac{w}{l} \right)^{1/2} t
@@ -1290,4 +1301,4 @@ what Loring and co-workers have derived [#Yazdanian2008jun]_.
 References
 ----------
 
-.. [#Yazdanian2008jun] Yazdanian, S. M.; Marohn, J. A. & Loring, R. F. Dielectric Fluctuations in Force Microscopy: Noncontact Friction and Frequency Jitter. *J. Chem. Phys.*,  **2008**, *128*: 224706 [http://dx.doi.org/10.1063/1.2932254].  See equations 6.7 through 6.9.
+.. [#Yazdanian2008jun] Yazdanian, S. M.; Marohn, J. A. & Loring, R. F. Dielectric Fluctuations in Force Microscopy: Noncontact Friction and Frequency Jitter. *J. Chem. Phys.*,  **2008**, *128*: 224706 [http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2674627/] [http://dx.doi.org/10.1063/1.2932254] .  See equations 6.7 through 6.9.
