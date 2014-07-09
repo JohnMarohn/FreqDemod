@@ -261,7 +261,7 @@ We can see this immediately from
 .. math:: z_0(\omega_0) = - \imath \: \frac{Q \: F_0}{k}
 
 
-.. _sect:correlation-functions-I:
+.. _sect:correlation-functions:
 
 Correlation Functions
 ---------------------
@@ -1188,9 +1188,9 @@ of time :math:`T`, which we can indicate with a subscript:
     :label: Eq:xT
     
     x_{T}(t) = \begin{cases}
-    0 & \text{for } t > T \\
-    x(t) & \text{for } -T \leq t < T \\
-    0 & \text{for } t < -T
+    0 & \text{for } t < 0 \\
+    x(t) & \text{for } 0 \leq t \leq T \\
+    0 & \text{for } T < t
     \end{cases}
 
 Equation :eq:`Eq:dphi` holds with
@@ -1201,11 +1201,13 @@ functions are defined in terms of :math:`x_T(t)`, not :math:`x(t)`,
 
 .. math::
 
-   \begin{gathered}
-   C_x(\tau) = \lim_{T \rightarrow \infty} \frac{1}{2 T}
-   \int_{-T}^{+T} \langle x(t) \: x(t + \tau) \rangle \: dt \\
-   = \lim_{T \rightarrow \infty} \frac{1}{2 T}
-   \int_{-\infty}^{+\infty} \langle x_{T}(t) \: x_{T}(t + \tau) \rangle \: dt\end{gathered}
+   \begin{split}
+   C_x(\tau) 
+   & = \lim_{T \rightarrow \infty} \frac{1}{T}
+   \int_{0}^{T} \langle x(t) \: x(t + \tau) \rangle \: dt \\
+   & = \lim_{T \rightarrow \infty} \frac{1}{T}
+   \int_{-\infty}^{+\infty} \langle x_{T}(t) \: x_{T}(t + \tau) \rangle \: dt
+   \end{split}
 
 where :math:`\langle \cdots \rangle` indicates a statistical average.
 The manipulations leading to equation :eq:`Eq:FTdeltaphi` are still valid with
@@ -1236,7 +1238,7 @@ We may now pass to the power spectrum by taking the limit
 
 .. math::
 
-    P_{\delta x}(f) = \lim_{T \rightarrow \infty} \frac{1}{2 T} \:
+    P_{\delta x}(f) = \lim_{T \rightarrow \infty} \frac{1}{T} \:
     \widehat{\delta x_{T}}(f) \: \widehat{\delta x_{T}}^{*}\!\!(f)
 
 with the power spectrum :math:`P_{\delta \phi}(f)` analogously defined.
@@ -1245,9 +1247,12 @@ equation :eq:`Eq:PdeltaphiTintermediate` yields
 
 .. math::
 
-   \begin{gathered}
-   P_{\delta \phi}(f) = \frac{1}{2 x_{\text{rms}}^2} \left( P_{\delta x}(f+f_0) + P_{\delta x}(f-f_0) \right) \\
-    + \frac{1}{2 x_{\text{rms}}^2} \lim_{T \rightarrow \infty} \frac{1}{2 T} \text{Re} \! \left( \widehat{\delta x_{T}}^{*}\!\!(f-f_0) \: \widehat{\delta x_{T}}(f+f_0) \: e^{j \: 2 \phi} \right)\end{gathered}
+    P_{\delta \phi}(f) 
+    = \frac{1}{2 x_{\text{rms}}^2} 
+        \left( P_{\delta x}(f+f_0) + P_{\delta x}(f-f_0) \right)
+    - \frac{1}{2 x_{\text{rms}}^2} \lim_{T \rightarrow \infty} \frac{1}{T}
+      \text{Re} \! \left( \widehat{\delta x_{T}}^{*}\!\!(f-f_0) \:
+                        \widehat{\delta x_{T}}(f+f_0) \: e^{j \: 2 \phi} \right)
 
 where :math:`\text{Re} \! \left( \cdots \right)` indicates taking the
 real part. The last term will not survive statistical averaging over the
@@ -1280,7 +1285,7 @@ time-correlation function of the frequency shift is then
 
 .. math::
 
-   C_{\delta f}(\tau) = \lim_{T \rightarrow \infty} \: \frac{1}{2 T}
+   C_{\delta f}(\tau) = \lim_{T \rightarrow \infty} \: \frac{1}{T}
    \int_{-\infty}^{+\infty} \langle \delta f_{T}(t) \: \delta f_{T}(t+\tau) \rangle \: dt
 
 with :math:`C_{\delta \phi}` defined likewise. Substituting, and
@@ -1290,7 +1295,7 @@ dropping :math:`\langle \cdots \rangle` for notational convenience,
     :label: Eq:Cdeltaf
 
     C_{\delta f}(\tau) = 
-    \frac{1}{4 \pi^2} \lim_{T \rightarrow \infty} \: \frac{1}{2 T}
+    \frac{1}{4 \pi^2} \lim_{T \rightarrow \infty} \: \frac{1}{T}
     \int_{-\infty}^{+\infty} \langle \delta \dot{\phi}_{T}(t) 
     \: \delta \dot{\phi}_{T}(t+\tau) \rangle \: dt
 
@@ -1383,18 +1388,28 @@ Cantilever Noise
 We have previously shown that the (one sided) power spectrum of
 cantilever position fluctuation is
 
-.. math:: P_{\delta x}^{\text{one}}(f) = \frac{2 k_B T}{\pi k Q f_0} \frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}
+.. math::
+
+    P_{\delta x}^{\text{one}}(f) 
+    = \frac{2 k_B T}{\pi k Q f_0} 
+    \frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}
 
 where :math:`T` is temperature, :math:`k_B` is Boltzmann’s constant, and
 :math:`f_0`, :math:`k`, and :math:`Q` are cantilever frequency, spring
 constant, and mechanical quality factor, respectively. We can see that,
 for frequencies :math:`f \gg f_0 / Q`
 
-.. math:: P_{\delta x}^{\text{one}}(f_0 \pm f) \approx  \frac{2 k_B T}{\pi k Q f_0} \times \frac{f_0^2}{4 f^2}
+.. math:: 
+
+    P_{\delta x}^{\text{one}}(f_0 \pm f) 
+    \approx  \frac{2 k_B T}{\pi k Q f_0} \times \frac{f_0^2}{4 f^2}
 
 Substituting this result into equation :eq:`Eq:Pdeltafresult` gives
 
-.. math:: P_{\delta x}^{\text{therm}}(f) = \frac{k_B T f_0}{2 \pi \: x_{\text{rms}}^2 k Q}
+.. math::
+
+    P_{\delta f}^{\text{therm}}(f) 
+    = \frac{k_B T f_0}{2 \pi \: x_{\text{rms}}^2 k Q}
 
 Using
 
@@ -1406,7 +1421,7 @@ one-sided power spectrum of cantilever frequency fluctuations as
 .. math::
     :label: Eq:PdeltaxTherm
     
-    \boxed{P_{\delta x}^{\text{therm}}(f) = \dfrac{k_B T}{2 \pi^2 \: x_{\text{rms}}^2 k \: \tau_0} }
+    \boxed{P_{\delta f}^{\text{therm}}(f) = \dfrac{k_B T}{2 \pi^2 \: x_{\text{rms}}^2 k \: \tau_0} }
 
 Discussion
 ----------
@@ -1419,7 +1434,7 @@ References
 
 .. [#Press1986] Press, W. H.; Flannery, B. P.; Teukolsky, S. A. & Vetterling, W. T. Numerical Recipes, The Art of Scientific Computing.  Cambridge University Press, New York (1986).
 
-.. [#Weissbluth1989] Weissbluth, M. Photon-Atom Interactions. Academic Press, New York (1989).  I am modifying Weiessbluth's treatment a little.  He considers a signal that extends in time from :math:`t = -T` to :math:`t = +T` while we consider instead a signal that extends in time from :math:`t = 0` to :math:`t = T`.  
+.. [#Weissbluth1989] Weissbluth, M. Photon-Atom Interactions. Academic Press, New York (1989).  We modify Weiessbluth's treatment a little.  He considers a signal that extends in time from :math:`t = -T` to :math:`t = +T` while we consider instead a signal that extends in time from :math:`t = 0` to :math:`t = T`.  
 
 .. [#Yazdanian2008jun] Yazdanian, S. M.; Marohn, J. A. & Loring, R. F. Dielectric Fluctuations in Force Microscopy: Noncontact Friction and Frequency Jitter. *J. Chem. Phys.*,  **2008**, *128*: 224706 [http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2674627/] [http://dx.doi.org/10.1063/1.2932254] .  See equations 6.7 through 6.9.
 
