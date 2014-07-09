@@ -17,11 +17,11 @@ of a damped harmonic oscillator is derived in
 
 Understanding the response of a damped oscillator to an *incoherent*
 driving force is greatly simplified by thinking in terms of correlation
-functions, introduced below in :ref:`sect:correlation-functions-I`. In this 
+functions, introduced below in :ref:`sect:correlation-functions`. In this 
 section we establish a link between the time-domain correlation function and the
-frequency-domain power spectrum. In  :ref:`sect:correlation-functions-II`, a
-slightly more sophisticated correlation function is introduced which is more
-suitable for understanding physical phenomena.
+frequency-domain power spectrum.  A slightly more sophisticated correlation
+function then is introduced that is more suitable for understanding physical
+phenomena.
 
 The steady-state-response of a damped harmonic oscillator to an
 incoherent is derived in :ref:`sect:steady-state-response-II`. The
@@ -263,29 +263,28 @@ We can see this immediately from
 
 .. _sect:correlation-functions-I:
 
-Correlation Functions I
------------------------
+Correlation Functions
+---------------------
 
-The section explores a connection between a function’s associated
-correlation function and power spectrum. The correlation function of
-:math:`x(t)` is defined as
+The section explores a connection between a function’s correlation function and its power spectrum. The correlation function of :math:`x(t)` is defined as
 
-.. math:: C_x(\tau) = \int_{-\infty}^{\infty} dt \: x(t) \: x(t+\tau) \: \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
+.. math:: 
+    :label: eq:Cx
 
-The Fourier and inverse Fourier transforms are taken as in the following
-text.
+    C_x(\tau) = \int_{-\infty}^{\infty} dt \: x(t) \: x(t+\tau) \: 
+        \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
 
-| 
-| W. H. Press, B. P. Flannery, S. A. Teukolsky,
-| and W. T. Vetterling
-| Cambridge University Press, NY (1986)
-
-Following Press *et al.*, the Fourier and inverse Fourier transforms of
+Following the Fourier Transform conventions in *Numerical Recipes*
+[#Press1986]_, the Fourier and inverse Fourier transforms of
 :math:`x(t)` are:
 
-.. math:: \hat{x}(f) = \int_{-\infty}^{\infty} dt \: x(t) \: e^{\imath \: 2 \pi f t}
+.. math:: 
 
-.. math:: x(t) = \int_{-\infty}^{\infty} df \: \hat{x}(f) \: e^{-\imath \: 2 \pi f t}
+    \hat{x}(f) = \int_{-\infty}^{\infty} dt \: x(t) \: e^{\imath \: 2 \pi f t}
+
+.. math:: 
+
+    x(t) = \int_{-\infty}^{\infty} df \: \hat{x}(f) \: e^{-\imath \: 2 \pi f t}
 
 Substitute for :math:`x(t)` and :math:`x(t+\tau)` the appropriate
 Fourier transform relation
@@ -314,11 +313,6 @@ complex conjugate. We have finally
         | \hat{x}(f) |^2 \: e^{-\imath \: 2 \pi f \tau}
     \end{split}
 
-This is an important result:
-
-    The correlation function and the power spectrum are Fourier
-    transform pairs.
-
 If we define the one-sided power spectral density as
 
 .. math:: 
@@ -330,71 +324,79 @@ If we define the one-sided power spectral density as
 then
 
 .. math:: 
+    :label: eq:Cxresult
 
     C_x(\tau)
     = \int_{0}^{\infty} df \: \hat{P}_x(f) \: e^{-\imath \: 2 \pi f \tau}
 
-.. _sect:correlation-functions-II:
+This is an important result: The correlation function and the power spectrum are Fourier transform pairs.  
 
-Correlation Functions II
-------------------------
+While equations :eq:`eq:Cx` and :eq:`eq:Cxresult` can in principle be used to
+analyze thermomechanical fluctuations in the position of a microcantilever, in
+practice we need to introduce a modified correlation function to analyze the
+fluctuations.  The reason for this can be seen by considering the correlation
+function of equation :eq:`eq:Cx` at :math:`\tau = 0`:
 
-The correlation function considered above is not suitable for
-considering physical phenomena. The physically-relevant correlation
-function is treated in
+.. math::
 
-| 
-| Chapter 1
-| Mitchel Weissbluth
-| Academic Press, NY (1989)
+    C_x(0) = \int_{-\infty}^{\infty} dt \: x(t)^2 \longrightarrow \infty
 
-Following Weissbluth, we define the correlation function as follows.
+As indicated, this integral will diverge if applied to a real-world laboratory
+signal such as a cantilever oscillation. Following Weissbluth
+[#Weissbluth1989]_, let's define a more physically-relevant correlation
+function as follows.
 
 .. math:: G(\tau) \equiv \langle x(t) x(t+\tau) \rangle
 
 .. math::
     :label: eq:CF
     
-    G(\tau) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} x(t) x(t+\tau) \: dt \: \sim \: [{\mathrm{m}}^2]
+    G(\tau) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{T} \int_{0}^{T} x(t) x(t+\tau) \: dt \: \sim \: [{\mathrm{m}}^2]
 
 The units of this correlation function are :math:`[{\mathrm{m}}^2]`, if the
-units of x are :math:`[{\mathrm{m}}]`. This is quite different from the
-mathematically-defined correlation function :math:`C(\tau)` above, whose
-units are :math:`[{\mathrm{m}}^2/{\mathrm{Hz}}]`.
-
-The correlation function at :math:`\tau=0`, zero delay, has special
-significance:
+units of x are :math:`[{\mathrm{m}}]`. This correlation function is quite
+different from the mathematically-defined correlation function
+:math:`C(\tau)` of equation :eq:`eq:Cx` whose units are
+:math:`[{\mathrm{m}}^2/{\mathrm{Hz}}]`.  The correlation function at
+:math:`\tau=0`, zero delay, has special significance:
 
 .. math:: 
 
     \begin{split}
     G(0) 
-    & = \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} x^2(t) \: dt 
+    & = \lim_{T \rightarrow \infty} \: \frac{1}{T} \int_{0}^{T} x^2(t) \: dt 
     & = x_{\mathrm{rms}}^2
     \end{split}
 
-Thus :math:`G(0)` is the square of the root-mean-square value of
-:math:`x(t)` and
-:math:`x_{\mathrm{rms}} \sqrt{G(0)}`.
+We see that :math:`G(0)` is the mean square value of :math:`x(t)` and
+therefore the root-mean-square is :math:`x_{\mathrm{rms}} = \sqrt{G(0)}`.
 
 We will now reproduce Weissbluth’s treatment relating the
 (physically-relevant) correlation function :math:`G(\tau)` to an
-analogous power spectrum. So following Weissbluth, define the function
+analogous power spectrum.  Following Weissbluth, let us define the function
 :math:`x_{T}(t)` which is equal to :math:`x(t)` on the time interval
-:math:`(-T,+T)` and is zero at all other times:
+:math:`(0,T)` and is zero at all other times:
 
-.. math:: x_{T}(t) = \left\{ \begin{array}{cc} x(t) & -T \leq t \leq +T \\ 0 & \mathrm{otherwise} \end{array} \right.
+.. math:: 
 
-Define too a correlation function for :math:`x_T` as follows.
+    x_{T}(t) = 
+    \left\{
+        \begin{array}{cc} x(t) & 0 \leq t \leq T \\ 
+        0 & \mathrm{otherwise} 
+        \end{array}
+    \right.
+
+Let us define correlation function for :math:`x_T` as follows:
 
 .. math::
 
     \begin{split}
-    G_{T}(\tau) & = \frac{1}{2 T} \int_{-T}^{+T} x_T(t) x_T(t+\tau) \: dt \\
-        & = \frac{1}{2 T} \int_{-\infty}^{+\infty} x_T(t) x_T(t+\tau) \: dt
+    G_{T}(\tau) 
+    & = \frac{1}{T} \int_{0}^{T} x_T(t) x_T(t+\tau) \: dt \\
+    & = \frac{1}{T} \int_{-\infty}^{+\infty} x_T(t) x_T(t+\tau) \: dt
     \end{split}
 
-Since we’ve confined :math:`x_T` to the time interval :math:`(-T,+T)` we
+Since we’ve confined :math:`x_T` to the time interval :math:`(0,T)` we
 can extend the limits in integration out to infinity. Now take the
 Fourier transform of :math:`G_{T}(\tau)`:
 
@@ -403,17 +405,16 @@ Fourier transform of :math:`G_{T}(\tau)`:
     \begin{multline}
     \int_{-\infty}^{+\infty} G_{T}(\tau) 
         \: e^{\imath \: 2 \pi f \tau} \: d\tau\
-    = \frac{1}{2 T} \int_{-\infty}^{+\infty} d\tau \: 
+    = \frac{1}{T} \int_{-\infty}^{+\infty} d\tau \: 
         e^{\imath \: 2 \pi f \tau} \int_{-\infty}^{+\infty} dt
             \: x_{T}(t) \: x_{T}(t+\tau) \\
-    = \frac{1}{2 T} \int_{-\infty}^{+\infty} dt 
+    = \frac{1}{T} \int_{-\infty}^{+\infty} dt 
             \: x_{T}(t) \: e^{-\imath \: 2 \pi f t} 
         \int_{-\infty}^{+\infty} d\tau \:  
             x_{T}(t+\tau) \: e^{\imath \: 2 \pi f (t+\tau)}
    \end{multline}
 
-where we have inserted 1 in the form of
-:math:`\exp{(-\imath \: 2 \pi f t)}
+where we have inserted :math:`1 = \exp{(-\imath \: 2 \pi f t)}
 \exp{(+\imath \: 2 \pi f t)}`. In the second integral, change the
 variable of integration to :math:`t^{\prime} = t+\tau`. This lets us
 write
@@ -422,18 +423,17 @@ write
 
     \int_{-\infty}^{+\infty} G_{T}(\tau) 
         \: e^{\imath \: 2 \pi f \tau} \: d\tau
-    = \frac{1}{2 T} \underbrace{\int_{-\infty}^{+\infty} dt \: x_{T}(t) \:
+    = \frac{1}{T} \underbrace{\int_{-\infty}^{+\infty} dt \: x_{T}(t) \:
         e^{-\imath \: 2 \pi f t}}_{{\hat{x}}_T(-f) = {\hat{x}}^{*}_{T}(f)} \underbrace{\int_{-\infty}^{+\infty} dt^{\prime} \: x_{T}(t^{\prime}) \: e^{\imath \: 2 \pi f t^{\prime}}}_{{\hat{x}}_T(f)}
 
 Since :math:`x(t)` is a real function, it follows that
-:math:`{\hat{x}}_{T}(-f) = {\hat{x}}^{*}_{T}(f)`. This allows us to
-write
+:math:`{\hat{x}}_{T}(-f) = {\hat{x}}^{*}_{T}(f)`. We can thus write
 
 .. math::
     :label: eq:limitG
 
     \int_{-\infty}^{+\infty} G_{T}(\tau) \: e^{\imath \: 2 \pi f \tau} \: d\tau 
-        = \frac{1}{2 T} \: | \hat{x}(f) |^{2}
+        = \frac{1}{T} \: | {\hat{x}}_{T}(f) |^{2}
 
 We recover the “real” correlation function by a limiting procedure.
 
@@ -442,14 +442,14 @@ We recover the “real” correlation function by a limiting procedure.
     G(\tau) = \lim_{T \rightarrow \infty} \: G_{T}(\tau)
 
 Take the limit on each side of equation :eq:`eq:limitG` as :math:`T \rightarrow
-\infty`. On the LHS :math:`G_T` becomes :math:`G`; the terms on the RHS
-motivate us to define
+\infty`. On the left-hand side, :math:`G_T` becomes :math:`G`; the terms on the
+right-hand side motivate us to define
 
 .. math::
     :label: eq:PS
     
     J(f) \equiv \lim_{T \rightarrow \infty} \: 
-    \frac{1}{2 T} \: | \hat{x}(f) |^{2} \: 
+    \frac{1}{T} \: | {\hat{x}}_{T}(f) |^{2} \: 
         \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
 
 as the *physically relevant spectral density*. It still holds that
@@ -480,15 +480,14 @@ We have defined the one-sided power spectral density as
     \begin{split}
     P(f)
     & = J(f) + J(-f) \\
-    & = \lim_{T \rightarrow \infty} \frac{1}{2 T} \: 
-        ( | \hat{x}(f) |^{2} + | \hat{x}(-f) |^{2})
+    & = \lim_{T \rightarrow \infty} \frac{1}{T} \: 
+        ( | {\hat{x}}_{T}(f) |^{2} + | {\hat{x}}_{T}(-f) |^{2})
     \end{split}
 
 With these definitions of correlation function (equation :eq:`eq:CF`) and
-spectral density (equation :eq:`eq:PS`), we still have that
-
-    The correlation function :math:`G(\tau)` and the power spectrum
-    :math:`J(f)` of :math:`x(t)` are Fourier transform pairs.
+spectral density (equation :eq:`eq:PS`), we still have that the correlation
+function :math:`G(\tau)` and the power spectrum :math:`J(f)` of :math:`x(t)` are
+Fourier transform pairs.
 
 Finally, equation :eq:`eq:FTOSPS` can be used to calculate the root-mean-square
 of :math:`x(t)` given a measured one-sided power spectral density:
@@ -502,14 +501,8 @@ of :math:`x(t)` given a measured one-sided power spectral density:
         & = G(0) = \int_{0}^{+\infty} P(f) \: df.
     \end{split}
 
-We conclude that
-
-    The area under the one-sided spectrum is the mean-square
-    displacement.
-
-We note that this connection is not valid for the mathematically-defined
-power-spectrum of the last section.
-
+We conclude that the area under the one-sided spectrum is the mean-square
+displacement.  We note that this connection is *not* valid for the mathematically-defined power-spectrum of the last section.
 
 .. _sect:steady-state-response-II:
 
@@ -520,19 +513,33 @@ In this section we explore the response of the harmonic oscillator to an
 **incoherent** driving force. If the force is random, it will have zero
 average:
 
-.. math:: \langle F(t) \rangle = \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} F(t) \: dt \longrightarrow 0
+.. math:: 
+
+    \langle F(t) \rangle 
+    = \lim_{T \rightarrow \infty} \: \frac{1}{T} \int_{0}^{T} F(t) \: dt
+        \longrightarrow 0
 
 It will not, in general, have a vanishing correlation function – we will
 discuss the force and response using correlation functions. Integrating
 equation :eq:`eq:z` provides another route to understanding the response
 :math:`z(t)` to a randomly fluctuating force :math:`F(t)` driving the
-system – we will not follow such a Langevin treatment.
+system; we will not follow such a Langevin treatment.
 
-Define correlation functions for :math:`z` and :math:`F` as above.
+Define correlation functions for :math:`z` and :math:`F` as above,
 
-.. math:: G_z(\tau) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} z(t) z(t+\tau) \: dt \: \sim \: [{\mathrm{m}}^2]
+.. math::
 
-.. math:: G_F(\tau) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{2 T} \int_{-T}^{+T} F(t) F(t+\tau) \: dt \: \sim \: [{\mathrm{N}}^2]
+    G_z(\tau) 
+    \equiv \lim_{T \rightarrow \infty} \: 
+        \frac{1}{T} \int_{0}^{T} z(t) z(t+\tau) \: dt \: 
+        \sim \: [{\mathrm{m}}^2]
+
+.. math::
+
+    G_F(\tau) 
+    \equiv \lim_{T \rightarrow \infty} \: 
+        \frac{1}{T} \int_{0}^{T} F(t) F(t+\tau) \: dt \: 
+        \sim \: [{\mathrm{N}}^2]
 
 With each of these correlation functions is associated a power spectrum:
 
@@ -567,26 +574,38 @@ connecting :math:`F` and :math:`z`, equation :eq:`eq:z`.
 
 For both sides to be equal, we must have that at each frequency
 
-.. math:: \hat{z}(f) = \frac{\hat{F}(f)}{k} \frac{f_0^2}{f_0^2 - f^2 - \imath f \: f_0 / Q}
+.. math:: 
+
+    \hat{z}(f) 
+    = \frac{\hat{F}(f)}{k} \frac{f_0^2}{f_0^2 - f^2 - \imath f \: f_0 / Q}
 
 Taking the magnitude of each side, we infer that the power spectra are
 related by
 
-.. math:: | \hat{z}(f) |^2 = \frac{| \hat{F}(f) |^2}{k^2} \frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}
+.. math:: 
+
+    | \hat{z}(f) |^2 
+    = \frac{| \hat{F}(f) |^2}{k^2} 
+        \frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}
 
 This equation relates “mathematical” correlation functions. It is a
 straightforward matter to introduce the time-averaging and limiting
 procedure employed above to obtain this result in terms of
 “physically-relevant” correlation functions:
 
-.. math:: P_z(f) = \lim_{T \rightarrow \infty} \frac{1}{2 T} \: ( | \hat{z}(f) |^{2} + | \hat{z}(-f) |^{2}) \: \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
+.. math::
+
+    P_z(f) 
+    = \lim_{T \rightarrow \infty} \frac{1}{T} 
+        \: ( | {\hat{z}}_{T}(f) |^{2} + | {\hat{z}}_{T}(-f) |^{2}) \: 
+            \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
 
 .. math::
     :label: eq:PF
 
     P_F(f) 
-    = \lim_{T \rightarrow \infty} \frac{1}{2 T} 
-        \: ( | \hat{F}(f) |^{2} + | \hat{F}(-f) |^{2}) \: 
+    = \lim_{T \rightarrow \infty} \frac{1}{T} 
+        \: ( | {\hat{F}}_{T}(f) |^{2} + | {\hat{F}}_{T}(-f) |^{2}) \: 
             \sim \: [\frac{{\mathrm{N}}^2}{{\mathrm{Hz}}}]
 
 The result, which we write in terms of *one-sided power spectral
@@ -595,7 +614,9 @@ densities* is:
 .. math::
     :label: eq:PzPF
     
-    P_z(f) = \frac{P_F(f)}{k^2} \frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}
+    P_z(f) = 
+    \frac{P_F(f)}{k^2}
+    \frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}
 
 Given an :math:`F(t)`, form a one-sided power spectrum :math:`P_F(f)` by
 Fourier transforming the time-domain spectrum of :math:`F` and averaging
@@ -1394,7 +1415,11 @@ Equations :eq:`Eq:PdeltaxDet` and :eq:`Eq:PdeltaxTherm` agree *exactly* with
 what Loring and co-workers have derived [#Yazdanian2008jun]_.
 
 References
-----------
+==========
+
+.. [#Press1986] Press, W. H.; Flannery, B. P.; Teukolsky, S. A. & Vetterling, W. T. Numerical Recipes, The Art of Scientific Computing.  Cambridge University Press, New York (1986).
+
+.. [#Weissbluth1989] Weissbluth, M. Photon-Atom Interactions. Academic Press, New York (1989).  I am modifying Weiessbluth's treatment a little.  He considers a signal that extends in time from :math:`t = -T` to :math:`t = +T` while we consider instead a signal that extends in time from :math:`t = 0` to :math:`t = T`.  
 
 .. [#Yazdanian2008jun] Yazdanian, S. M.; Marohn, J. A. & Loring, R. F. Dielectric Fluctuations in Force Microscopy: Noncontact Friction and Frequency Jitter. *J. Chem. Phys.*,  **2008**, *128*: 224706 [http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2674627/] [http://dx.doi.org/10.1063/1.2932254] .  See equations 6.7 through 6.9.
 
