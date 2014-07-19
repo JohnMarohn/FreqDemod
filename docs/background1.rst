@@ -3,7 +3,10 @@ Harmonic Oscillator Brownian Motion Tutorial
 
 This tutorial discusses the steady-state response of a cantilever to both
 a coherent and an incoherent driving force. The cantilever is modeled
-classically as a damped harmonic oscillator.  This tutorial is organized as
+classically as a damped harmonic oscillator.  
+
+
+This tutorial is organized as
 follows.
 
 In :ref:`sect:equation-of-motion` the equation of motion for a damped
