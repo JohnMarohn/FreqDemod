@@ -247,7 +247,7 @@ Fourier transform relation
 
     C_{\delta x}(\tau) 
     = \int df  \int df^{\prime}  \: 
-        \hat{\delta x}(f^{\prime}) \: \hat{\delta x}(f) \: 
+        \widehat{\delta x}(f^{\prime}) \: \widehat{\delta x}(f) \: 
         e^{-\imath \: 2 \pi f \tau} 
         \underbrace{\int dt \: e^{-\imath \: 2 \pi f t}  e^{-\imath \: 2 \pi f^{\prime} t}}_{\delta(f+f^{\prime}) \Longrightarrow f^{\prime} = -f}
 
@@ -257,29 +257,35 @@ final double integral, so that
 
 .. math:: C_{\delta x}(\tau) 
     = \int_{-\infty}^{\infty} df \: \: 
-        \hat{\delta x}(-f) \: \hat{\delta x}(f) \: e^{-\imath \: 2 \pi f \tau}
+        \widehat{\delta x}(-f) \: \widehat{\delta x}(f) 
+        \: e^{-\imath \: 2 \pi f \tau}
 
 If :math:`\delta x(t)` is a real function of time, then it can be shown that
-:math:`\hat{\delta x}(-f) = \hat{\delta x}^{*}(f)` where the star indicates the
-complex conjugate. We have finally
+
+.. math::
+
+    \widehat{\delta x}(-f) = {\widehat{\delta x}}^{*}(f) 
+
+
+where the star indicates the complex conjugate. We have finally
 
 .. math::
     
     \begin{split}
     C_{\delta x}(\tau) 
     & = \int_{-\infty}^{\infty} df \: 
-        \hat{\delta x}^{*}(f) \: \hat{\delta x}(f) \: 
+        {\widehat{\delta x}}^{*}(f) \: \widehat{\delta x}(f) \: 
             e^{-\imath \: 2 \pi f \tau} \\ 
     & = \int_{-\infty}^{\infty} df \: 
-        | \hat{\delta x}(f) |^2 \: e^{-\imath \: 2 \pi f \tau}
+        | \widehat{\delta x}(f) |^2 \: e^{-\imath \: 2 \pi f \tau}
     \end{split}
 
 If we define the one-sided power spectral density as
 
 .. math:: 
 
-    \hat{P}_{\delta x}(f) 
-    = | \hat{\delta x}(f) |^2 + | \hat{\delta x}(-f) |^2  \: 
+    P_{\delta x}(f) 
+    = | \widehat{\delta x}(f) |^2 + | \widehat{\delta x}(-f) |^2  \: 
     \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}^2}]
 
 then
@@ -288,7 +294,7 @@ then
     :label: eq:Cxresult
 
     C_{\delta x}(\tau)
-    = \int_{0}^{\infty} df \: \hat{P}_{\delta x}(f) \: 
+    = \int_{0}^{\infty} df \: P_{\delta x}(f) \: 
         e^{-\imath \: 2 \pi f \tau}
 
 This is an important result: The correlation function and the power spectrum are Fourier transform pairs.  
@@ -301,79 +307,86 @@ function of equation :eq:`eq:Cx` at :math:`\tau = 0`:
 
 .. math::
 
-    C_x(0) = \int_{-\infty}^{\infty} dt \: x(t)^2 \longrightarrow \infty
+    C_{\delta x}(0) 
+    = \int_{-\infty}^{\infty} dt \: 
+        \delta x(t)^2 \longrightarrow \infty
 
 As indicated, this integral will diverge if applied to a real-world laboratory
 signal such as a cantilever oscillation. Following Weissbluth
 [#Weissbluth1989]_, let's define a more physically-relevant correlation
 function as follows.
 
-.. math:: G(\tau) \equiv \langle x(t) x(t+\tau) \rangle
+.. math:: G(\tau) \equiv \langle \delta x(t) \: \delta x(t+\tau) \rangle
 
 .. math::
     :label: eq:CF
     
-    G(\tau) \equiv \lim_{T \rightarrow \infty} \: \frac{1}{T} \int_{0}^{T} x(t) x(t+\tau) \: dt \: \sim \: [{\mathrm{m}}^2]
+    G(\tau) \equiv \lim_{T \rightarrow \infty} \: 
+    \frac{1}{T} \int_{0}^{T} 
+        \delta x(t) \: \delta x(t+\tau) \: dt \: 
+        \sim \: [{\mathrm{m}}^2]
 
 The units of this correlation function are :math:`[{\mathrm{m}}^2]`, if the
 units of x are :math:`[{\mathrm{m}}]`. This correlation function is quite
 different from the mathematically-defined correlation function
 :math:`C(\tau)` of equation :eq:`eq:Cx` whose units are
 :math:`[{\mathrm{m}}^2/{\mathrm{Hz}}]`.  The correlation function at
-:math:`\tau=0`, zero delay, has special significance:
+:math:`\tau=0` (zero delay) has special significance:
 
 .. math:: 
 
     \begin{split}
     G(0) 
-    & = \lim_{T \rightarrow \infty} \: \frac{1}{T} \int_{0}^{T} x^2(t) \: dt 
+    & = \lim_{T \rightarrow \infty} \: 
+        \frac{1}{T} \int_{0}^{T} \delta x^2(t) \: dt 
     & = x_{\mathrm{rms}}^2
     \end{split}
 
-We see that :math:`G(0)` is the mean square value of :math:`x(t)` and
-therefore the root-mean-square is :math:`x_{\mathrm{rms}} = \sqrt{G(0)}`.
+We see that :math:`G(0)` is the mean square value of :math:`\delta x(t)` and
+therefore the root-mean-square is 
+:math:`{\delta x}_{\mathrm{rms}} = \sqrt{G(0)}`.
 
-We will now reproduce Weissbluth’s treatment relating the
+We will now reproduce Weissbluth’s treatment [#Weissbluth1989]_ relating the
 (physically-relevant) correlation function :math:`G(\tau)` to an
 analogous power spectrum.  Following Weissbluth, let us define the function
-:math:`x_{T}(t)` which is equal to :math:`x(t)` on the time interval
-:math:`(0,T)` and is zero at all other times:
+:math:`{\delta x}_{T}(t)` which is equal to :math:`\delta 
+x(t)` on the time interval :math:`(0,T)` and is zero at all other times:
 
 .. math:: 
 
-    x_{T}(t) = 
+    {\delta x}_{T}(t) = 
     \left\{
-        \begin{array}{cc} x(t) & 0 \leq t \leq T \\ 
+        \begin{array}{cc} \delta x(t) & 0 \leq t \leq T \\ 
         0 & \mathrm{otherwise} 
         \end{array}
     \right.
 
-Let us define correlation function for :math:`x_T` as follows:
+Let us define correlation function for :math:`{\delta x}_T` as follows:
 
 .. math::
 
     \begin{split}
     G_{T}(\tau) 
-    & = \frac{1}{T} \int_{0}^{T} x_T(t) x_T(t+\tau) \: dt \\
-    & = \frac{1}{T} \int_{-\infty}^{+\infty} x_T(t) x_T(t+\tau) \: dt
+    & = \frac{1}{T} \int_{0}^{T} 
+        {\delta x}_T(t) \: {\delta x}_T(t+\tau) \: dt \\
+    & = \frac{1}{T} \int_{-\infty}^{+\infty} 
+        {\delta x}_T(t) \: {\delta x}_T(t+\tau) \: dt
     \end{split}
 
-Since we’ve confined :math:`x_T` to the time interval :math:`(0,T)` we
-can extend the limits in integration out to infinity. Now take the
-Fourier transform of :math:`G_{T}(\tau)`:
+Since we’ve confined :math:`{\delta x}_T` to the time interval :math:`(0,T)` we can extend the limits in integration out to infinity. Now take the Fourier transform of :math:`G_{T}(\tau)`:
 
 .. math::
 
     \begin{multline}
     \int_{-\infty}^{+\infty} G_{T}(\tau) 
-        \: e^{\imath \: 2 \pi f \tau} \: d\tau\
+        \: e^{\imath \: 2 \pi f \tau} \: d\tau
     = \frac{1}{T} \int_{-\infty}^{+\infty} d\tau \: 
         e^{\imath \: 2 \pi f \tau} \int_{-\infty}^{+\infty} dt
-            \: x_{T}(t) \: x_{T}(t+\tau) \\
+            \: {\delta x}_{T}(t) \: {\delta x}_{T}(t+\tau) \\
     = \frac{1}{T} \int_{-\infty}^{+\infty} dt 
-            \: x_{T}(t) \: e^{-\imath \: 2 \pi f t} 
+            \: {\delta x}_{T}(t) \: e^{-\imath \: 2 \pi f t} 
         \int_{-\infty}^{+\infty} d\tau \:  
-            x_{T}(t+\tau) \: e^{\imath \: 2 \pi f (t+\tau)}
+            {\delta x}_{T}(t+\tau) \: e^{\imath \: 2 \pi f (t+\tau)}
    \end{multline}
 
 where we have inserted :math:`1 = \exp{(-\imath \: 2 \pi f t)}
@@ -385,17 +398,17 @@ write
 
     \int_{-\infty}^{+\infty} G_{T}(\tau) 
         \: e^{\imath \: 2 \pi f \tau} \: d\tau
-    = \frac{1}{T} \underbrace{\int_{-\infty}^{+\infty} dt \: x_{T}(t) \:
-        e^{-\imath \: 2 \pi f t}}_{{\hat{x}}_T(-f) = {\hat{x}}^{*}_{T}(f)} \underbrace{\int_{-\infty}^{+\infty} dt^{\prime} \: x_{T}(t^{\prime}) \: e^{\imath \: 2 \pi f t^{\prime}}}_{{\hat{x}}_T(f)}
+    = \frac{1}{T} \underbrace{\int_{-\infty}^{+\infty} dt 
+        \: {\delta x}_{T}(t) \:
+        e^{-\imath \: 2 \pi f t}}_{{\widehat{\delta x}}_T(-f) = {\widehat{\delta x}}^{*}_{T}(f)} \underbrace{\int_{-\infty}^{+\infty} dt^{\prime} \: {\delta x}_{T}(t^{\prime}) \: e^{\imath \: 2 \pi f t^{\prime}}}_{{\widehat{\delta x}}_T(f)}
 
-Since :math:`x(t)` is a real function, it follows that
-:math:`{\hat{x}}_{T}(-f) = {\hat{x}}^{*}_{T}(f)`. We can thus write
+Since :math:`x(t)` is a real function, it follows that :math:`{\widehat{\delta x}}_{T}(-f) = {\widehat{\delta x}}^{*}_{T}(f)`. We can thus write 
 
 .. math::
     :label: eq:limitG
 
     \int_{-\infty}^{+\infty} G_{T}(\tau) \: e^{\imath \: 2 \pi f \tau} \: d\tau 
-        = \frac{1}{T} \: | {\hat{x}}_{T}(f) |^{2}
+        = \frac{1}{T} \: | {\widehat{\delta x}}_{T}(f) |^{2}
 
 We recover the “real” correlation function by a limiting procedure.
 
@@ -411,7 +424,7 @@ right-hand side motivate us to define
     :label: eq:PS
     
     J(f) \equiv \lim_{T \rightarrow \infty} \: 
-    \frac{1}{T} \: | {\hat{x}}_{T}(f) |^{2} \: 
+    \frac{1}{T} \: | {\widehat{\delta x}}_{T}(f) |^{2} \: 
         \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
 
 as the *physically relevant spectral density*. It still holds that
@@ -443,13 +456,14 @@ We have defined the one-sided power spectral density as
     P(f)
     & = J(f) + J(-f) \\
     & = \lim_{T \rightarrow \infty} \frac{1}{T} \: 
-        ( | {\hat{x}}_{T}(f) |^{2} + | {\hat{x}}_{T}(-f) |^{2})
+        ( | {\widehat{\delta x}}_{T}(f) |^{2} + 
+          | {\widehat{\delta x}}_{T}(-f) |^{2})
     \end{split}
 
 With these definitions of correlation function (equation :eq:`eq:CF`) and
 spectral density (equation :eq:`eq:PS`), we still have that the correlation
-function :math:`G(\tau)` and the power spectrum :math:`J(f)` of :math:`x(t)` are
-Fourier transform pairs.
+function :math:`G(\tau)` and the power spectrum :math:`J(f)` of 
+:math:`\delta x(t)` are Fourier transform pairs.
 
 Finally, equation :eq:`eq:FTOSPS` can be used to calculate the root-mean-square
 of :math:`x(t)` given a measured one-sided power spectral density:
@@ -458,17 +472,15 @@ of :math:`x(t)` given a measured one-sided power spectral density:
     :label: eq:xrmsP
     
     \begin{split}
-    x_{\mathrm{rms}}^2 
-        & = \langle x^2(t) \rangle \\
+    {\delta x}_{\mathrm{rms}}^2 
+        & = \langle {\delta x}^2(t) \rangle \\
         & = G(0) = \int_{0}^{+\infty} P(f) \: df.
     \end{split}
 
 We conclude that the area under the one-sided spectrum is the mean-square
 displacement.  We note that this connection is *not* valid for the mathematically-defined power-spectrum of the last section.
 
-**Steady-State Response Revisited**.    In this section we explore the response 
-of the harmonic oscillator to an **incoherent** driving force. If the force is 
-random, it will have zero average:
+**Steady-State Response Revisited**.    In this section we explore the response of the cantilever to an **incoherent** driving force.  We assume that the driving force averages to zero over long times:
 
 .. math:: 
 
@@ -476,26 +488,20 @@ random, it will have zero average:
     = \lim_{T \rightarrow \infty} \: \frac{1}{T} \int_{0}^{T} F(t) \: dt
         \longrightarrow 0
 
-It will not, in general, have a vanishing correlation function – we will
-discuss the force and response using correlation functions. Integrating
-equation :eq:`eq:z` provides another route to understanding the response
-:math:`z(t)` to a randomly fluctuating force :math:`F(t)` driving the
-system; we will not follow such a Langevin treatment.
-
-Define correlation functions for :math:`z` and :math:`F` as above,
+The change in cantilever position resulting from such a force will likewise average to zero at long times.  At short times, however, the cantilever will experience force fluctuations :math:`\delta F(t)` and these force fluctuations will stimulate fluctuations :math:`\delta z(t)` in the cantilever's position.  Let us define correlation functions for both :math:`\delta z` and :math:`\delta F` as above,
 
 .. math::
 
-    G_z(\tau) 
+    G_{\delta z}(\tau) 
     \equiv \lim_{T \rightarrow \infty} \: 
-        \frac{1}{T} \int_{0}^{T} z(t) z(t+\tau) \: dt \: 
+        \frac{1}{T} \int_{0}^{T} \delta z(t) \: \delta z(t+\tau) \: dt \: 
         \sim \: [{\mathrm{m}}^2]
 
 .. math::
 
-    G_F(\tau) 
+    G_{\delta F}(\tau) 
     \equiv \lim_{T \rightarrow \infty} \: 
-        \frac{1}{T} \int_{0}^{T} F(t) F(t+\tau) \: dt \: 
+        \frac{1}{T} \int_{0}^{T} \delta F(t) \: \delta F(t+\tau) \: dt \: 
         \sim \: [{\mathrm{N}}^2]
 
 With each of these correlation functions is associated a power spectrum:
@@ -503,67 +509,74 @@ With each of these correlation functions is associated a power spectrum:
 .. math::
 
    \begin{aligned}
-   G_z(\tau) \Leftarrow \mathrm{FT} \Rightarrow J_z(f) \: \mbox{or} \: P_z(f) \\
-   G_F(\tau) \Leftarrow \mathrm{FT} \Rightarrow J_F(f) \: \mbox{or} \: P_z(f)
+   G_{\delta z}(\tau) \underleftrightarrow{\mathrm{\small FT}} 
+        J_{\delta z}(f) \: \text{or} \: P_{\delta z}(f) \\
+   G_{\delta F}(\tau) \underleftrightarrow{\mathrm{\small FT}}
+        J_{\delta F}(f) \: \text{or} \: P_{\delta F}(f)
    \end{aligned}
 
-Because :math:`z` and :math:`F` are connected by an equation of motion,
-we can write :math:`J_z` in terms of :math:`J_F`, as we will now show.
-
-Follow the motion by Fourier analysis:
+Because :math:`z` and :math:`F` are connected by an equation of motion, we can write :math:`J_{\delta z}` in terms of :math:`J_{\delta F}`, as we will now show.  Let us use a Fourier expansion to write the fluctuating quantities as follows
 
 .. math::
     :label: eq:FTF
     
-    F(t) = \int_{-\infty}^{\infty} df \: \hat{F}(f) \: e^{-\imath \: 2 \pi f t}
+    \delta F(t) 
+    = \int_{-\infty}^{\infty} df \: \widehat{\delta F}(f) 
+        \: e^{-\imath \: 2 \pi f t}
     
 .. math::
     :label: eq:FTz
 
-    z(t) = \int_{-\infty}^{\infty} df \: \hat{z}(f) \: e^{-\imath \: 2 \pi f t}
+    \delta z(t) 
+    = \int_{-\infty}^{\infty} df \: \widehat{\delta z}(f) 
+        \: e^{-\imath \: 2 \pi f t}
 
 Substitute equations :eq:`eq:FTF` and :eq:`eq:FTz` into the equation of motion
 connecting :math:`F` and :math:`z`, equation :eq:`eq:z`.
 
 .. math::
 
-    \int_{-\infty}^{+\infty} (-f^2 - \imath f \: \frac{f_0}{Q} + f_0^2 ) \: \hat{z}(f) \: e^{-\imath \: 2 \pi f t} \: df = \int_{-\infty}^{+\infty} \frac{f_0^2}{k} \hat{F}(f) \: e^{-\imath \: 2 \pi f t} \: df
+    \int_{-\infty}^{+\infty} 
+    (-f^2 - \imath f \: \frac{f_0}{Q} + f_0^2 ) \: \widehat{\delta z}(f) 
+        \: e^{-\imath \: 2 \pi f t} \: df 
+    =
+    \int_{-\infty}^{+\infty}
+    \frac{f_0^2}{k} \widehat{\delta F}(f) \: e^{-\imath \: 2 \pi f t} \: df
 
 For both sides to be equal, we must have that at each frequency
 
 .. math:: 
 
-    \hat{z}(f) 
-    = \frac{\hat{F}(f)}{k} \frac{f_0^2}{f_0^2 - f^2 - \imath f \: f_0 / Q}
+    \widehat{\delta z}(f) 
+    = \frac{\widehat{\delta F}(f)}{k} 
+        \frac{f_0^2}{f_0^2 - f^2 - \imath f \: f_0 / Q}
 
-Taking the magnitude of each side, we infer that the power spectra are
-related by
+Taking the magnitude of each side, we infer that the power spectra are related by
 
 .. math:: 
 
-    | \hat{z}(f) |^2 
-    = \frac{| \hat{F}(f) |^2}{k^2} 
+    | \widehat{\delta z}(f) |^2 
+    = \frac{| \widehat{\delta F}(f) |^2}{k^2} 
         \frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}
 
-This equation relates “mathematical” correlation functions. It is a
-straightforward matter to introduce the time-averaging and limiting
-procedure employed above to obtain this result in terms of
-“physically-relevant” correlation functions:
+This equation relates “mathematical” correlation functions. It is a straightforward matter to introduce the time-averaging and limiting procedure employed above to obtain this result in terms of “physically-relevant” correlation functions:
 
 .. math::
 
-    P_z(f) 
+    P_{\delta z}(f) 
     = \lim_{T \rightarrow \infty} \frac{1}{T} 
-        \: ( | {\hat{z}}_{T}(f) |^{2} + | {\hat{z}}_{T}(-f) |^{2}) \: 
-            \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
+        \: ( | {\widehat{\delta z}}_{T}(f) |^{2} + 
+             | {\widehat{\delta z}}_{T}(-f) |^{2}) \: 
+            \sim \: [\frac{{\text{m}}^2}{{\text{Hz}}}]
 
 .. math::
     :label: eq:PF
 
-    P_F(f) 
+    P_{\delta F}(f) 
     = \lim_{T \rightarrow \infty} \frac{1}{T} 
-        \: ( | {\hat{F}}_{T}(f) |^{2} + | {\hat{F}}_{T}(-f) |^{2}) \: 
-            \sim \: [\frac{{\mathrm{N}}^2}{{\mathrm{Hz}}}]
+        \: ( | {\widehat{\delta F}}_{T}(f) |^{2} + 
+             | {\widehat{\delta F}}_{T}(-f) |^{2}) \: 
+            \sim \: [\frac{{\text{N}}^2}{{\text{Hz}}}]
 
 The result, which we write in terms of *one-sided power spectral
 densities* is:
@@ -571,63 +584,34 @@ densities* is:
 .. math::
     :label: eq:PzPF
     
-    P_z(f) = 
-    \frac{P_F(f)}{k^2}
+    P_{\delta z}(f) = 
+    \frac{P_{\delta F}(f)}{k^2}
     \frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}
 
-Given an :math:`F(t)`, form a one-sided power spectrum :math:`P_F(f)` by
-Fourier transforming the time-domain spectrum of :math:`F` and averaging
-(equation :eq:`eq:PF`). We can then predict the resulting one-sided power
-spectrum :math:`P_z(f)` of the response :math:`z(t)` using
-equation :eq:`eq:PzPF`. Finally, if we wish, we could determine what would be 
-the time-correlation function :math:`G_z(\tau)` of :math:`z(t)`.
+Given a fluctuating force :math:`\delta F(t)`, we can form a one-sided power spectrum :math:`P_{\delta F}(f)` by Fourier transforming the time-domain spectrum of :math:`\delta F` and averaging (equation :eq:`eq:PF`). We can then predict the resulting one-sided power spectrum :math:`P_{\delta z}(f)` of the response :math:`\delta z(t)` using equation :eq:`eq:PzPF`. Finally, if we wish, we could determine the time-correlation function :math:`G_{\delta z}(\tau)` of :math:`\delta z(t)` by inverse Fourier-transforming :math:`P_{\delta z}(f)`.
 
-We can proceed no further in discussing the response of the harmonic
-oscillator to an incoherent driving force unless we specify a form for
-either :math:`F(t)`, :math:`G_F(\tau)`, :math:`J_F(f)`, or the power
-spectrum :math:`P_F(f)`. The simplest approximation is to assume that
-the force fluctuation driving the oscillator is well-described as being
-*white noise*, e.g., a randomly-fluctuating with a power spectrum that
-is flat up to some very high frequency cutoff:
+We can proceed no further in discussing the response of the harmonic oscillator to an incoherent driving force unless we specify a form for either :math:`\delta F(t)`, :math:`G_{\delta F}(\tau)`, :math:`J_{\delta F}(f)`, or the power spectrum :math:`P_{\delta F}(f)`. The simplest approximation is to assume that the environmental force fluctuation driving the cantilever is well-described as being *white noise*, e.g., a randomly-fluctuating with a power spectrum that is flat up to some very high frequency cutoff:
 
 .. math::
     :label: eq:whitenoise
     
-    P_F(f) 
+    P_{\delta F}(f) 
     = \left\{ 
         \begin{array}{cc} 
-            P_F(0) & 0 \leq f \leq f_m \\ 
+            P_{\delta F}(0) & 0 \leq f \leq f_m \\ 
             0 & f_m \leq f 
         \end{array} 
     \right.
 
-The cutoff frequency’s numerical value is determined by the physical
-process giving rise to the force fluctuation. Atomic force microscope
-cantilevers experience force fluctuations due to random collisions with
-gas molecules and fluctuating cantilever phonon populations, for
-example. Both of these processes have characteristic timescales on the
-order of nanoseconds, which implies (by Fourier transform of the
-associated correlation function) that
-:math:`f_m \sim 1 / {\mathrm{ns}} = \mathrm{GHz}`.
+The cutoff frequency’s numerical value is determined by the physical process giving rise to the force fluctuation. Atomic force microscope cantilevers experience force fluctuations due to random collisions with gas molecules and fluctuating cantilever phonon populations, for example. Both of these processes have characteristic timescales on the order of nanoseconds, which implies, by Fourier transforming the associated correlation function, that :math:`f_m \sim 1 / {\mathrm{ns}} = \mathrm{GHz}`.  The resonance frequencies of atomic-force microscope cantilevers are in the range of :math:`f_0 \sim 1 \: \text{to} \: 500 \: \text{kHz}`; consequently, :math:`f_0 << f_m`, and thus when considering a cantilever’s response to the above-mentioned force fluctuations the approximation of equation :eq:`eq:whitenoise` is a good one. An example of a case where the white-force-noise approximation of equation :eq:`eq:whitenoise` would *not* be valid is the cantilever being driven by acoustic room vibrations. The power spectrum of doors closing, mechanical vibrations from transformers, and people walking by the cantilever is generally not flat near the cantilever resonance frequency.
 
-Atomic force cantilever resonance frequencies are in the range of
-:math:`f_0
-\sim 1 - 500 \: \mathrm{kHz}`, so that :math:`f_0 << f_m`, and thus when
-considering a cantilever’s response to the above-mentioned force
-fluctuations the approximation of equation :eq:`eq:whitenoise` is a good one. An
-example of a case where the white-noise approximation would not be valid
-is the cantilever being driven by acoustic room vibrations. The power
-spectrum of doors closing, mechanical vibrations from transformers, and
-people walking by the cantilever is generally not flat near the
-cantilever resonance frequency.
-
-If the cantilever is being driven by white noise, then
+If the cantilever is being driven by white force noise, then
 
 .. math::
     :label: eq:PzPFconst
     
-    P_z(f) = 
-    \underbrace{\frac{P_F(0)}{k^2}}_{\mathrm{\small freq. independent}} 
+    P_{\delta z}(f) = 
+    \underbrace{\frac{P_{\delta F}(0)}{k^2}}_{\mathrm{\small freq. independent}} 
     \underbrace{\frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}}_{\mathrm{\small freq. dependent}}
 
 .. _sect:analyzing-data:
