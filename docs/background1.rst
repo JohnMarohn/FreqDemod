@@ -13,34 +13,35 @@ friction coefficient.  We show that if the cantilever's temperature, resonance f
 .. math::
     :label: eq:HO
     
-    m \: \ddot{x} + \alpha \: \dot{x} + k \: x = F
+    m \: \ddot{x} + \Gamma \: \dot{x} + k \: x = F
 
 The variables are
 
 .. math::
 
    \begin{array}{lll}
-    x & \mbox{oscillator position} & [\mathrm{meter}] \\ 
-    m & \mbox{mass} & [\mathrm{kilogram}] \\
-    \alpha & \mbox{friction parameter} & [\mathrm{kilogram} \: {\mathrm{second}}^{-1} = \mathrm{newton} \: \mathrm{second} \: {\mathrm{meter}}^{-1}] \\
-    k & \mbox{spring constant} & [\mathrm{newton} \: {\mathrm{meter}}^{-1}] \\
-    F & \mbox{applied force} & [\mathrm{newton}]
+    x & \text{oscillator position} & [\text{m}] \\ 
+    m & \text{mass} & [\text{kg}] \\
+    \Gamma & \text{friction coefficient} & [\text{kg} \: {\text{s}}^{-1} 
+    = \text{N} \: \text{s} \: {\text{m}}^{-1}] \\
+    k & \text{spring constant} & [\text{N} \: {\text{m}}^{-1}] \\
+    F & \text{applied force} & [\text{N}]
    \end{array}
 
 It is useful to rewrite this equation in a more canonical form. Divide
 equation :eq:`eq:HO` by :math:`m`, and define new variables according to the
 following equations.
 
-.. math:: \frac{\alpha}{m} = \frac{\omega_0}{Q}, \: \: \frac{k}{m} = \omega_0^2, \: \mbox{and} \: \frac{F}{m} = \frac{\omega_0^2 F}{k} = A
+.. math:: \frac{\Gamma}{m} = \frac{\omega_0}{Q}, \: \: \frac{k}{m} = \omega_0^2, \: \mbox{and} \: \frac{F}{m} = \frac{\omega_0^2 F}{k} = A
 
 The new variables are
 
 .. math::
 
    \begin{array}{lll}
-    \omega_0 &\mbox{resonance frequency} & [\mathrm{rad} \: {\mathrm{second}}^{-1}] \\
-    Q & \mbox{quality factor} & [\mbox{unitless}] \\
-    A & \mbox{applied force amplitude} & [\mathrm{meter} \: {\mathrm{second}}^{-2}]
+    \omega_0 &\text{resonance frequency} & [\text{rad} \: {\text{s}}^{-1}] \\
+    Q & \text{quality factor} & [\text{unitless}] \\
+    A & \text{acceleration} & [\text{m} \: {\text{s}}^{-2}]
    \end{array}
 
 The canonical equation of motion for a classical harmonic oscillator is
@@ -82,12 +83,10 @@ driving frequency. It is convenient to introduce a complex number
 If we can recast equation :eq:`eq:HO-canonical` in terms of the complex variable
 :math:`z` then we can reduce the problem of solving for two real
 variables, :math:`x_c` and :math:`x_s`, to solving for one complex
-variable, :math:`z_0`.
-
-Towards this end, we introduce another complex variable :math:`F_c`
-which tracks the applied force. If the force is a sinusoidal function of
-time, then :math:`F_c = F_0 \exp{(\imath \: \omega t)}` where
-:math:`F_0 = | F_0 | \: \exp{(\imath \: \phi)}` is complex number that 
+variable, :math:`z_0`.  With this goal in mind, let us introduce another complex 
+variable :math:`F_c` that tracks the applied force. If the force is a sinusoidal
+function of time, then :math:`F_c = F_0 \exp{(\imath \: \omega t)}` where
+:math:`F_0 = | F_0 | \: \exp{(\imath \: \phi)}` is a complex number that 
 describes the magnitude and phase of the harmonic driving force:
 
 .. math::
@@ -101,7 +100,7 @@ describes the magnitude and phase of the harmonic driving force:
     & = | F_0 | \cos{(\omega t + \phi)}
     \end{split}
 
-The equation of motion for :math:`z` in terms of **phasors** is
+The equation of motion for :math:`z` is
 
 .. math::
     :label: eq:z
@@ -112,19 +111,19 @@ The equation of motion for :math:`z` in terms of **phasors** is
 
 .. _sect:steady-state-response-I: 
 
-**Steady State Response**: It is convenient to work with frequency in 
-experimental units of :math:`[\mathrm{cyc}/{\mathrm{s}}] = [{\mathrm{Hz}}]` 
-instead of :math:`[\mathrm{rad}/{\mathrm{s}}]`. Therefore we’ll define
+**Steady State Response**: It is convenient to work with the frequency expressed 
+in  experimental units of :math:`[\mathrm{cyc}/{\mathrm{s}}] = [{\mathrm{Hz}}]` 
+instead of :math:`[\mathrm{rad}/{\mathrm{s}}]`.  Let us therefore define
 
 .. math:: f_0 = \frac{\omega_0}{2 \pi} \: \sim \: [\frac{\mathrm{cyc}}{{\mathrm{s}}}] = [{\mathrm{Hz}}]
 
-and work throughout with frequencies in :math:`{\mathrm{Hz}}`.
+and from now on with frequencies in :math:`{\mathrm{Hz}}`.
 
-In this section we explore the response of the harmonic oscillator to a
+We are now ready to explore the response of the cantilever to a
 **coherent sinusoidal driving force**. Substitute :math:`F_c = F_0
 \exp{(\imath \: 2 \pi f t)}` into equation :eq:`eq:z` and assume that the
 response :math:`z` is of the form
-:math:`z_0 \exp{(\imath \: 2 \pi f t)}`:
+:math:`z_0 \exp{(\imath \: 2 \pi f t)}`.  This will be true at steady state.
 
 .. math::
 
@@ -180,10 +179,8 @@ where
 
 The signal :math:`x_c` is the part of the response detected with a
 lock-in as *in phase* with the driving force. The signal :math:`x_s` is
-the *out of phase* part of the response.
-
-When the applied force drives the oscillator right on resonance,
-:math:`\omega = \omega_0`, and we compute that
+the *out of phase* part of the response.  We can see that when the applied force
+drives the oscillator right on resonance, :math:`\omega = \omega_0` and 
 
 .. math::
     
@@ -205,19 +202,26 @@ This is to be compared to the steady-state response to a non-oscillating
 We conclude that the response to a resonant force is :math:`Q` times
 larger than the response to a static DC force. The response at resonance
 is also ninety degrees out of phase with the applied oscillating force.
-We can see this immediately from
+These two results are captured in the single equation
 
 .. math:: z_0(\omega_0) = - \imath \: \frac{Q \: F_0}{k}
 
+The response on resonance is purely imaginary and therefore ninety degrees out of phase with the applied force. 
 
-.. _sect:correlation-functions:
+**Correlation Functions**.  The section explores a connection between a function’s correlation function and its power spectrum.  Correlation functions
+are usually applied to fluctuating quantities having zero mean.  In our case, we wish to aply correlation functions to understand fluctuations in cantilever position:
 
-**Correlation Functions**.  The section explores a connection between a function’s correlation function and its power spectrum. The correlation function of :math:`x(t)` is defined as
+.. math::
+
+    \delta x(t) = x(t) - \mathrm{mean}(x(t))
+
+The correlation function of :math:`\delta x(t)` is defined as
 
 .. math:: 
     :label: eq:Cx
 
-    C_x(\tau) = \int_{-\infty}^{\infty} dt \: x(t) \: x(t+\tau) \: 
+    C_{\delta x}(\tau) = \int_{-\infty}^{\infty} dt \: 
+        \delta x(t) \: \delta x(t+\tau) \: 
         \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
 
 Following the Fourier Transform conventions in *Numerical Recipes*
@@ -226,45 +230,56 @@ Following the Fourier Transform conventions in *Numerical Recipes*
 
 .. math:: 
 
-    \hat{x}(f) = \int_{-\infty}^{\infty} dt \: x(t) \: e^{\imath \: 2 \pi f t}
+    \widehat{\delta x}(f) 
+    = \int_{-\infty}^{\infty} dt \: \delta x(t) 
+        \: e^{\imath \: 2 \pi f t}
 
 .. math:: 
 
-    x(t) = \int_{-\infty}^{\infty} df \: \hat{x}(f) \: e^{-\imath \: 2 \pi f t}
+    \delta x(t) 
+    = \int_{-\infty}^{\infty} df \: \widehat{\delta x}(f) 
+        \: e^{-\imath \: 2 \pi f t}
 
-Substitute for :math:`x(t)` and :math:`x(t+\tau)` the appropriate
+Substitute for :math:`\delta x(t)` and :math:`\delta x(t+\tau)` the appropriate
 Fourier transform relation
 
 .. math::
 
-    C_x(\tau) = \int df  \int df^{\prime}  \: \hat{x}(f^{\prime}) \: \hat{x}(f) \: e^{-\imath \: 2 \pi f \tau} \underbrace{\int dt \: e^{-\imath \: 2 \pi f t}  e^{-\imath \: 2 \pi f^{\prime} t}}_{\delta(f+f^{\prime}) \Longrightarrow f^{\prime} = -f}
+    C_{\delta x}(\tau) 
+    = \int df  \int df^{\prime}  \: 
+        \hat{\delta x}(f^{\prime}) \: \hat{\delta x}(f) \: 
+        e^{-\imath \: 2 \pi f \tau} 
+        \underbrace{\int dt \: e^{-\imath \: 2 \pi f t}  e^{-\imath \: 2 \pi f^{\prime} t}}_{\delta(f+f^{\prime}) \Longrightarrow f^{\prime} = -f}
 
-The integral over time involving exponentials reduces to a delta
-function. Only frequencies :math:`f^{\prime} = -f` contribute to the
+The integral over time involving exponentials reduces to a Dirac delta
+function.  Only frequencies :math:`f^{\prime} = -f` contribute to the
 final double integral, so that
 
-.. math:: C_x(\tau) = \int_{-\infty}^{\infty} df \: \: \hat{x}(-f) \: \hat{x}(f) \: e^{-\imath \: 2 \pi f \tau}
+.. math:: C_{\delta x}(\tau) 
+    = \int_{-\infty}^{\infty} df \: \: 
+        \hat{\delta x}(-f) \: \hat{\delta x}(f) \: e^{-\imath \: 2 \pi f \tau}
 
-If :math:`x(t)` is a real function of time, then it can be shown that
-:math:`\hat{x}(-f) = \hat{x}^{*}(f)` where the star indicates the
+If :math:`\delta x(t)` is a real function of time, then it can be shown that
+:math:`\hat{\delta x}(-f) = \hat{\delta x}^{*}(f)` where the star indicates the
 complex conjugate. We have finally
 
 .. math::
     
     \begin{split}
-    C_x(\tau) 
+    C_{\delta x}(\tau) 
     & = \int_{-\infty}^{\infty} df \: 
-        \hat{x}^{*}(f) \: \hat{x}(f) \: e^{-\imath \: 2 \pi f \tau} \\ 
+        \hat{\delta x}^{*}(f) \: \hat{\delta x}(f) \: 
+            e^{-\imath \: 2 \pi f \tau} \\ 
     & = \int_{-\infty}^{\infty} df \: 
-        | \hat{x}(f) |^2 \: e^{-\imath \: 2 \pi f \tau}
+        | \hat{\delta x}(f) |^2 \: e^{-\imath \: 2 \pi f \tau}
     \end{split}
 
 If we define the one-sided power spectral density as
 
 .. math:: 
 
-    \hat{P}_x(f) 
-    = | \hat{x}(f) |^2 + | \hat{x}(-f) |^2  \: 
+    \hat{P}_{\delta x}(f) 
+    = | \hat{\delta x}(f) |^2 + | \hat{\delta x}(-f) |^2  \: 
     \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}^2}]
 
 then
@@ -272,8 +287,9 @@ then
 .. math:: 
     :label: eq:Cxresult
 
-    C_x(\tau)
-    = \int_{0}^{\infty} df \: \hat{P}_x(f) \: e^{-\imath \: 2 \pi f \tau}
+    C_{\delta x}(\tau)
+    = \int_{0}^{\infty} df \: \hat{P}_{\delta x}(f) \: 
+        e^{-\imath \: 2 \pi f \tau}
 
 This is an important result: The correlation function and the power spectrum are Fourier transform pairs.  
 
