@@ -1,32 +1,35 @@
 Introduction
 ============
 
-**Summary**.  This package provides functions for analyzing and plotting the time-dependent frequency and amplitude of a sinusoidally oscillating signal.  Additional functions are provided for analyzing fluctuations in oscillator amplitude, phase, or frequency.  The provided functions should work equally well for any oscillating signal, although thee data-fitting and -plotting functions have been written with an oscillating atomic force microscope (AFM) cantilever in mind.  
+**Summary**.  This package provides functions for analyzing and plotting the time-dependent frequency and amplitude of a sinusoidally oscillating signal.  Additional functions are provided for analyzing fluctuations in oscillator amplitude, phase, or frequency.  The provided functions should work equally well for any oscillating signal, although thee data-fitting and -plotting functions have been written with an oscillating atomic force microscope cantilever in mind.  The algorithm's only assumption is that the oscillating signal contains a single frequency component (the carrier, in FM-radio terminology).
 
-**Motivation**: The microcantilevers uses in an AFM experiment oscillate with an amplitude between 0.1 to 100 nm and at a frequency in the kilohertz range.  
-A number of microcantilever-based experiments rely on meauring the time-dependent oscillation frequency of a cantilever.  These experiments include
+**Motivation**: The microcantilevers used in an atomic force microscope experiment oscillate with an amplitude between 0.1 to 100 nanometers and a frequency in the kilohertz range.  A number of microcantilever-based experiments rely on measuring the time-dependent oscillation frequency of a cantilever.  These experiments include
 
 * frequency-modulation scanning Kelvin probe force microscopy (FM-SKPM) [#Kikukawa1995jun]_, used to measure a thin film's local capacitance and electrostatic potential;   
 
 * frequency-modulated magnetic resonance force microscopy (FM-MRFM), used to sensitively detect and image electron-spin or nuclear-spin magnetic resonance as a slow [#Garner2004jun]_ [#Alexson2012jul]_ or rapidly-modulated [#Rugar2004jul]_ [#Mamin2007may]_ [#Moore2009dec]_ shift in the resonance frequency of a cantilever; 
 
-* experiments studying the frequency fluctuations experienced by a charged microcantilever near a sample surface.  This apparent frequency noise can be used to probe dielectric fluations arising from thermally-driven atomic motions in the sample below [#Yazdanian2008jun]_ [#Yazdanian2009jun]_ [#Hoepker2011oct]_, light-induced charge detrapping of charges in inorganic [#Cockins2009mar]_ and organic semiconductor films [#Luria2012nov]_, and voltage fluctuations arising from correlated charge motion in an organic field effect transistor [#Lekkala2012sep]_ [#Lekkala2013nov]_.
+* experiments studying the frequency fluctuations experienced by a charged microcantilever near a sample surface.  This apparent frequency noise can be used to probe dielectric fluctuations arising from thermally-driven atomic motions in the sample below [#Yazdanian2008jun]_ [#Yazdanian2009jun]_ [#Hoepker2011oct]_, light-induced detrapping of charges in an inorganic [#Cockins2009mar]_ or organic semiconductor film [#Luria2012nov]_, and voltage fluctuations arising from correlated charge motion in an organic field effect transistor [#Lekkala2012sep]_ [#Lekkala2013nov]_; and 
+
+* time-resolved electrostatic force microscopy (tr-EFM) [#Coffey2006sep]_ [#Giridharagopal2012jan]_, used to study the dynamics of photo-generated charges in solar-cell films.
+
+In FM-KPFM, the cantilever frequency must be analyzed in real time; the cantilever frequency is measured with millisecond time resolution and latency, and the resulting output, proportional to the instantaneous cantilever frequency, is passsed to a lock-in detector and a PID loop used to control the cantilever tip voltage.  In contrast, the time-dependent cantilever frequency in an FM-MRFM, fluctuation-microscopy, or tr-EFM experiment can be obtained *via* post-acquisition processing of the cantilever oscillation signal using a software frequency demodulator such as the one presented here. 
 
 This package represents a detailed description of the frequency-demodulation algorithm outlined in the Supplementary Information of Reference [#Yazdanian2009jun]_ and in the Ph.D. thesis of Reference [#Moore2011sep]_.
 
-**Algorithm**.  Let 
+**Algorithm**. Let 
 
 .. math::
 
     x(t) = a(t) \cos{(2 \pi f(t) \: t)}
     
-be the oscillating cantilever signal, with :math:`a(t)` the cantilever amplitude and :math:`f(t)` the cantilever frequency.  We want to extract :math:`a(t)` and :math:`f(t)` from :math:`x(t)`.  We do this by generating phase-shifted copy of the signal,
+be the oscillating cantilever signal, with :math:`a(t)` the cantilever amplitude and :math:`f(t)` the cantilever frequency.  We want to extract :math:`a(t)` and :math:`f(t)` from :math:`x(t)`.  We do this by generating a phase-shifted copy of the signal,
 
 .. math::
 
     y(t) = a(t) \sin{(2 \pi f(t) \: t)}
     
-using a Hilbert transform.  Using the original signal and the phase-shifted signal, we compute the instantaneous amplitude as
+*via* a Hilbert transform.  Using the original signal and the phase-shifted signal, we compute the instantaneous amplitude as
 
 .. math::
 
@@ -38,7 +41,11 @@ and the instantaneous phase as
 
     \phi(t) = \arctan{(y(t)/x(t))}  
 
-The instantanous frequency is equal to the slope of the :math:`\phi(t)` *vs* :math:`t` line.
+The instantaneous frequency :math:`f(t)` is determined from the slope of the :math:`\phi(t)` *vs* :math:`t` line.
+
+While straightforward in principle, implementing this algorithm in practice requires careful attention to detail.  For example, to avoid aliasing noise present in :math:`x(t)` into the :math:`f(t)` signal, the signal :math:`x(t)` must be properly bandpass filtered and the phase :math:`\phi(t)` must be sampled and analyzed in suitably short blocks.  These and other details are described in the following documentation.  
+
+**Tutorials**.  The authors initially developed the code in this package to analyze fluctuations in cantilever frequency and position.  To understand how the included functions process the cantilever signal, it is helpful to have a mathematical understanding of the power spectrum of position- and frequency fluctuations expected for a microcantilever.  The expected power spectra are derived and discussed in the two include tutorials -- the Harmonic Oscillator Brownian Motion Tutorial and the Oscillator Frequency Noise Tutorial.
 
 **References**
 
@@ -67,5 +74,10 @@ The instantanous frequency is equal to the slope of the :math:`\phi(t)` *vs* :ma
 .. [#Lekkala2012sep] [**Lekkala2012sep**] Lekkala, S.; Hoepker, N.; Marohn, J. A. & Loring, R. F. Charge carrier dynamics and interactions in electric force microscopy. *J. Chem. Phys.*,  **2012**, *137*: 124701 [http://dx.doi.org/10.1063/1.4754602].
 
 .. [#Lekkala2013nov] [**Lekkala2013nov**] Lekkala, S.; Marohn, J. A. & Loring, R. F. Electric force microscopy of semiconductors: Cantilever frequency fluctuations and noncontact friction. *J. Chem. Phys.*,  **2013**, *139*: 184702 [http://dx.doi.org/10.1063/1.4828862].
+
+.. [#Coffey2006sep] [**Coffey2006sep**] Coffey, D. C. & Ginger, D. S. Time-Resolved Electrostatic Force Microscopy of Polymer Solar Cells. *Nat. Mater.*,  **2006**, *5*: 735 - 740 [http://dx.doi.org/10.1038/nmat1712].
+
+
+.. [#Giridharagopal2012jan] [**Giridharagopal2012jan**] Giridharagopal, R.; Rayermann, G. E.; Shao, G.; Moore, D. T.; Reid, O. G.; Tillack, A. F.; Masiello, D. J. & Ginger, D. S. Submicrosecond Time Resolution Atomic Force Microscopy for Probing Nanoscale Dynamics. *Nano Lett.*,  **2012**, *12*: 893 - 898 [http://dx.doi.org/10.1021/nl203956q].
 
 .. [#Moore2011sep] [**Moore2011sep**] Moore, E. W. 1. Mechanical Detection of Electron Spin Resonance from Nitroxide Spin Probes, 2. Ultrasensitive Cantilever Torque Magnetometry of Magnetization Switching in Individual Nickel Nanorods. Ph.D. Thesis, Cornell University, **2011**.
