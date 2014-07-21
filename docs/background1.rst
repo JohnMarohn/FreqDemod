@@ -1,61 +1,14 @@
 Oscillator Thermomechanical Fluctuations
-========================================
+----------------------------------------
 
-This tutorial discusses the steady-state response of a cantilever to both
-a coherent and an incoherent driving force. The cantilever is modeled
-classically as a damped harmonic oscillator.  
+**Overview**.  In this tutorial we examine the steady-state response of a microcantilever to both a coherent and an incoherent driving force.  The cantilever is modeled classically as a damped harmonic oscillator.  
 
+When the cantilever is driven by a *coherent* sinusoidal force, the steady-state solution of the equation of motion is greatly simplified by recasting the equation in terms of a complex variable whose real and imaginary parts track the in-phase and out-of-phase response, respectively, of the cantilever.  Using this approach we derive the steady-state in-phase and out-of-phase amplitude of the driven cantilever as a function of frequency.
 
-This tutorial is organized as
-follows.
+Even when no external driving force is applied, the cantilever is acted upon by its surroundings.  The action of the surroundings can be treated as an *incoherent* driving force acting on the cantilever.  This incoherent driving force casuses fluctuations in the cantilever position which are desribed in terms of correlation functions.  We establish a link between the time-domain correlation function and the frequency-domain power spectrum of the fluctuating cantilever position.  For a cantilever in thermal contact with a bath of modes at a well-defined temperature, the form of the incoherent environmental force can be derived using the equipartition theorem of statistical mechanics.  We derive an expression of the force's power spectrum in terms of the cantilever's
+friction coefficient.  We show that if the cantilever's temperature, resonance frequency, and ringdown time are known, then the cantilever spring constant can be determined from the area under the power spectrum of cantilever position fluctuations.
 
-In :ref:`sect:equation-of-motion` the equation of motion for a damped
-harmonic oscillator is summarized. When a *coherent* force is driving the
-oscillator, the solution of the equation of motion is greatly simplified
-by recasting the equation in terms of a complex variable whose real and
-imaginary parts track the in-phase and out-of-phase response, respectively. 
-This recasting is done in section :ref:`sect:phasors`. The steady-state response 
-of a damped harmonic oscillator is derived in
-:ref:`sect:steady-state-response-I`.
-
-Understanding the response of a damped oscillator to an *incoherent*
-driving force is greatly simplified by thinking in terms of correlation
-functions, introduced below in :ref:`sect:correlation-functions`. In this 
-section we establish a link between the time-domain correlation function and the
-frequency-domain power spectrum.  A slightly more sophisticated correlation
-function then is introduced that is more suitable for understanding physical
-phenomena.
-
-The steady-state-response of a damped harmonic oscillator to an
-incoherent is derived in :ref:`sect:steady-state-response-II`. The
-solution relates the power spectrum of the response to the power
-spectrum of the incoherent force.  The soluton is examined in the limit where
-the incoherent driving force has a flat frequency content. In
-:ref:`sect:analyzing-data` the fitting of a cantilever power-spectrum is
-discussed.
-
-In the case where the incoherent driving force represents the oscillator
-in thermal contact with a bath of modes at a definite temperature, the
-form of the force can be derived using the equipartition theorem of
-statistical mechanics. This is accomplished in
-:ref:`sect:equipartition-theorem`, where it is also shown that if oscillator
-temperature is known, then from the area under the cantilever power
-spectrum the cantilever spring constant can be determined.
-
-In :ref:`sect:minimum-detectable-force`, it is shown that the thus
-derived thermomechanical cantilever fluctuations limit the minimum
-applied force that can be detected by measuring cantilever displacement.
-Designing an experiment to achieve the smallest possible detectable
-force is discussed. In :ref:`sect:cantilever-design` a scaling
-analysis is done to show the dependence of the minimum detectable force
-on cantilever parameters such as length, width, and thickness.
-
-.. _sect:equation-of-motion:
-
-Equation of Motion
-------------------
-
-The equation of motion for a **damped harmonic oscillator** is
+**Equation of Motion**.  The equation of motion for a **damped harmonic oscillator** is
 
 .. math::
     :label: eq:HO
@@ -99,12 +52,8 @@ thus
     \ddot{x} + \frac{\omega_0}{Q} \: \dot{x} + \omega_0^2 \: x 
         = A = \frac{\omega_0^2 \: F}{k}
 
-.. _sect:phasors:
-
-Phasors
--------
-
-We wish to calculate the response of the oscillator to a resonant force,
+**Phasors**. We wish to calculate the response of the oscillator to a resonant
+force,
 
 .. math:: F(t) \propto \cos{\omega t}
 
@@ -163,13 +112,9 @@ The equation of motion for :math:`z` in terms of **phasors** is
 
 .. _sect:steady-state-response-I: 
 
-
-Steady State Response I
------------------------
-
-It is convenient to work with frequency in experimental units of
-:math:`[\mathrm{cyc}/{\mathrm{s}}] = [{\mathrm{Hz}}]` instead of
-:math:`[\mathrm{rad}/{\mathrm{s}}]`. Therefore we’ll define
+**Steady State Response**: It is convenient to work with frequency in 
+experimental units of :math:`[\mathrm{cyc}/{\mathrm{s}}] = [{\mathrm{Hz}}]` 
+instead of :math:`[\mathrm{rad}/{\mathrm{s}}]`. Therefore we’ll define
 
 .. math:: f_0 = \frac{\omega_0}{2 \pi} \: \sim \: [\frac{\mathrm{cyc}}{{\mathrm{s}}}] = [{\mathrm{Hz}}]
 
@@ -267,10 +212,7 @@ We can see this immediately from
 
 .. _sect:correlation-functions:
 
-Correlation Functions
----------------------
-
-The section explores a connection between a function’s correlation function and its power spectrum. The correlation function of :math:`x(t)` is defined as
+**Correlation Functions**.  The section explores a connection between a function’s correlation function and its power spectrum. The correlation function of :math:`x(t)` is defined as
 
 .. math:: 
     :label: eq:Cx
@@ -508,16 +450,9 @@ of :math:`x(t)` given a measured one-sided power spectral density:
 We conclude that the area under the one-sided spectrum is the mean-square
 displacement.  We note that this connection is *not* valid for the mathematically-defined power-spectrum of the last section.
 
-.. _sect:steady-state-response-II:
-
-
-
-Steady State Response II
-------------------------
-
-In this section we explore the response of the harmonic oscillator to an
-**incoherent** driving force. If the force is random, it will have zero
-average:
+**Steady-State Response Revisited**.    In this section we explore the response 
+of the harmonic oscillator to an **incoherent** driving force. If the force is 
+random, it will have zero average:
 
 .. math:: 
 
@@ -681,10 +616,8 @@ If the cantilever is being driven by white noise, then
 
 .. _sect:analyzing-data:
 
-Analyzing Data
---------------
-
-As a practical matter, the the position fluctuation is fit to:
+**Analyzing Data**.  As a practical matter, the the position fluctuation is fit 
+to:
 
 .. math::
     :label: eq:Pzfit
@@ -731,12 +664,9 @@ now be discussed.
 
 .. _sect:equipartition-theorem:
 
-Equipartition Theorem
----------------------
-
-As may be derived using statistical mechanics, a harmonic oscillator in
-equilibrium with a bath of temperature :math:`T` has a energy
-expectation value for each mode equal to :math:`k_B T/2`. Thus
+**Equipartition Theorem**.  As may be derived using statistical mechanics, a
+harmonic oscillator in equilibrium with a bath of temperature :math:`T` has a 
+energy expectation value for each mode equal to :math:`k_B T/2`. Thus
 
 .. math::
     :label: eq:equip
@@ -793,10 +723,7 @@ the desired relation
 
 .. _sect:minimum-detectable-force:
 
-Minimum Detectable Force
-------------------------
-
-We can turn equation :eq:`eq:k2` around to read
+**Minimum Detectable Force**.  We can turn equation :eq:`eq:k2` around to read
 
 .. math:: 
     :label: eq:Pz0therm
@@ -966,13 +893,13 @@ Another way to achieve the best possible force sensitivity is to:
 
 .. _sect:cantilever-design:
 
-Cantilever Design
------------------
+**Cantilever Design**.  The resonance frequency and spring constant for a beam 
+cantilever of length :math:`l`, width :math:`w`, and thickness :math:`t` are:
 
-The resonance frequency and spring constant for a beam cantilever of
-length :math:`l`, width :math:`w`, and thickness :math:`t` are:
+.. math:: 
 
-.. math:: f_0 = \frac{3.516}{2 \pi} \frac{t}{l^2} \left( \frac{E}{12 \rho} \right)^{1/2}
+    f_0 = \frac{3.516}{2 \pi} \frac{t}{l^2} 
+    \left( \frac{E}{12 \rho} \right)^{1/2}
 
 .. math:: k = 1.030 \frac{l}{4} \frac{E w t^3}{l^3}
 
@@ -994,10 +921,7 @@ important parameters to optimize.
 
 .. _sect:appendix-an-integral:
 
-Appendix
---------
-
-We wish to compute the following integral
+**Appendix**.  We wish to compute the following integral
 
 .. math:: P = P_z(0) \: f_0^4 \int_{0}^{\infty} df \frac{1}{(f^2 - f_0^2)^2 + f^2 f_0^2 / Q^2}
 
@@ -1030,8 +954,7 @@ We conclude that
 
 .. math:: P = \frac{\pi}{2} \: P_z (0) \: Q \: f_0
 
-References
-==========
+**References**
 
 .. [#Press1986] Press, W. H.; Flannery, B. P.; Teukolsky, S. A. & Vetterling, W. T. Numerical Recipes, The Art of Scientific Computing.  Cambridge University Press, New York (1986).
 
