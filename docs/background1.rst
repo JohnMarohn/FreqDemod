@@ -1,5 +1,5 @@
-Harmonic Oscillator Brownian Motion Tutorial
-============================================
+Oscillator Thermomechanical Fluctuations
+========================================
 
 This tutorial discusses the steady-state response of a cantilever to both
 a coherent and an incoherent driving force. The cantilever is modeled
