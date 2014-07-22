@@ -444,7 +444,7 @@ and
         & = \int_{-\infty}^{+\infty} 
             J(f) \: e^{-\imath \: 2 \pi f \tau} \: df \\
         & = \int_{0}^{+\infty} 
-            P(f) \: e^{-\imath \: 2 \pi f \tau} \: df.
+            P_{\delta x}(f) \: e^{-\imath \: 2 \pi f \tau} \: df.
     \end{split}
 
 We have defined the one-sided power spectral density as
@@ -453,7 +453,7 @@ We have defined the one-sided power spectral density as
     :label: eq:OSPS
     
     \begin{split}
-    P(f)
+    P_{\delta z}(f)
     & = J(f) + J(-f) \\
     & = \lim_{T \rightarrow \infty} \frac{1}{T} \: 
         ( | {\widehat{\delta x}}_{T}(f) |^{2} + 
@@ -463,19 +463,14 @@ We have defined the one-sided power spectral density as
 With these definitions of correlation function (equation :eq:`eq:CF`) and
 spectral density (equation :eq:`eq:PS`), we still have that the correlation
 function :math:`G(\tau)` and the power spectrum :math:`J(f)` of 
-:math:`\delta x(t)` are Fourier transform pairs.
-
-Finally, equation :eq:`eq:FTOSPS` can be used to calculate the root-mean-square
+:math:`\delta x(t)` are Fourier transform pairs.  Finally, equation :eq:`eq:FTOSPS` can be used to calculate the root-mean-square
 of :math:`x(t)` given a measured one-sided power spectral density:
 
 .. math::
     :label: eq:xrmsP
     
-    \begin{split}
-    {\delta x}_{\mathrm{rms}}^2 
-        & = \langle {\delta x}^2(t) \rangle \\
-        & = G(0) = \int_{0}^{+\infty} P(f) \: df.
-    \end{split}
+    {\delta x}_{\mathrm{rms}}^2 = \langle {\delta x}^2(t) \rangle
+        = G(0) = \int_{0}^{+\infty} P_{\delta x}(f) \: df
 
 We conclude that the area under the one-sided spectrum is the mean-square
 displacement.  We note that this connection is *not* valid for the mathematically-defined power-spectrum of the last section.
@@ -598,7 +593,7 @@ We can proceed no further in discussing the response of the harmonic oscillator 
     P_{\delta F}(f) 
     = \left\{ 
         \begin{array}{cc} 
-            P_{\delta F}(0) & 0 \leq f \leq f_m \\ 
+            P_{\delta F} & 0 \leq f \leq f_m \\ 
             0 & f_m \leq f 
         \end{array} 
     \right.
@@ -611,59 +606,100 @@ We conclude that a cantilever driven by white-noise force fluctuations exhibits 
     :label: eq:PzPFconst
     
     P_{\delta z}(f) = 
-    \underbrace{\frac{P_{\delta F}(0)}{k^2}}_{\mathrm{\small freq. independent}} 
+    \underbrace{\frac{P_{\delta F}}{k^2}}_{\mathrm{\small freq. independent}} 
     \underbrace{\frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}}_{\mathrm{\small freq. dependent}}
 
-
-
-
-
-**Equipartition Theorem**.  As may be derived using statistical mechanics, a
-harmonic oscillator in equilibrium with a bath of temperature :math:`T` has a 
-energy expectation value for each mode equal to :math:`k_B T/2`. Thus
+**Equipartition Theorem**.  As may be derived using statistical mechanics, a harmonic oscillator in equilibrium with a bath of temperature :math:`T` has a  energy expectation value for each mode equal to :math:`k_b T/2`. Thus
 
 .. math::
     :label: eq:equip
     
-    \frac{1}{2} \: k \langle x^2 \rangle = \frac{1}{2} \: k_B T
+    \frac{1}{2} \: k \: \langle \delta x(t)^2 \rangle = \frac{1}{2} \: k_b T
 
-where
-:math:`k_B = 1.38 \: \times \: {10}^{-23} \: {\mathrm{J}} \: {{\mathrm{K}}}^{-1}`
-is Boltzmann’s constant and :math:`T \: [{\mathrm{K}}]` is the absolute
-temperature. Here :math:`\langle x^2 \rangle` is mean-square
-displacement :math:`x_{\mathrm{rms}}^2`. If the oscillator is in
-thermal equilibrium with a bath described by a temperature :math:`T`,
-then if :math:`x_{\mathrm{rms}}^2` can be measured, the oscillator
-spring constant can be inferred from
+where :math:`k_b = 1.3806 \times {10}^{-23} \: {\text{J}} \: {{\text{K}}}^{-1}` is Boltzmann’s constant and :math:`T \: \sim \: [{\text{K}}]` is the absolute temperature. Here :math:`\langle \delta x(t)^2 \rangle = \delta x_{\mathrm{rms}}^2` is the mean-square cantilever displacement.  The mean-square displacement can be calculated directly from observations of the cantilever displacement versus time.  According to :eq:`eq:equip`, the cantilever's spring constant can then be calculated using 
 
 .. math::
     :label: eq:k
     
-    k = \frac{k_B T}{x_{\mathrm{rms}}^2} \: 
+    k = \frac{k_b T}{{\delta x}_{\mathrm{rms}}^2} \: 
         \sim \: [\frac{{\mathrm{N}}}{{\mathrm{m}}}]
 
-The mean-square displacement can be measured directly from time-domain
-observations. An alternative and more accurate way to determine
-:math:`x_{\mathrm{rms}}` is to employ equation :eq:`eq:xrmsP`
-and calculate :math:`x_{\mathrm{rms}}` as the area
-under the position-fluctuation power spectrum. In practice both circuit
-noise and cantilever fluctuations contribute to the power spectrum, and
-therefore, by equation :eq:`eq:xrmsP`, to the observed time-domain
-:math:`x_{\mathrm{rms}}`. Having fit data to
-equation :eq:`eq:Pzfit`, the integral of the cantilever’s contribution to the
-power spectrum may be calculated analytically in from the fit parameters
-as follows (see the appendix):
+The only assumption in this procedure is that the cantilever is in thermal equilibrium with an environment of known temperature.
+
+An alternative and often more accurate way to determine :math:`x_{\text{rms}}` is to measure the power spectrum of cantilever position fluctuations instead.  According to equation :eq:`eq:xrmsP`, :math:`{\delta x}_{\text{rms}}^2` is the area under this power spectrum.  The relevant integral is
 
 .. math::
-    :label: eq:xrmscalc
-    
-    \begin{split}
-    x_{\mathrm{rms}}^2 
-    & = P_z(0) f\: _0^4 \: (\int_{0}^{\infty} df 
-        \frac{1}{(f^2 - f_0^2)^2 + f^2 f_0^2 / Q^2}) \\
-    & = \frac{\pi}{2} \: P_z (0) \: Q \: f_0
-    \end{split}
 
+    {\delta x}_{\text{rms}}^2 = \int_{0}^{\infty} P_{\delta z}(f) \: df
+     = \frac{P_{\delta F} f_0^4}{k^2} 
+     \int_{0}^{\infty} \frac{df}{(f_0^2-f^2)^2 + f^2 f_0^2 / Q^2}
+
+This integral may be rewritten in terms of a unitless variable :math:`F \equiv f/f_0` to give
+
+.. math::
+    :label: eq:xrmsint
+
+    {\delta x}_{\text{rms}}^2 = \frac{P_{\delta F}(0) Q f_0}{k^2}
+         \int_{0}^{\infty} \frac{Q dF}{Q^2 (F^2 - 1)^2 + F^2}
+
+The integral in equation :eq:`eq:xrmsint` is unitless and is equal to :math:`\pi/2` (see this section's Appendix).  Thus
+
+.. math::
+
+    {\delta x}_{\text{rms}}^2 
+        = \frac{P_{\delta F}(0) Q f_0}{k^2} \frac{\pi}{2},
+
+Recognizing
+
+.. math::
+
+    \Gamma = \frac{k}{\omega_0 Q} = \frac{k}{2 \pi f_0 Q}
+    
+and solving for :math:`P_{\delta F}`, we find
+
+.. math::
+    :label: eq:Pdftherm
+
+    \boxed{
+        P_{\delta F} = 4 \: \Gamma \: k_b T 
+            \: \sim \: [\dfrac{\text{N}^2}{\text{Hz}}]
+    }  
+    
+Substituting this result into equation :eq:`eq:PzPFconst` gives
+
+.. math::
+    :label: eq:PzGamma 
+
+    P_{\delta z}(f) = 
+        \frac{ 4 \: \Gamma \: k_b T}{k^2}
+        \frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}
+
+Finally, let us recast this result into a form that is somewhat more practical for curve fitting. We do this by writing the cantilever quality factor :math:`Q` in terms of the cantilever ringdown time :math:`\tau_0` uaing
+
+.. math::
+    :label: eq:Qsimp
+
+    Q = \pi f_0 \tau_0   
+
+and by writing the spring constant in terms of the dissipation constant, resonance frequency, and ringdown time using
+
+.. math::  
+    :label: eq:ksimp
+
+    k = 2 \pi^2 f_0^2 \tau_0 \Gamma.
+    
+Substituting equations :eq:`eq:Qsimp` and :eq:`eq:ksimp` into equation :eq:`eq:PzGamma` and simplifying the result we find
+
+.. math::
+    :label: eq:Pzthermal
+
+    \boxed{
+        P_{\delta z}^{\text{therm}}(f) =  \dfrac{k_b T \tau_0^2}{\Gamma} 
+            \dfrac{1}{(\pi \tau_0)^4(f_0^2 - f^2)^2 + (\pi \tau_0)^2 f^2}
+            \: \sim \: [\dfrac{\text{m}^2}{\text{Hz}}]
+    }
+            
+Equations :eq:`eq:Pdftherm` and :eq:`eq:Pzthermal` are the central results of this section.
 
 **References**
 
@@ -671,3 +707,77 @@ as follows (see the appendix):
 
 .. [#Weissbluth1989] Weissbluth, M. Photon-Atom Interactions. Academic Press, New York (1989).  We modify Weiessbluth's treatment a little.  He considers a signal that extends in time from :math:`t = -T` to :math:`t = +T` while we consider instead a signal that extends in time from :math:`t = 0` to :math:`t = T`.  
 
+**Appendix**.  We wish to compute the following integral
+
+.. math::
+
+    I = \int_{0}^{\infty} \frac{Q dF}{Q^2 (F^2 - 1)^2 + F^2}
+    
+*Mathematica* will carry out this integral, but the result is not easily rewritten in a simple form.  We will carry out the integral using a trigonometric substitution to convert the integral into a contour integral in the complex plane; the resulting contour integral can be computed using the residue theorem.     
+
+Let :math:`F = \tan{\theta}`.  Substituting, :math:`dF = \cos^{-2}{\theta} \: d\theta` and consequently
+
+.. math::
+
+    I = \frac{Q}{4} \int_{0}^{2 \pi} 
+     \frac{d\theta}
+      {\cos^2{\theta} \: (Q^2 (\tan^2{\theta} - 1)^2 + \tan^2{\theta})}
+
+In carrying out the substitution we have used
+
+.. math::
+
+    \int_{0}^{\pi/2} \cdots \: d\theta \rightarrow 
+        \frac{1}{4} \int_{0}^{2 \pi} \cdots \: d\theta,      
+
+which is valid given the periodicity of the integrand.  We can convert this integral into an integral over the :math:`|z| = 1` contour in the complex plane.  Along this contour, :math:`z = e^{\imath \theta}`, :math:`\theta \in (0,2 \pi)`, and 
+
+.. math::
+
+    \cos{\theta} = \frac{1}{2} (e^{\imath \: \theta} + e^{-\imath \: \theta}) = 
+     \frac{1}{2} (z + \frac{1}{z})
+     
+likewise
+
+.. math::
+
+    \sin{\theta} = \frac{1}{2 \imath} (z + \frac{1}{z}), \quad
+    \tan{\theta} = -\imath \frac{z^2 - 1}{z^2 + 1}, \quad 
+    d\theta = - \imath \frac{dz}{z}
+    
+Substituting, after considerable simplification,
+
+.. math::
+
+    I = - \imath \int_{|z| = 1} \frac{Q \: (z^2 + 1)^2}
+            {4 Q^2 (z^4 + 1)^2 - (z^4 - 1)^2} \: dz
+
+Setting
+
+.. math::
+
+    4 Q^2 (z^4 + 1)^2 - (z^4 - 1)^2 = 0
+            
+and solving for :math:`z` we find that the denominator in the integrand has eight poles.  Four of them outsize the :math:`|z| = 1` contour and four of them are inside.  The four poles inside the contour are given by
+
+.. math::
+
+    z_j = \left( \frac{2 Q - 1}{2 Q + 1} \right)^{1/4} \: 
+        ( e^{\imath \: \pi/4}, \: e^{\imath \: 3 \pi/4}, \: 
+        e^{\imath \: 5 \pi/4}, \: e^{\imath \: 7 \pi/4}) 
+        
+According to the residue theorem of complex analysis
+
+.. math::
+
+    I = 2 \pi \imath \sum_{J = 1}^{4} 
+        \text{Res}\left( - \frac{\imath \: Q (z^2 + 1)^2}
+            {4 Q^2 (z^4 + 1)^2 - (z^4 - 1)^2}; \: z_j \right) 
+            
+Computing the residues with *Mathematica's* help and carrying out the sum we find, remarkably, that
+
+.. math::
+
+    I = \frac{\pi}{2}.
+    
+  

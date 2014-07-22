@@ -1,7 +1,7 @@
 Background
 ==========
 
-The two following tutorials derive the properties of a microcantilever in thermal equilibrium at temperature :math:`T`.  We characterize the cantilever by its resonance frequency :math:`f_0 \: [\mathrm{Hz}]`, ringdown time :math:`\tau_0 \: [\mathrm{s}]`, and frictional coefficient :math:`\Gamma \: [\mathrm{N} \mathrm{s} \mathrm{m}^{-1}]`.
+The following tutorials derive the properties of a microcantilever in thermal equilibrium at temperature :math:`T`.  We characterize the cantilever by its resonance frequency :math:`f_0 \: [\mathrm{Hz}]`, ringdown time :math:`\tau_0 \: [\mathrm{s}]`, and frictional coefficient :math:`\Gamma \: [\mathrm{N} \mathrm{s} \mathrm{m}^{-1}]`.
 
 The cantilever experiences a stochastic force arising from its interaction with the environment that gives rise to thermal fluctuations in cantilever position.  In the first tutorial we show that the resulting power spectrum of these thermal fluctuations in cantilever position is given by
 

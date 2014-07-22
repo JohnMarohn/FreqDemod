@@ -45,7 +45,7 @@ The instantaneous frequency :math:`f(t)` is determined from the slope of the :ma
 
 While straightforward in principle, implementing this algorithm in practice requires careful attention to detail.  For example, to avoid aliasing noise present in :math:`x(t)` into the :math:`f(t)` signal, the signal :math:`x(t)` must be properly bandpass filtered and the phase :math:`\phi(t)` must be sampled and analyzed in suitably short blocks.  These and other details are described in the following documentation.  
 
-**Tutorials**.  The authors initially developed the code in this package to analyze fluctuations in cantilever frequency and position.  To understand how the included functions process the cantilever signal, it is helpful to have a mathematical understanding of the power spectrum of position- and frequency fluctuations expected for a microcantilever.  The expected power spectra are derived and discussed in the two include tutorials.
+**Tutorials**.  The authors initially developed the code in this package to analyze fluctuations in cantilever frequency and position.  To understand how the included functions process the cantilever signal, it is helpful to have a mathematical understanding of the power spectrum of position- and frequency fluctuations expected for a microcantilever.  The expected power spectra are derived and discussed in the following tutorials.
 
 **References**
 
