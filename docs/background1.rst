@@ -509,9 +509,9 @@ With each of these correlation functions is associated a power spectrum:
 .. math::
 
    \begin{aligned}
-   G_{\delta z}(\tau) \underleftrightarrow{\mathrm{\small FT}} 
+   G_{\delta z}(\tau) \overset{\mathrm{\small FT}}{\iff} 
         J_{\delta z}(f) \: \text{or} \: P_{\delta z}(f) \\
-   G_{\delta F}(\tau) \underleftrightarrow{\mathrm{\small FT}}
+   G_{\delta F}(\tau) \overset{\mathrm{\small FT}}{\iff}
         J_{\delta F}(f) \: \text{or} \: P_{\delta F}(f)
    \end{aligned}
 
