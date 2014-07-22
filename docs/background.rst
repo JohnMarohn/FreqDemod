@@ -1,4 +1,4 @@
-Background and Conventions
+Conventions and Background
 ==========================
 
 **Fourier Transform**.  Our frequency-demodulation algorithm implements the Hilbert Transform indirectly, *via* a Discrete Fourier Transform (DFT).  We use the ``numpy.fft`` package [#numpy.fft]_ to carry our the DFT.  This package defines the Fourier transform of the signal :math:`a_n` (having :math:`N` data points, :math:`n = 0, 1, .\ldots, N - 1`) as
@@ -31,9 +31,10 @@ while the continuous analog of the inverse transform (equation :eq:`eq:DIFT`) is
     a(t) = \int_{-\infty}^{+\infty} df \: 
         \hat{a}(f) \: e^{\: 2 \pi \imath f t } 
 
-We thus define our Fourier transform in terms of the frequency variable :math:`f \: \sim \: [\text{cycles/s} = \text{Hz}]` and not :math:`\omega = 2 \pi f \: \sim \: [\text{radians/s}]`.  While this transform-variable convention agrees with the convention espoused by *Numerical Recipes* [#Press1986]_, the sign of the exponent in the ``numpy.fft`` DFT (:math:`-2 \pi \imath \, n k / N`) is different from the sign of the exponent in the *Numerical Recipes* DFT (:math:`+2 \pi \imath \, n k / N`).  In the following tutorials we define a correlation function and power spectrum based on the Fourier transform conventions of equations :eq:`eq:FT` and eq:`eq:IFT`.
+We thus define our Fourier transform in terms of the frequency variable :math:`f \: \sim \: [\text{cycles/s} = \text{Hz}]` and not :math:`\omega = 2 \pi f \: \sim \: [\text{radians/s}]`.  While this transform-variable convention agrees with the convention espoused by *Numerical Recipes* [#Press1986]_, the sign of the exponent in the ``numpy.fft`` DFT (:math:`-2 \pi \imath \, n k / N`) is different from the sign of the exponent in the *Numerical Recipes* DFT (:math:`+2 \pi \imath \, n k / N`).  
 
-The 
+In the following tutorials we define a correlation function and power spectrum based on the Fourier transform conventions of equations :eq:`eq:FT` and :eq:`eq:IFT`.  The results of the tutorials can be summarized as follows.
+
 
 **Cantilever Thermomechanical Fluctuations**.  We characterize a microcantilever by its resonance frequency :math:`f_0 \: [\mathrm{Hz}]`, ringdown time :math:`\tau_0 \: [\mathrm{s}]`, and frictional coefficient :math:`\Gamma \: [\mathrm{N} \mathrm{s} \mathrm{m}^{-1}]`.  The cantilever experiences a stochastic force arising from its interaction with the environment that gives rise to thermal fluctuations in cantilever position.  In the first tutorial we show that, for a microcantilever in thermal equilibrium at temperature :math:`T`, the resulting power spectrum of these thermal fluctuations in cantilever position is given by
 
