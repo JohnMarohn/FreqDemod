@@ -1,10 +1,7 @@
-Oscillator Frequency Noise Tutorial
-===================================
+Microcantilever Frequency Noise
+-------------------------------
 
-Detection of Instantaneous Phase
---------------------------------
-
-The cantilever signal is
+**Detection of Instantaneous Phase**.  The cantilever signal is
 
 .. math:: 
     :label: Eq:x
@@ -12,11 +9,7 @@ The cantilever signal is
     \boxed{x(t) = \sqrt{2} \: x_{\text{rms}} \cos{(\omega_0 t + \phi)} +
      \delta x(t)}
 
-where :math:`x_{\text{rms}}` is the cantilever root mean square
-amplitude, :math:`\omega_0` is the cantilever frequency, and
-:math:`\phi` is the cantilever phase. Here :math:`\delta x(t)` is random
-noise which includes contributions from cantilever thermomechanical
-fluctuations as well as detector noise.
+where :math:`x_{\text{rms}}` is the cantilever root mean square amplitude, :math:`\omega_0` is the cantilever frequency, and :math:`\phi` is the cantilever phase. Here :math:`\delta x(t)` is random noise which includes contributions from cantilever thermomechanical fluctuations as well as detector noise.
 
 In order to detect the cantilever frequency we create a quadrature
 signal by taking the Hilbert transform of the cantilever signal. This

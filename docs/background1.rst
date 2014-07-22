@@ -1,5 +1,5 @@
-Oscillator Thermomechanical Fluctuations
-----------------------------------------
+Microcantilever Thermomechanical Fluctuations
+---------------------------------------------
 
 **Overview**.  In this tutorial we examine the steady-state response of a microcantilever to both a coherent and an incoherent driving force.  The cantilever is modeled classically as a damped harmonic oscillator.  
 

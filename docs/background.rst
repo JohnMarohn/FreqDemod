@@ -1,9 +1,39 @@
-Background
-==========
+Background and Conventions
+==========================
 
-The following tutorials derive the properties of a microcantilever in thermal equilibrium at temperature :math:`T`.  We characterize the cantilever by its resonance frequency :math:`f_0 \: [\mathrm{Hz}]`, ringdown time :math:`\tau_0 \: [\mathrm{s}]`, and frictional coefficient :math:`\Gamma \: [\mathrm{N} \mathrm{s} \mathrm{m}^{-1}]`.
+**Fourier Transform**.  Our frequency-demodulation algorithm implements the Hilbert Transform indirectly, *via* a Discrete Fourier Transform (DFT).  We use the ``numpy.fft`` package [#numpy.fft]_ to carry our the DFT.  This package defines the Fourier transform of the signal :math:`a_n` (:math:`N` data points, :math:`n = 0, 1, .\ldots, N - 1`) as
 
-The cantilever experiences a stochastic force arising from its interaction with the environment that gives rise to thermal fluctuations in cantilever position.  In the first tutorial we show that the resulting power spectrum of these thermal fluctuations in cantilever position is given by
+.. math::
+    :label: eq:DFT  
+
+    A_k = \sum_{n = 0}^{N - 1} a_n e^{\: -2 \pi \imath \: n k / N}
+
+while the inverse Fourier transform is defined as
+
+.. math::
+    :label: eq:DIFT  
+
+    a_n = \sum_{k = 0}^{N-1} A_k e^{\: 2 \pi \imath \: n k / N}.
+
+In the derivations presented below, we will have need of the continuous Fourier transform.  The continuous analog of the forward transform (equation :eq:`eq:DFT`) is
+
+.. math::
+    :label: eq:FT
+    
+    \hat{a}(f) = \int_{-\infty}^{+\infty} dt \: 
+        a(t) \: e^{\: -2 \pi \imath \: f t } 
+
+while the continuous analog of the inverse transform (equation :eq:`eq:DIFT`) is
+ 
+.. math::
+    :label: eq:IFT
+    
+    a(t) = \int_{-\infty}^{+\infty} df \: 
+        \hat{a}(f) \: e^{\: 2 \pi \imath \: f t } 
+
+We thus define our Fourier transform in terms of the frequency variable :math:`f \: \sim \: [\text{cycles/s} = \text{Hz}]` and not :math:`\omega = 2 \pi f \: \sim \: [\text{radians/s}]`.  While this transform-variable convention agrees with the convention espoused by *Numerical Recipes* [#Press1992]_, the sign of the exponent in the ``numpy.fft`` DFT (:math:`-2 \pi \imath \: n k / N`) is different from the sign of the exponent in the *Numerical Recipes* DFT (:math:`+2 \pi \imath \: n k / N`).   
+
+**Cantilever Thermomechanical Fluctuations**.  We characterize a microcantilever by its resonance frequency :math:`f_0 \: [\mathrm{Hz}]`, ringdown time :math:`\tau_0 \: [\mathrm{s}]`, and frictional coefficient :math:`\Gamma \: [\mathrm{N} \mathrm{s} \mathrm{m}^{-1}]`.  The cantilever experiences a stochastic force arising from its interaction with the environment that gives rise to thermal fluctuations in cantilever position.  In the first tutorial we show that, for microcantilever in thermal equilibrium at temperature :math:`T`, the resulting power spectrum of these thermal fluctuations in cantilever position is given by
 
 .. math::
     :label: Eq:Pdzf
@@ -11,9 +41,9 @@ The cantilever experiences a stochastic force arising from its interaction with 
     P_{\delta z}(f) =  \frac{k_b T \tau_0^2}{\Gamma}
         \frac{1}{(\pi \tau_0)^4 (f_0^2 - f^2)^2 + (\pi \tau_0)^2 f^2}
 
-with  :math:`k_b` Boltzmann's constant.  Assuming that the cantilever's temperature is known, we can fit the observed power spectrum of position fluctuations to equation :eq:`Eq:Pdzf` to obtain :math:`f_0`, :math:`\tau_0`, and :math:`\Gamma`.  In terms of the quantities in equation :eq:`Eq:Pdzf`, the cantilever spring constant and quality factor are computed as :math:`k = 2 \pi^2 f_0^2 \tau_0 \Gamma \: [\mathrm{N} \: \mathrm{m}^{-1}]` and :math:`Q = \pi f_0 \tau_0 \: [\mathrm{unitless}]`, respectively. 
+with  :math:`k_b` Boltzmann's constant and :math:`T` the temperature.  Assuming that the cantilever's temperature is known, we can fit the observed power spectrum of position fluctuations to equation :eq:`Eq:Pdzf` to obtain :math:`f_0`, :math:`\tau_0`, and :math:`\Gamma`.  In terms of the quantities in equation :eq:`Eq:Pdzf`, the cantilever spring constant and quality factor are computed as :math:`k = 2 \pi^2 f_0^2 \tau_0 \Gamma \: [\mathrm{N} \: \mathrm{m}^{-1}]` and :math:`Q = \pi f_0 \tau_0 \: [\mathrm{unitless}]`, respectively. 
 
-Both thermomechanical position fluctuations and detector noise contribute to the noise observed in the cantilever frequency determined using the algorithm described in the Introduction.  In the second tutorial we show that these two noise sources give rise to apparent fluctuations in cantilever frequency whose power spectrum is given by 
+**Cantilever Frequency Noise**.  Both thermomechanical position fluctuations and detector noise contribute to the noise observed in the cantilever frequency determined using the algorithm described in the Introduction.  In the second tutorial we show that these two noise sources give rise to apparent fluctuations in cantilever frequency whose power spectrum is given by 
 
 .. math::
     :label: Eq:Pdff
@@ -25,6 +55,12 @@ Both thermomechanical position fluctuations and detector noise contribute to the
     \right)
 
 with :math:`x_{\mathrm{rms}}` the root-mean-square amplitude of the driven cantilever, :math:`P_{\delta x}^{\mathrm{det}} \: [\mathrm{m}^2 \: \mathrm{Hz}^{-1}]` the power spectrum of detector noise written as an equivalent position fluctuation, assumed for simplicity in equation :eq:`Eq:Pdff` to be frequency indepenent in the vicinity of the cantilever resonance.
+
+**References**
+
+.. [#numpy.fft] *Discrete Fourier Transform* (``numpy.fft``).  http://docs.scipy.org/doc/numpy/reference/routines.fft.html
+
+.. [#Press1986] Press, W. H.; Flannery, B. P.; Teukolsky, S. A. & Vetterling, W. T. Numerical Recipes, The Art of Scientific Computing.  Cambridge University Press, New York (1986).
 
 
 .. NOTES
