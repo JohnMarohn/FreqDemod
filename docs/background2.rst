@@ -350,7 +350,8 @@ Within this approximation,
     :label: Eq:PdeltaxDet
 
     \boxed{P_{\delta f}^{\text{det}}(f) 
-        = \dfrac{f^2 \: P_{\delta x}^{\text{det}}}{x_{\text{rms}}^2}
+        = \dfrac{f^2 \: P_{\delta x}^{\text{det}}}{x_{\text{rms}}^2} \: 
+            \sim \: [\dfrac{\text{Hz}^2}{\text{Hz}}]
     }
 
 This relation holds whether the power spectra are defined as one-sided or two-sided, as long as the power spectrum is computed consistently on both sides of equation.  We typically work up data using a one-sided power spectrum.  The more general equation :eq:`Eq:Pdeltafresult` can be used when the detector noise spectrum is not independent of frequency.
@@ -359,38 +360,50 @@ This relation holds whether the power spectra are defined as one-sided or two-si
 
 .. math::
 
-    P_{\delta x}^{\text{one}}(f) 
-    = \frac{2 k_B T}{\pi k Q f_0} 
-    \frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}
+    P_{\delta z}^{\text{therm}}(f) 
+    =  \dfrac{k_b T \tau_0^2}{\Gamma} 
+            \dfrac{1}{(\pi \tau_0)^4(f_0^2 - f^2)^2 + (\pi \tau_0)^2 f^2}
 
-where :math:`T` is temperature, :math:`k_B` is Boltzmann’s constant, and :math:`f_0`, :math:`k`, and :math:`Q` are cantilever frequency, spring constant, and mechanical quality factor, respectively. We can see that, for frequencies :math:`f \gg f_0 / Q`
+where :math:`T` is temperature, :math:`k_b` is Boltzmann’s constant, and :math:`f_0`, :math:`\tau_0`, and :math:`\Gamma` are cantilever frequency, ring-down time, and dissipation constant, respectively.  For frequency offsets :math:`f \gg f_0 / Q` we find that 
 
 .. math:: 
 
-    P_{\delta x}^{\text{one}}(f_0 \pm f) 
-    \approx  \frac{2 k_B T}{\pi k Q f_0} \times \frac{f_0^2}{4 f^2}
+    P_{\delta z}^{\text{therm}}(f_0 \pm f) 
+    \approx \dfrac{k_b T \tau_0^2}{\Gamma} 
+        \times \frac{1}{(\pi \tau_0)^4 \: 4 f_0^2 f^2}
 
 Substituting this result into equation :eq:`Eq:Pdeltafresult` gives
 
 .. math::
-
-    P_{\delta f}^{\text{therm}}(f) 
-    = \frac{k_B T f_0}{2 \pi \: x_{\text{rms}}^2 k Q}
-
-Using
-
-.. math:: Q = \pi f_0 \tau_0,
-
-where :math:`\tau_0` is the cantilever ringdown time, we can rewrite the one-sided power spectrum of cantilever frequency fluctuations as
-
-.. math::
     :label: Eq:PdeltaxTherm
-    
-    \boxed{P_{\delta f}^{\text{therm}}(f) 
-        = \dfrac{k_B T}{2 \pi^2 \: x_{\text{rms}}^2 k \: \tau_0}
+
+    \boxed{
+    P_{\delta f}^{\text{therm}}(f) 
+    = \dfrac{k_b T}{\Gamma x_{\text{rms}}^2} 
+        \dfrac{1}{4 \pi^2}
+        \dfrac{1}{(\pi \tau_0 f_0)^2} \: 
+            \sim \: [\dfrac{\text{Hz}^2}{\text{Hz}}]
     }
 
-**Discussion**. Equations :eq:`Eq:PdeltaxDet` and :eq:`Eq:PdeltaxTherm` agree *exactly* with what Loring and co-workers have derived [#Yazdanian2008jun]_.
+The last term equals :math:`Q^{-2}`, where :math:`Q` is the cantilever quality factor.  Using :math:`\Gamma = k /(2 \pi f_0 Q)` we can rewrite the one-sided power spectrum of cantilever frequency fluctuations as
+
+.. math::
+    :label: Eq:PdeltaxTherm2
+    
+    P_{\delta f}^{\text{therm}}(f) 
+        = \frac{k_b T}{k x_{\text{rms}}^2} \frac{1}{2 \pi^2 \tau_0}
+
+**Discussion**. Equations :eq:`Eq:PdeltaxDet` and :eq:`Eq:PdeltaxTherm2` agree *exactly* with what Loring and co-workers have derived [#Yazdanian2008jun]_.  Together, thermomechanical fluctuations and detector noise lead to cantilever frequency noise with a one-sided power spectrum of
+
+.. math::
+
+    P_{\delta f}(f) = \frac{1}{x_{\mathrm{rms}}^2} 
+    \left( 
+        \frac{1}{4 \pi^2} \frac{k_b T}{\Gamma} \frac{1}{(\pi \tau_0 f_0)^2}
+        + f^2 P_{\delta x}^{\mathrm{det}}
+    \right)
+
+This equation is valid for offset frequencies :math:`f \gg f_0/Q` and assumes for simplicity that detector noise is frequency independent in the vicinity of the cantilever resonance frequency.  
 
 **References**
 

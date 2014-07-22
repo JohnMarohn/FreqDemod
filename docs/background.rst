@@ -53,7 +53,7 @@ with  :math:`k_b` Boltzmann's constant and :math:`T` the temperature.  Assuming 
 
     P_{\delta f}(f) = \frac{1}{x_{\mathrm{rms}}^2} 
     \left( 
-        \frac{1}{4 \pi^2} \frac{k_b T}{\Gamma} \frac{1}{(\pi \tau_0 f_0^2)^2}
+        \frac{1}{4 \pi^2} \frac{k_b T}{\Gamma} \frac{1}{(\pi \tau_0 f_0)^2}
         + f^2 P_{\delta x}^{\mathrm{det}}
     \right)
 
