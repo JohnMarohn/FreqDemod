@@ -5,10 +5,9 @@ Microcantilever Thermomechanical Fluctuations
 
 When the cantilever is driven by a *coherent* sinusoidal force, the steady-state solution of the equation of motion is greatly simplified by recasting the equation in terms of a complex variable whose real and imaginary parts track the in-phase and out-of-phase response, respectively, of the cantilever.  Using this approach we derive the steady-state in-phase and out-of-phase amplitude of the driven cantilever as a function of frequency.
 
-Even when no external driving force is applied, the cantilever is acted upon by its surroundings.  The action of the surroundings can be treated as an *incoherent* driving force acting on the cantilever.  This incoherent driving force casuses fluctuations in the cantilever position which are desribed in terms of correlation functions.  We establish a link between the time-domain correlation function and the frequency-domain power spectrum of the fluctuating cantilever position.  For a cantilever in thermal contact with a bath of modes at a well-defined temperature, the form of the incoherent environmental force can be derived using the equipartition theorem of statistical mechanics.  We derive an expression of the force's power spectrum in terms of the cantilever's
-friction coefficient.  We show that if the cantilever's temperature, resonance frequency, and ringdown time are known, then the cantilever spring constant can be determined from the area under the power spectrum of cantilever position fluctuations.
+Even when no external driving force is applied, the cantilever is acted upon by its surroundings.  The action of the surroundings can be treated as an *incoherent* driving force that perturbs the cantilever.  This incoherent driving force casuses fluctuations in the cantilever position which are desribed in terms of correlation functions.  We establish a link between the time-domain correlation function and the frequency-domain power spectrum of the fluctuating cantilever position.  For a cantilever in thermal contact with surroundings having a well-defined temperature, the form of the incoherent environmental force can be derived using the equipartition theorem of statistical mechanics.  We derive an expression of the force's power spectrum in terms of the cantilever's measured friction coefficient.  We show that if the cantilever's temperature, resonance frequency, and ringdown time are known, then the cantilever spring constant can be determined from the area under the measured power spectrum of cantilever position fluctuations.
 
-**Equation of Motion**.  The equation of motion for a **damped harmonic oscillator** is
+**Equation of Motion**.  The equation of motion for a damped harmonic oscillator is
 
 .. math::
     :label: eq:HO
@@ -28,9 +27,7 @@ The variables are
     F & \text{applied force} & [\text{N}]
    \end{array}
 
-It is useful to rewrite this equation in a more canonical form. Divide
-equation :eq:`eq:HO` by :math:`m`, and define new variables according to the
-following equations.
+It is useful to rewrite this equation in a more canonical form. Divide equation :eq:`eq:HO` by :math:`m`, and define new variables according to the following equations:
 
 .. math:: \frac{\Gamma}{m} = \frac{\omega_0}{Q}, \: \: \frac{k}{m} = \omega_0^2, \: \mbox{and} \: \frac{F}{m} = \frac{\omega_0^2 F}{k} = A
 
@@ -53,22 +50,16 @@ thus
     \ddot{x} + \frac{\omega_0}{Q} \: \dot{x} + \omega_0^2 \: x 
         = A = \frac{\omega_0^2 \: F}{k}
 
-**Phasors**. We wish to calculate the response of the oscillator to a resonant
+We now wish to calculate the response of the oscillator to a resonant
 force,
 
 .. math:: F(t) \propto \cos{\omega t}
 
-Here :math:`\omega` is the driving frequency, close to but not
-necessarily equal to :math:`\omega_0`. At *steady state*, the cantilever
-response must also be periodic, of the general form
+Here :math:`\omega` is the driving frequency, close to but not necessarily equal to :math:`\omega_0`. At *steady state*, the cantilever response must also be periodic, of the general form
 
 .. math:: x(t) = x_c \cos{\omega t} + x_s \sin{\omega t}
 
-We wish to solve for :math:`x_c` and :math:`x_s` as a function of
-driving frequency. It is convenient to introduce a complex number
-:math:`z` that tracks cantilever displacement,
-:math:`x = \mathrm{Re}(z)`. If we make the ansatz that
-:math:`z = z_0 \exp{(\imath \: \omega t)}` then
+We wish to solve for :math:`x_c` and :math:`x_s` as a function of driving frequency. It is convenient to introduce a complex number :math:`z` that tracks cantilever displacement, :math:`x = \mathrm{Re}(z)`. If we make the ansatz that :math:`z = z_0 \exp{(\imath \: \omega t)}` then
 
 .. math::
     
@@ -80,14 +71,7 @@ driving frequency. It is convenient to introduce a complex number
         - \underbrace{\mathrm{Im} \{ z_0 \} }_{x_s} \sin{\omega t}
     \end{split}
 
-If we can recast equation :eq:`eq:HO-canonical` in terms of the complex variable
-:math:`z` then we can reduce the problem of solving for two real
-variables, :math:`x_c` and :math:`x_s`, to solving for one complex
-variable, :math:`z_0`.  With this goal in mind, let us introduce another complex 
-variable :math:`F_c` that tracks the applied force. If the force is a sinusoidal
-function of time, then :math:`F_c = F_0 \exp{(\imath \: \omega t)}` where
-:math:`F_0 = | F_0 | \: \exp{(\imath \: \phi)}` is a complex number that 
-describes the magnitude and phase of the harmonic driving force:
+If we can recast equation :eq:`eq:HO-canonical` in terms of the complex variable :math:`z` then we can reduce the problem of solving for two real variables, :math:`x_c` and :math:`x_s`, to solving for one complex variable, :math:`z_0`.  With this goal in mind, let us introduce another complex variable :math:`F_c` that tracks the applied force. If the force is a sinusoidal function of time, then :math:`F_c = F_0 \exp{(\imath \: \omega t)}` where :math:`F_0 = | F_0 | \: \exp{(\imath \: \phi)}` is a complex number that  describes the magnitude and phase of the harmonic driving force:
 
 .. math::
 
@@ -111,19 +95,13 @@ The equation of motion for :math:`z` is
 
 .. _sect:steady-state-response-I: 
 
-**Steady State Response**: It is convenient to work with the frequency expressed 
-in  experimental units of :math:`[\mathrm{cyc}/{\mathrm{s}}] = [{\mathrm{Hz}}]` 
-instead of :math:`[\mathrm{rad}/{\mathrm{s}}]`.  Let us therefore define
+**Steady State Response**: It is convenient to work with the frequency expressed  in  experimental units of :math:`[\mathrm{cyc}/{\mathrm{s}}] = [{\mathrm{Hz}}]`  instead of :math:`[\mathrm{rad}/{\mathrm{s}}]`.  Let us therefore define
 
 .. math:: f_0 = \frac{\omega_0}{2 \pi} \: \sim \: [\frac{\mathrm{cyc}}{{\mathrm{s}}}] = [{\mathrm{Hz}}]
 
-and from now on with frequencies in :math:`{\mathrm{Hz}}`.
+and work from now on with frequencies in :math:`{\mathrm{Hz}}`.
 
-We are now ready to explore the response of the cantilever to a
-**coherent sinusoidal driving force**. Substitute :math:`F_c = F_0
-\exp{(\imath \: 2 \pi f t)}` into equation :eq:`eq:z` and assume that the
-response :math:`z` is of the form
-:math:`z_0 \exp{(\imath \: 2 \pi f t)}`.  This will be true at steady state.
+We are now ready to explore the response of the cantilever to a oherent sinusoidal driving force. Substitute :math:`F_c = F_0 \exp{(\imath \: 2 \pi f t)}` into equation :eq:`eq:z` and assume that the response :math:`z` is of the form :math:`z_0 \exp{(\imath \: 2 \pi f t)}`.  This will be true at steady state.
 
 .. math::
 
@@ -177,10 +155,7 @@ where
     \frac{f \: f_0^3 / Q}
         {(f_0^2 - f^2)^2 + f^2 \: f_0^2 / Q^2}
 
-The signal :math:`x_c` is the part of the response detected with a
-lock-in as *in phase* with the driving force. The signal :math:`x_s` is
-the *out of phase* part of the response.  We can see that when the applied force
-drives the oscillator right on resonance, :math:`\omega = \omega_0` and 
+The signal :math:`x_c` is the part of the response detected with a lock-in as *in phase* with the driving force. The signal :math:`x_s` is the *out of phase* part of the response.  We can see that when the applied force drives the oscillator right on resonance, :math:`\omega = \omega_0` and 
 
 .. math::
     
@@ -189,8 +164,7 @@ drives the oscillator right on resonance, :math:`\omega = \omega_0` and
     x_s(\omega_0) & =\frac{Q \: | F_0 |}{k}
     \end{split}
 
-This is to be compared to the steady-state response to a non-oscillating
-(DC) force
+This is to be compared to the steady-state response to a non-oscillating (DC) force
 
 .. math::
 
@@ -199,17 +173,13 @@ This is to be compared to the steady-state response to a non-oscillating
     x_s(0) & = 0
     \end{split}
 
-We conclude that the response to a resonant force is :math:`Q` times
-larger than the response to a static DC force. The response at resonance
-is also ninety degrees out of phase with the applied oscillating force.
-These two results are captured in the single equation
+We conclude that the response to a resonant force is :math:`Q` times larger than the response to a static DC force. The response at resonance is also ninety degrees out of phase with the applied oscillating force.  These two results are captured in the single equation
 
 .. math:: z_0(\omega_0) = - \imath \: \frac{Q \: F_0}{k}
 
 The response on resonance is purely imaginary and therefore ninety degrees out of phase with the applied force. 
 
-**Correlation Functions**.  The section explores a connection between a function’s correlation function and its power spectrum.  Correlation functions
-are usually applied to fluctuating quantities having zero mean.  In our case, we wish to aply correlation functions to understand fluctuations in cantilever position:
+**Correlation Functions**.  The section explores a connection between a function’s correlation function and its power spectrum.  Correlation functions are usually applied to fluctuating quantities having zero mean.  In our case, we wish to apply correlation functions to understand fluctuations in cantilever position:
 
 .. math::
 
@@ -224,21 +194,19 @@ The correlation function of :math:`\delta x(t)` is defined as
         \delta x(t) \: \delta x(t+\tau) \: 
         \sim \: [\frac{{\mathrm{m}}^2}{{\mathrm{Hz}}}]
 
-Following the Fourier Transform conventions in *Numerical Recipes*
-[#Press1986]_, the Fourier and inverse Fourier transforms of
-:math:`x(t)` are:
+The Fourier and inverse Fourier transforms of :math:`x(t)` are:
 
 .. math:: 
 
     \widehat{\delta x}(f) 
     = \int_{-\infty}^{\infty} dt \: \delta x(t) 
-        \: e^{\imath \: 2 \pi f t}
+        \: e^{-2 \pi \imath \: f t}
 
 .. math:: 
 
     \delta x(t) 
     = \int_{-\infty}^{\infty} df \: \widehat{\delta x}(f) 
-        \: e^{-\imath \: 2 \pi f t}
+        \: e^{2 \pi \imath \: f t}
 
 Substitute for :math:`\delta x(t)` and :math:`\delta x(t+\tau)` the appropriate
 Fourier transform relation
@@ -248,8 +216,8 @@ Fourier transform relation
     C_{\delta x}(\tau) 
     = \int df  \int df^{\prime}  \: 
         \widehat{\delta x}(f^{\prime}) \: \widehat{\delta x}(f) \: 
-        e^{-\imath \: 2 \pi f \tau} 
-        \underbrace{\int dt \: e^{-\imath \: 2 \pi f t}  e^{-\imath \: 2 \pi f^{\prime} t}}_{\delta(f+f^{\prime}) \Longrightarrow f^{\prime} = -f}
+        e^{2 \pi \imath \: f \tau} 
+        \underbrace{\int dt \: e^{-2 \pi \imath \: f t}  e^{-2 \pi \imath \:  f^{\prime} t}}_{\delta(-f-f^{\prime}) \Longrightarrow f^{\prime} = -f}
 
 The integral over time involving exponentials reduces to a Dirac delta
 function.  Only frequencies :math:`f^{\prime} = -f` contribute to the
@@ -258,13 +226,13 @@ final double integral, so that
 .. math:: C_{\delta x}(\tau) 
     = \int_{-\infty}^{\infty} df \: \: 
         \widehat{\delta x}(-f) \: \widehat{\delta x}(f) 
-        \: e^{-\imath \: 2 \pi f \tau}
+        \: e^{2 \pi \imath \: f \tau}
 
 If :math:`\delta x(t)` is a real function of time, then it can be shown that
 
 .. math::
 
-    \widehat{\delta x}(-f) = {\widehat{\delta x}}^{*}(f) 
+    \widehat{\delta x}(-f) = {\widehat{\delta x}}^{\: *}(f) 
 
 
 where the star indicates the complex conjugate. We have finally
@@ -275,9 +243,9 @@ where the star indicates the complex conjugate. We have finally
     C_{\delta x}(\tau) 
     & = \int_{-\infty}^{\infty} df \: 
         {\widehat{\delta x}}^{*}(f) \: \widehat{\delta x}(f) \: 
-            e^{-\imath \: 2 \pi f \tau} \\ 
+            e^{2 \pi \imath \: f \tau} \\ 
     & = \int_{-\infty}^{\infty} df \: 
-        | \widehat{\delta x}(f) |^2 \: e^{-\imath \: 2 \pi f \tau}
+        | \widehat{\delta x}(f) |^2 \: e^{2 \pi \imath \: f \tau}
     \end{split}
 
 If we define the one-sided power spectral density as
@@ -295,15 +263,11 @@ then
 
     C_{\delta x}(\tau)
     = \int_{0}^{\infty} df \: P_{\delta x}(f) \: 
-        e^{-\imath \: 2 \pi f \tau}
+        e^{2 \pi \imath \: f \tau}
 
 This is an important result: The correlation function and the power spectrum are Fourier transform pairs.  
 
-While equations :eq:`eq:Cx` and :eq:`eq:Cxresult` can in principle be used to
-analyze thermomechanical fluctuations in the position of a microcantilever, in
-practice we need to introduce a modified correlation function to analyze the
-fluctuations.  The reason for this can be seen by considering the correlation
-function of equation :eq:`eq:Cx` at :math:`\tau = 0`:
+While equations :eq:`eq:Cx` and :eq:`eq:Cxresult` can in principle be used to analyze thermomechanical fluctuations in the position of a microcantilever, in practice we need to introduce a modified correlation function to analyze the fluctuations.  The reason for this can be seen by considering the correlation function of equation :eq:`eq:Cx` at :math:`\tau = 0`:
 
 .. math::
 
@@ -311,10 +275,7 @@ function of equation :eq:`eq:Cx` at :math:`\tau = 0`:
     = \int_{-\infty}^{\infty} dt \: 
         \delta x(t)^2 \longrightarrow \infty
 
-As indicated, this integral will diverge if applied to a real-world laboratory
-signal such as a cantilever oscillation. Following Weissbluth
-[#Weissbluth1989]_, let's define a more physically-relevant correlation
-function as follows.
+As indicated, this integral will diverge if applied to a real-world laboratory signal such as a cantilever oscillation. Following Weissbluth [#Weissbluth1989]_, let's define a more physically-relevant correlation function as follows.
 
 .. math:: G(\tau) \equiv \langle \delta x(t) \: \delta x(t+\tau) \rangle
 
@@ -326,12 +287,7 @@ function as follows.
         \delta x(t) \: \delta x(t+\tau) \: dt \: 
         \sim \: [{\mathrm{m}}^2]
 
-The units of this correlation function are :math:`[{\mathrm{m}}^2]`, if the
-units of x are :math:`[{\mathrm{m}}]`. This correlation function is quite
-different from the mathematically-defined correlation function
-:math:`C(\tau)` of equation :eq:`eq:Cx` whose units are
-:math:`[{\mathrm{m}}^2/{\mathrm{Hz}}]`.  The correlation function at
-:math:`\tau=0` (zero delay) has special significance:
+The units of this correlation function are :math:`[{\mathrm{m}}^2]`, if the units of x are :math:`[{\mathrm{m}}]`. This correlation function is quite different from the mathematically-defined correlation function :math:`C(\tau)` of equation :eq:`eq:Cx` whose units are :math:`[{\mathrm{m}}^2/{\mathrm{Hz}}]`.  The correlation function at :math:`\tau=0` (zero delay) has special significance:
 
 .. math:: 
 
@@ -342,9 +298,7 @@ different from the mathematically-defined correlation function
     & = x_{\mathrm{rms}}^2
     \end{split}
 
-We see that :math:`G(0)` is the mean square value of :math:`\delta x(t)` and
-therefore the root-mean-square is 
-:math:`{\delta x}_{\mathrm{rms}} = \sqrt{G(0)}`.
+We see that :math:`G(0)` is the mean square value of :math:`\delta x(t)` and therefore the root-mean-square is  :math:`{\delta x}_{\mathrm{rms}} = \sqrt{G(0)}`.
 
 We will now reproduce Weissbluth’s treatment [#Weissbluth1989]_ relating the
 (physically-relevant) correlation function :math:`G(\tau)` to an
@@ -379,35 +333,32 @@ Since we’ve confined :math:`{\delta x}_T` to the time interval :math:`(0,T)` w
 
     \begin{multline}
     \int_{-\infty}^{+\infty} G_{T}(\tau) 
-        \: e^{\imath \: 2 \pi f \tau} \: d\tau
+        \: e^{-2 \pi \imath \: f \tau} \: d\tau
     = \frac{1}{T} \int_{-\infty}^{+\infty} d\tau \: 
-        e^{\imath \: 2 \pi f \tau} \int_{-\infty}^{+\infty} dt
+        e^{-2 \pi \imath \: f \tau} \int_{-\infty}^{+\infty} dt
             \: {\delta x}_{T}(t) \: {\delta x}_{T}(t+\tau) \\
     = \frac{1}{T} \int_{-\infty}^{+\infty} dt 
-            \: {\delta x}_{T}(t) \: e^{-\imath \: 2 \pi f t} 
+            \: {\delta x}_{T}(t) \: e^{2 \pi \imath \: f t} 
         \int_{-\infty}^{+\infty} d\tau \:  
-            {\delta x}_{T}(t+\tau) \: e^{\imath \: 2 \pi f (t+\tau)}
+            {\delta x}_{T}(t+\tau) \: e^{-2 \pi \imath \: f (t+\tau)}
    \end{multline}
 
-where we have inserted :math:`1 = \exp{(-\imath \: 2 \pi f t)}
-\exp{(+\imath \: 2 \pi f t)}`. In the second integral, change the
-variable of integration to :math:`t^{\prime} = t+\tau`. This lets us
-write
+where we have inserted :math:`1 = \exp{(-\imath \: 2 \pi f t)} \exp{(+\imath \: 2 \pi f t)}`. In the second integral, change the variable of integration to :math:`t^{\prime} = t+\tau`. This lets us write
 
 .. math::
 
     \int_{-\infty}^{+\infty} G_{T}(\tau) 
-        \: e^{\imath \: 2 \pi f \tau} \: d\tau
+        \: e^{-2 \pi \imath \: f \tau} \: d\tau
     = \frac{1}{T} \underbrace{\int_{-\infty}^{+\infty} dt 
         \: {\delta x}_{T}(t) \:
-        e^{-\imath \: 2 \pi f t}}_{{\widehat{\delta x}}_T(-f) = {\widehat{\delta x}}^{*}_{T}(f)} \underbrace{\int_{-\infty}^{+\infty} dt^{\prime} \: {\delta x}_{T}(t^{\prime}) \: e^{\imath \: 2 \pi f t^{\prime}}}_{{\widehat{\delta x}}_T(f)}
+        e^{2 \pi \imath \: f t}}_{{\widehat{\delta x}}_T(-f) = {\widehat{\delta x}}^{\: *}_{T}(f)} \underbrace{\int_{-\infty}^{+\infty} dt^{\prime} \: {\delta x}_{T}(t^{\prime}) \: e^{-2 \pi \imath \: f t^{\prime}}}_{{\widehat{\delta x}}_T(f)}
 
-Since :math:`x(t)` is a real function, it follows that :math:`{\widehat{\delta x}}_{T}(-f) = {\widehat{\delta x}}^{*}_{T}(f)`. We can thus write 
+Since :math:`x(t)` is a real function, it follows that :math:`{\widehat{\delta x}}_{T}(-f) = {\widehat{\delta x}}^{\: *}_{T}(f)`. We can thus write 
 
 .. math::
     :label: eq:limitG
 
-    \int_{-\infty}^{+\infty} G_{T}(\tau) \: e^{\imath \: 2 \pi f \tau} \: d\tau 
+    \int_{-\infty}^{+\infty} G_{T}(\tau) \: e^{-2 \pi \imath \: f \tau} \: d\tau 
         = \frac{1}{T} \: | {\widehat{\delta x}}_{T}(f) |^{2}
 
 We recover the “real” correlation function by a limiting procedure.
@@ -432,7 +383,7 @@ as the *physically relevant spectral density*. It still holds that
 .. math::
 
     J(f) 
-    = \int_{-\infty}^{+\infty} G(\tau) \: e^{\imath \: 2 \pi f \tau} \: d\tau
+    = \int_{-\infty}^{+\infty} G(\tau) \: e^{-2 \pi \imath \: f \tau} \: d\tau
 
 and
 
@@ -442,9 +393,9 @@ and
     \begin{split}
     G(\tau) 
         & = \int_{-\infty}^{+\infty} 
-            J(f) \: e^{-\imath \: 2 \pi f \tau} \: df \\
+            J(f) \: e^{2 \pi \imath \: f \tau} \: df \\
         & = \int_{0}^{+\infty} 
-            P_{\delta x}(f) \: e^{-\imath \: 2 \pi f \tau} \: df.
+            P_{\delta x}(f) \: e^{2 \pi \imath \: f \tau} \: df.
     \end{split}
 
 We have defined the one-sided power spectral density as
@@ -460,11 +411,7 @@ We have defined the one-sided power spectral density as
           | {\widehat{\delta x}}_{T}(-f) |^{2})
     \end{split}
 
-With these definitions of correlation function (equation :eq:`eq:CF`) and
-spectral density (equation :eq:`eq:PS`), we still have that the correlation
-function :math:`G(\tau)` and the power spectrum :math:`J(f)` of 
-:math:`\delta x(t)` are Fourier transform pairs.  Finally, equation :eq:`eq:FTOSPS` can be used to calculate the root-mean-square
-of :math:`x(t)` given a measured one-sided power spectral density:
+With these definitions of correlation function (equation :eq:`eq:CF`) and spectral density (equation :eq:`eq:PS`), we still have that the correlation function :math:`G(\tau)` and the power spectrum :math:`J(f)` of  :math:`\delta x(t)` are Fourier transform pairs.  Finally, equation :eq:`eq:FTOSPS` can be used to calculate the root-mean-square of :math:`x(t)` given a measured one-sided power spectral density:
 
 .. math::
     :label: eq:xrmsP
@@ -472,10 +419,9 @@ of :math:`x(t)` given a measured one-sided power spectral density:
     {\delta x}_{\mathrm{rms}}^2 = \langle {\delta x}^2(t) \rangle
         = G(0) = \int_{0}^{+\infty} P_{\delta x}(f) \: df
 
-We conclude that the area under the one-sided spectrum is the mean-square
-displacement.  We note that this connection is *not* valid for the mathematically-defined power-spectrum of the last section.
+We conclude that the area under the one-sided spectrum is the mean-square displacement.  We note that this connection is *not* valid for the mathematically-defined power-spectrum of the last section.
 
-**Steady-State Response Revisited**.    In this section we explore the response of the cantilever to an **incoherent** driving force.  We assume that the driving force averages to zero over long times:
+**Steady-State Response Revisited**.    In this section we explore the response of the cantilever to an incoherent driving force.  We assume that the driving force averages to zero over long times:
 
 .. math:: 
 
@@ -504,9 +450,9 @@ With each of these correlation functions is associated a power spectrum:
 .. math::
 
    \begin{aligned}
-   G_{\delta z}(\tau) \overset{\mathrm{\small FT}}{\iff} 
+   G_{\delta z}(\tau) \overset{\: \mathrm{\small FT}}{\iff} 
         J_{\delta z}(f) \: \text{or} \: P_{\delta z}(f) \\
-   G_{\delta F}(\tau) \overset{\mathrm{\small FT}}{\iff}
+   G_{\delta F}(\tau) \overset{\: \mathrm{\small FT}}{\iff}
         J_{\delta F}(f) \: \text{or} \: P_{\delta F}(f)
    \end{aligned}
 
@@ -517,14 +463,14 @@ Because :math:`z` and :math:`F` are connected by an equation of motion, we can w
     
     \delta F(t) 
     = \int_{-\infty}^{\infty} df \: \widehat{\delta F}(f) 
-        \: e^{-\imath \: 2 \pi f t}
+        \: e^{2 \pi \imath \: f t}
     
 .. math::
     :label: eq:FTz
 
     \delta z(t) 
     = \int_{-\infty}^{\infty} df \: \widehat{\delta z}(f) 
-        \: e^{-\imath \: 2 \pi f t}
+        \: e^{2 \pi \imath \: f t}
 
 Substitute equations :eq:`eq:FTF` and :eq:`eq:FTz` into the equation of motion
 connecting :math:`F` and :math:`z`, equation :eq:`eq:z`.
@@ -532,11 +478,11 @@ connecting :math:`F` and :math:`z`, equation :eq:`eq:z`.
 .. math::
 
     \int_{-\infty}^{+\infty} 
-    (-f^2 - \imath f \: \frac{f_0}{Q} + f_0^2 ) \: \widehat{\delta z}(f) 
-        \: e^{-\imath \: 2 \pi f t} \: df 
+    (-f^2 + \imath f \: \frac{f_0}{Q} + f_0^2 ) \: \widehat{\delta z}(f) 
+        \: e^{2 \pi \imath \: f t} \: df 
     =
     \int_{-\infty}^{+\infty}
-    \frac{f_0^2}{k} \widehat{\delta F}(f) \: e^{-\imath \: 2 \pi f t} \: df
+    \frac{f_0^2}{k} \widehat{\delta F}(f) \: e^{2 \pi \imath \: f t} \: df
 
 For both sides to be equal, we must have that at each frequency
 
@@ -544,7 +490,7 @@ For both sides to be equal, we must have that at each frequency
 
     \widehat{\delta z}(f) 
     = \frac{\widehat{\delta F}(f)}{k} 
-        \frac{f_0^2}{f_0^2 - f^2 - \imath f \: f_0 / Q}
+        \frac{f_0^2}{f_0^2 - f^2 + \imath f \: f_0 / Q}
 
 Taking the magnitude of each side, we infer that the power spectra are related by
 
