@@ -47,7 +47,7 @@ thus
 .. math::
     :label: eq:HO-canonical
 
-    \ddot{x} + \frac{\omega_0}{Q} \: \dot{x} + \omega_0^2 \: x 
+    \ddot{x} + \frac{\omega_0}{Q} \dot{x} + \omega_0^2 \: x 
         = A = \frac{\omega_0^2 \: F}{k}
 
 We now wish to calculate the response of the oscillator to a resonant
@@ -59,26 +59,26 @@ Here :math:`\omega` is the driving frequency, close to but not necessarily equal
 
 .. math:: x(t) = x_c \cos{\omega t} + x_s \sin{\omega t}
 
-We wish to solve for :math:`x_c` and :math:`x_s` as a function of driving frequency. It is convenient to introduce a complex number :math:`z` that tracks cantilever displacement, :math:`x = \mathrm{Re}(z)`. If we make the ansatz that :math:`z = z_0 \exp{(\imath \: \omega t)}` then
+We wish to solve for :math:`x_c` and :math:`x_s` as a function of driving frequency. It is convenient to introduce a complex number :math:`z` that tracks cantilever displacement, :math:`x = \mathrm{Re}(z)`. If we make the ansatz that :math:`z = z_0 \exp{(\imath \omega t)}` then
 
 .. math::
     
     \begin{split}
     x(t) 
     & = \mathrm{Re} \{ z \} \\
-    &  = \mathrm{Re} \{ z_0 \: e^{\imath \: \omega t} \} \\
+    &  = \mathrm{Re} \{ z_0 \: e^{\, \imath \omega t} \} \\
     & = \underbrace{\mathrm{Re} \{ z_0 \} }_{x_c} \cos{\omega t}
         - \underbrace{\mathrm{Im} \{ z_0 \} }_{x_s} \sin{\omega t}
     \end{split}
 
-If we can recast equation :eq:`eq:HO-canonical` in terms of the complex variable :math:`z` then we can reduce the problem of solving for two real variables, :math:`x_c` and :math:`x_s`, to solving for one complex variable, :math:`z_0`.  With this goal in mind, let us introduce another complex variable :math:`F_c` that tracks the applied force. If the force is a sinusoidal function of time, then :math:`F_c = F_0 \exp{(\imath \: \omega t)}` where :math:`F_0 = | F_0 | \: \exp{(\imath \: \phi)}` is a complex number that  describes the magnitude and phase of the harmonic driving force:
+If we can recast equation :eq:`eq:HO-canonical` in terms of the complex variable :math:`z` then we can reduce the problem of solving for two real variables, :math:`x_c` and :math:`x_s`, to solving for one complex variable, :math:`z_0`.  With this goal in mind, let us introduce another complex variable :math:`F_c` that tracks the applied force. If the force is a sinusoidal function of time, then :math:`F_c = F_0 \exp{(\imath \omega t)}` where :math:`F_0 = | F_0 | \: \exp{(\imath \phi)}` is a complex number that  describes the magnitude and phase of the harmonic driving force:
 
 .. math::
 
     \begin{split}
     F(t)
     & = \mathrm{Re}\{ F_c \} \\
-    & = \mathrm{Re} \{ F_0 \: e^{\imath \: \omega t} \} \\
+    & = \mathrm{Re} \{ F_0 \: e^{\, \imath \omega t} \} \\
     & = \mathrm{Re} \{ F_0 \} \cos{\omega t} 
         - \mathrm{Im} \{ F_0 \} \sin{\omega t} \\
     & = | F_0 | \cos{(\omega t + \phi)}
@@ -89,8 +89,8 @@ The equation of motion for :math:`z` is
 .. math::
     :label: eq:z
     
-    \ddot{z} + \frac{\omega_0}{Q} \: \dot{z} + \omega_0^2 \: z 
-    = \frac{\omega_0^2 \: F_c}{k}
+    \ddot{z} + \frac{\omega_0}{Q} \dot{z} + \omega_0^2 \, z 
+    = \frac{\omega_0^2 \, F_c}{k}
 
 
 .. _sect:steady-state-response-I: 
@@ -101,20 +101,20 @@ The equation of motion for :math:`z` is
 
 and work from now on with frequencies in :math:`{\mathrm{Hz}}`.
 
-We are now ready to explore the response of the cantilever to a oherent sinusoidal driving force. Substitute :math:`F_c = F_0 \exp{(\imath \: 2 \pi f t)}` into equation :eq:`eq:z` and assume that the response :math:`z` is of the form :math:`z_0 \exp{(\imath \: 2 \pi f t)}`.  This will be true at steady state.
+We are now ready to explore the response of the cantilever to a oherent sinusoidal driving force. Substitute :math:`F_c = F_0 \exp{(2 \pi \imath f t)}` into equation :eq:`eq:z` and assume that the response :math:`z` is of the form :math:`z_0 \exp{(2 \pi \imath f t)}`.  This will be true at steady state.
 
 .. math::
 
-    (-f^2 + \imath f \: \frac{f_0}{Q} + f_0^2 ) 
-        \: z_0 \: e^{\imath \: 2 \pi f t} 
-    = \frac{f_0^2}{k} F_0 \: e^{\imath \: 2 \pi f t}
+    (-f^2 + \imath f \frac{f_0}{Q} + f_0^2 ) 
+        \: z_0 \: e^{\, 2 \pi \imath  f t} 
+    = \frac{f_0^2}{k} F_0 \: e^{\, 2 \pi \imath  f t}
 
 where we have canceled a factor of :math:`4 \pi^2` from every term. We
 infer that
 
 .. math:: 
 
-    z_0 = \frac{F_0}{k} \: \frac{f_0^2}{f_0^2 - f^2 + \imath \: f \: f_0 / Q}
+    z_0 = \frac{F_0}{k} \: \frac{f_0^2}{f_0^2 - f^2 + \imath  f \: f_0 / Q}
 
 so that at steady state
 
@@ -122,16 +122,16 @@ so that at steady state
 
     \begin{split}
     z(f) 
-    & = z_0 \: e^{\imath \: 2 \pi f t} \\
-    & = \frac{F_0 \: e^{\imath \: 2 \pi f t}}{k} \: 
-        \frac{f_0^2}{f_0^2 - f^2 + \imath \: f \: f_0 / Q}
+    & = z_0 \: e^{\, 2 \pi \imath  f t} \\
+    & = \frac{F_0 \: e^{\, 2 \pi \imath  f t}}{k} \: 
+        \frac{f_0^2}{f_0^2 - f^2 + \imath  f \: f_0 / Q}
     \end{split}
 
 It is useful to write :math:`z` as follows:
 
 .. math::
 
-    z(f) = \frac{| F_0 |}{k} \left( \frac{f_0^2 (f_0^2 - f^2)}{(f_0^2 - f^2)^2 + f^2 \: f_0^2 / Q^2} - \imath \: \frac{f \: f_0^3 / Q}{(f_0^2 - f^2)^2 + f^2 \: f_0^2 / Q^2} \right) \: e^{\imath \: ( 2 \pi f t + \phi)}
+    z(f) = \frac{| F_0 |}{k} \left( \frac{f_0^2 (f_0^2 - f^2)}{(f_0^2 - f^2)^2 + f^2 \: f_0^2 / Q^2} - \imath  \frac{f \: f_0^3 / Q}{(f_0^2 - f^2)^2 + f^2 \: f_0^2 / Q^2} \right) \: e^{\, \imath  ( 2 \pi f t + \phi)}
 
 Using :math:`x = \mathrm{Re} \{ z \}` we can infer that
 :math:`x(t)` is of the form
@@ -175,7 +175,7 @@ This is to be compared to the steady-state response to a non-oscillating (DC) fo
 
 We conclude that the response to a resonant force is :math:`Q` times larger than the response to a static DC force. The response at resonance is also ninety degrees out of phase with the applied oscillating force.  These two results are captured in the single equation
 
-.. math:: z_0(\omega_0) = - \imath \: \frac{Q \: F_0}{k}
+.. math:: z_0(\omega_0) = - \imath  \frac{Q \: F_0}{k}
 
 The response on resonance is purely imaginary and therefore ninety degrees out of phase with the applied force. 
 
@@ -200,13 +200,13 @@ The Fourier and inverse Fourier transforms of :math:`x(t)` are:
 
     \widehat{\delta x}(f) 
     = \int_{-\infty}^{\infty} dt \: \delta x(t) 
-        \: e^{-2 \pi \imath \: f t}
+        \: e^{-2 \pi \imath  f t}
 
 .. math:: 
 
     \delta x(t) 
     = \int_{-\infty}^{\infty} df \: \widehat{\delta x}(f) 
-        \: e^{2 \pi \imath \: f t}
+        \: e^{\, 2 \pi \imath  f t}
 
 Substitute for :math:`\delta x(t)` and :math:`\delta x(t+\tau)` the appropriate
 Fourier transform relation
@@ -216,8 +216,8 @@ Fourier transform relation
     C_{\delta x}(\tau) 
     = \int df  \int df^{\prime}  \: 
         \widehat{\delta x}(f^{\prime}) \: \widehat{\delta x}(f) \: 
-        e^{2 \pi \imath \: f \tau} 
-        \underbrace{\int dt \: e^{-2 \pi \imath \: f t}  e^{-2 \pi \imath \:  f^{\prime} t}}_{\delta(-f-f^{\prime}) \Longrightarrow f^{\prime} = -f}
+        e^{\, 2 \pi \imath  f \tau} 
+        \underbrace{\int dt \: e^{-2 \pi \imath  f t}  e^{-2 \pi \imath   f^{\prime} t}}_{\delta(-f-f^{\prime}) \Longrightarrow f^{\prime} = -f}
 
 The integral over time involving exponentials reduces to a Dirac delta
 function.  Only frequencies :math:`f^{\prime} = -f` contribute to the
@@ -226,7 +226,7 @@ final double integral, so that
 .. math:: C_{\delta x}(\tau) 
     = \int_{-\infty}^{\infty} df \: \: 
         \widehat{\delta x}(-f) \: \widehat{\delta x}(f) 
-        \: e^{2 \pi \imath \: f \tau}
+        \: e^{\, 2 \pi \imath  f \tau}
 
 If :math:`\delta x(t)` is a real function of time, then it can be shown that
 
@@ -243,9 +243,9 @@ where the star indicates the complex conjugate. We have finally
     C_{\delta x}(\tau) 
     & = \int_{-\infty}^{\infty} df \: 
         {\widehat{\delta x}}^{*}(f) \: \widehat{\delta x}(f) \: 
-            e^{2 \pi \imath \: f \tau} \\ 
+            e^{\, 2 \pi \imath  f \tau} \\ 
     & = \int_{-\infty}^{\infty} df \: 
-        | \widehat{\delta x}(f) |^2 \: e^{2 \pi \imath \: f \tau}
+        | \widehat{\delta x}(f) |^2 \: e^{\, 2 \pi \imath  f \tau}
     \end{split}
 
 If we define the one-sided power spectral density as
@@ -263,7 +263,7 @@ then
 
     C_{\delta x}(\tau)
     = \int_{0}^{\infty} df \: P_{\delta x}(f) \: 
-        e^{2 \pi \imath \: f \tau}
+        e^{\, 2 \pi \imath  f \tau}
 
 This is an important result: The correlation function and the power spectrum are Fourier transform pairs.  
 
@@ -333,32 +333,32 @@ Since we’ve confined :math:`{\delta x}_T` to the time interval :math:`(0,T)` w
 
     \begin{multline}
     \int_{-\infty}^{+\infty} G_{T}(\tau) 
-        \: e^{-2 \pi \imath \: f \tau} \: d\tau
+        \: e^{-2 \pi \imath  f \tau} \: d\tau
     = \frac{1}{T} \int_{-\infty}^{+\infty} d\tau \: 
-        e^{-2 \pi \imath \: f \tau} \int_{-\infty}^{+\infty} dt
+        e^{-2 \pi \imath  f \tau} \int_{-\infty}^{+\infty} dt
             \: {\delta x}_{T}(t) \: {\delta x}_{T}(t+\tau) \\
     = \frac{1}{T} \int_{-\infty}^{+\infty} dt 
-            \: {\delta x}_{T}(t) \: e^{2 \pi \imath \: f t} 
+            \: {\delta x}_{T}(t) \: e^{\, 2 \pi \imath  f t} 
         \int_{-\infty}^{+\infty} d\tau \:  
-            {\delta x}_{T}(t+\tau) \: e^{-2 \pi \imath \: f (t+\tau)}
+            {\delta x}_{T}(t+\tau) \: e^{-2 \pi \imath  f (t+\tau)}
    \end{multline}
 
-where we have inserted :math:`1 = \exp{(-\imath \: 2 \pi f t)} \exp{(+\imath \: 2 \pi f t)}`. In the second integral, change the variable of integration to :math:`t^{\prime} = t+\tau`. This lets us write
+where we have inserted :math:`1 = \exp{(-\imath  2 \pi f t)} \exp{(+\imath  2 \pi f t)}`. In the second integral, change the variable of integration to :math:`t^{\prime} = t+\tau`. This lets us write
 
 .. math::
 
     \int_{-\infty}^{+\infty} G_{T}(\tau) 
-        \: e^{-2 \pi \imath \: f \tau} \: d\tau
+        \: e^{-2 \pi \imath  f \tau} \: d\tau
     = \frac{1}{T} \underbrace{\int_{-\infty}^{+\infty} dt 
         \: {\delta x}_{T}(t) \:
-        e^{2 \pi \imath \: f t}}_{{\widehat{\delta x}}_T(-f) = {\widehat{\delta x}}^{\: *}_{T}(f)} \underbrace{\int_{-\infty}^{+\infty} dt^{\prime} \: {\delta x}_{T}(t^{\prime}) \: e^{-2 \pi \imath \: f t^{\prime}}}_{{\widehat{\delta x}}_T(f)}
+        e^{\, 2 \pi \imath  f t}}_{{\widehat{\delta x}}_T(-f) = {\widehat{\delta x}}^{\: *}_{T}(f)} \underbrace{\int_{-\infty}^{+\infty} dt^{\prime} \: {\delta x}_{T}(t^{\prime}) \: e^{-2 \pi \imath  f t^{\prime}}}_{{\widehat{\delta x}}_T(f)}
 
 Since :math:`x(t)` is a real function, it follows that :math:`{\widehat{\delta x}}_{T}(-f) = {\widehat{\delta x}}^{\: *}_{T}(f)`. We can thus write 
 
 .. math::
     :label: eq:limitG
 
-    \int_{-\infty}^{+\infty} G_{T}(\tau) \: e^{-2 \pi \imath \: f \tau} \: d\tau 
+    \int_{-\infty}^{+\infty} G_{T}(\tau) \: e^{-2 \pi \imath  f \tau} \: d\tau 
         = \frac{1}{T} \: | {\widehat{\delta x}}_{T}(f) |^{2}
 
 We recover the “real” correlation function by a limiting procedure.
@@ -383,7 +383,7 @@ as the *physically relevant spectral density*. It still holds that
 .. math::
 
     J(f) 
-    = \int_{-\infty}^{+\infty} G(\tau) \: e^{-2 \pi \imath \: f \tau} \: d\tau
+    = \int_{-\infty}^{+\infty} G(\tau) \: e^{-2 \pi \imath  f \tau} \: d\tau
 
 and
 
@@ -393,9 +393,9 @@ and
     \begin{split}
     G(\tau) 
         & = \int_{-\infty}^{+\infty} 
-            J(f) \: e^{2 \pi \imath \: f \tau} \: df \\
+            J(f) \: e^{\, 2 \pi \imath  f \tau} \: df \\
         & = \int_{0}^{+\infty} 
-            P_{\delta x}(f) \: e^{2 \pi \imath \: f \tau} \: df.
+            P_{\delta x}(f) \: e^{\, 2 \pi \imath  f \tau} \: df.
     \end{split}
 
 We have defined the one-sided power spectral density as
@@ -463,14 +463,14 @@ Because :math:`z` and :math:`F` are connected by an equation of motion, we can w
     
     \delta F(t) 
     = \int_{-\infty}^{\infty} df \: \widehat{\delta F}(f) 
-        \: e^{2 \pi \imath \: f t}
+        \: e^{\, 2 \pi \imath  f t}
     
 .. math::
     :label: eq:FTz
 
     \delta z(t) 
     = \int_{-\infty}^{\infty} df \: \widehat{\delta z}(f) 
-        \: e^{2 \pi \imath \: f t}
+        \: e^{\, 2 \pi \imath  f t}
 
 Substitute equations :eq:`eq:FTF` and :eq:`eq:FTz` into the equation of motion
 connecting :math:`F` and :math:`z`, equation :eq:`eq:z`.
@@ -479,10 +479,10 @@ connecting :math:`F` and :math:`z`, equation :eq:`eq:z`.
 
     \int_{-\infty}^{+\infty} 
     (-f^2 + \imath f \: \frac{f_0}{Q} + f_0^2 ) \: \widehat{\delta z}(f) 
-        \: e^{2 \pi \imath \: f t} \: df 
+        \: e^{\, 2 \pi \imath  f t} \: df 
     =
     \int_{-\infty}^{+\infty}
-    \frac{f_0^2}{k} \widehat{\delta F}(f) \: e^{2 \pi \imath \: f t} \: df
+    \frac{f_0^2}{k} \widehat{\delta F}(f) \: e^{\, 2 \pi \imath  f t} \: df
 
 For both sides to be equal, we must have that at each frequency
 
@@ -649,8 +649,6 @@ Equations :eq:`eq:Pdftherm` and :eq:`eq:Pzthermal` are the central results of th
 
 **References**
 
-.. [#Press1986] Press, W. H.; Flannery, B. P.; Teukolsky, S. A. & Vetterling, W. T. Numerical Recipes, The Art of Scientific Computing.  Cambridge University Press, New York (1986).
-
 .. [#Weissbluth1989] Weissbluth, M. Photon-Atom Interactions. Academic Press, New York (1989).  We modify Weiessbluth's treatment a little.  He considers a signal that extends in time from :math:`t = -T` to :math:`t = +T` while we consider instead a signal that extends in time from :math:`t = 0` to :math:`t = T`.  
 
 **Appendix**.  We wish to compute the following integral
@@ -680,7 +678,7 @@ which is valid given the periodicity of the integrand.  We can convert this inte
 
 .. math::
 
-    \cos{\theta} = \frac{1}{2} (e^{\imath \: \theta} + e^{-\imath \: \theta}) = 
+    \cos{\theta} = \frac{1}{2} (e^{\, \imath \theta} + e^{-\imath  \theta}) = 
      \frac{1}{2} (z + \frac{1}{z})
      
 likewise
@@ -709,15 +707,15 @@ and solving for :math:`z` we find that the denominator in the integrand has eigh
 .. math::
 
     z_j = \left( \frac{2 Q - 1}{2 Q + 1} \right)^{1/4} \: 
-        ( e^{\imath \: \pi/4}, \: e^{\imath \: 3 \pi/4}, \: 
-        e^{\imath \: 5 \pi/4}, \: e^{\imath \: 7 \pi/4}) 
+        ( e^{\, \imath  \pi/4}, \: e^{\, \imath  3 \pi/4}, \: 
+        e^{\, \imath  5 \pi/4}, \: e^{\, \imath  7 \pi/4}) 
         
 According to the residue theorem of complex analysis
 
 .. math::
 
     I = 2 \pi \imath \sum_{J = 1}^{4} 
-        \text{Res}\left( - \frac{\imath \: Q (z^2 + 1)^2}
+        \text{Res}\left( - \frac{\imath  Q (z^2 + 1)^2}
             {4 Q^2 (z^4 + 1)^2 - (z^4 - 1)^2}; \: z_j \right) 
             
 Computing the residues with *Mathematica's* help and carrying out the sum we find, remarkably, that

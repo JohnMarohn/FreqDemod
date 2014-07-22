@@ -6,14 +6,14 @@ Background and Conventions
 .. math::
     :label: eq:DFT  
 
-    A_k = \sum_{n = 0}^{N - 1} a_n \: e^{\: -2 \pi \imath \: n k / N}
+    A_k = \sum_{n = 0}^{N - 1} a_n \: e^{-2 \pi \imath \, n k / N}
 
 while the inverse Fourier transform is defined as
 
 .. math::
     :label: eq:DIFT  
 
-    a_n = \sum_{k = 0}^{N-1} A_k \: e^{\: 2 \pi \imath \: n k / N}.
+    a_n = \sum_{k = 0}^{N-1} A_k \: e^{\: 2 \pi \imath \, n k / N}.
 
 In the derivations presented below, we will have need of the continuous Fourier transform.  The continuous analog of the forward transform (equation :eq:`eq:DFT`) is
 
@@ -21,7 +21,7 @@ In the derivations presented below, we will have need of the continuous Fourier 
     :label: eq:FT
     
     \hat{a}(f) = \int_{-\infty}^{+\infty} dt \: 
-        a(t) \: e^{\: -2 \pi \imath \: f t } 
+        a(t) \: e^{-2 \pi \imath f t } 
 
 while the continuous analog of the inverse transform (equation :eq:`eq:DIFT`) is
  
@@ -29,9 +29,9 @@ while the continuous analog of the inverse transform (equation :eq:`eq:DIFT`) is
     :label: eq:IFT
     
     a(t) = \int_{-\infty}^{+\infty} df \: 
-        \hat{a}(f) \: e^{\: 2 \pi \imath \: f t } 
+        \hat{a}(f) \: e^{\: 2 \pi \imath f t } 
 
-We thus define our Fourier transform in terms of the frequency variable :math:`f \: \sim \: [\text{cycles/s} = \text{Hz}]` and not :math:`\omega = 2 \pi f \: \sim \: [\text{radians/s}]`.  While this transform-variable convention agrees with the convention espoused by *Numerical Recipes* [#Press1986]_, the sign of the exponent in the ``numpy.fft`` DFT (:math:`-2 \pi \imath \: n k / N`) is different from the sign of the exponent in the *Numerical Recipes* DFT (:math:`+2 \pi \imath \: n k / N`).  In the following tutorials we define a correlation function and power spectrum based on the Fourier transform conventions of equations :eq:`eq:FT` and eq:`eq:IFT`.
+We thus define our Fourier transform in terms of the frequency variable :math:`f \: \sim \: [\text{cycles/s} = \text{Hz}]` and not :math:`\omega = 2 \pi f \: \sim \: [\text{radians/s}]`.  While this transform-variable convention agrees with the convention espoused by *Numerical Recipes* [#Press1986]_, the sign of the exponent in the ``numpy.fft`` DFT (:math:`-2 \pi \imath \, n k / N`) is different from the sign of the exponent in the *Numerical Recipes* DFT (:math:`+2 \pi \imath \, n k / N`).  In the following tutorials we define a correlation function and power spectrum based on the Fourier transform conventions of equations :eq:`eq:FT` and eq:`eq:IFT`.
 
 The 
 
@@ -56,7 +56,7 @@ with  :math:`k_b` Boltzmann's constant and :math:`T` the temperature.  Assuming 
         + f^2 P_{\delta x}^{\mathrm{det}}
     \right)
 
-with :math:`x_{\mathrm{rms}}` the root-mean-square amplitude of the driven cantilever, :math:`P_{\delta x}^{\mathrm{det}} \: [\mathrm{m}^2 \: \mathrm{Hz}^{-1}]` the power spectrum of detector noise written as an equivalent position fluctuation.   In writing equation :eq:`Eq:Pdff`, we have assumed for simplicity that `P_{\delta x}^{\mathrm{det}}(f)` is independent of frequency in the vicinity of the cantilever resonance at :\math:`f = f_0`.
+with :math:`x_{\mathrm{rms}}` the root-mean-square amplitude of the driven cantilever, :math:`P_{\delta x}^{\mathrm{det}} \: [\mathrm{m}^2 \: \mathrm{Hz}^{-1}]` the power spectrum of detector noise written as an equivalent position fluctuation.   In writing equation :eq:`Eq:Pdff`, we have assumed for simplicity that :math:`P_{\delta x}^{\mathrm{det}}(f)` is independent of frequency in the vicinity of the cantilever resonance at :math:`f = f_0`.
 
 **References**
 
