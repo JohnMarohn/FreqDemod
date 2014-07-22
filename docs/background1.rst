@@ -605,7 +605,7 @@ We can proceed no further in discussing the response of the harmonic oscillator 
 
 The cutoff frequency’s numerical value is determined by the physical process giving rise to the force fluctuation. Atomic force microscope cantilevers experience force fluctuations due to random collisions with gas molecules and fluctuating cantilever phonon populations, for example. Both of these processes have characteristic timescales on the order of nanoseconds, which implies, by Fourier transforming the associated correlation function, that :math:`f_m \sim 1 / {\mathrm{ns}} = \mathrm{GHz}`.  The resonance frequencies of atomic-force microscope cantilevers are in the range of :math:`f_0 \sim 1 \: \text{to} \: 500 \: \text{kHz}`; consequently, :math:`f_0 << f_m`, and thus when considering a cantilever’s response to the above-mentioned force fluctuations the approximation of equation :eq:`eq:whitenoise` is a good one. An example of a case where the white-force-noise approximation of equation :eq:`eq:whitenoise` would *not* be valid is the cantilever being driven by acoustic room vibrations. The power spectrum of doors closing, mechanical vibrations from transformers, and people walking by the cantilever is generally not flat near the cantilever resonance frequency.
 
-If the cantilever is being driven by white force noise, then
+We conclude that a cantilever driven by white-noise force fluctuations exhibits a power spectrum of position fluctuations given by
 
 .. math::
     :label: eq:PzPFconst
@@ -613,7 +613,6 @@ If the cantilever is being driven by white force noise, then
     P_{\delta z}(f) = 
     \underbrace{\frac{P_{\delta F}(0)}{k^2}}_{\mathrm{\small freq. independent}} 
     \underbrace{\frac{f_0^4}{(f_0^2 - f^2)^2 + f^2 f_0^2 / Q^2}}_{\mathrm{\small freq. dependent}}
-
 
 
 
