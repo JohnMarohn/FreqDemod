@@ -1,3 +1,5 @@
+.. _Conventions:
+
 Conventions and Background
 ==========================
 
@@ -13,7 +15,7 @@ while the inverse Fourier transform is defined as
 .. math::
     :label: eq:DIFT  
 
-    a_n = \sum_{k = 0}^{N-1} A_k \: e^{\: 2 \pi \imath \, n k / N}.
+    a_n = \frac{1}{N} \sum_{k = 0}^{N-1} A_k \: e^{\: 2 \pi \imath \, n k / N}.
 
 In the derivations presented below, we will have need of the continuous Fourier transform.  The continuous analog of the forward transform (equation :eq:`eq:DFT`) is
 
