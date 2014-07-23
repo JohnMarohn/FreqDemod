@@ -157,6 +157,7 @@ For lack of a better term, we'll call :math:`Hc` the complex Hilbert transform.
 **Analysis of Thermomechanical Motion**.  We will fit the power spectrum of cantilever position fluctuation to the function
 
 .. math::
+    :label: Pdzfit1
 
     P_{\delta z}^{\text{therm}}(f) 
     =  \dfrac{k_b T \tau_0^2}{\Gamma} 
@@ -164,6 +165,6 @@ For lack of a better term, we'll call :math:`Hc` the complex Hilbert transform.
 
 To avoid numerical-precision problems in the curve-fitting algorithm, it is important that the dependent variable :math:`P_{\delta z}^{\text{therm}}`, the independent variable :math:`f`, and the fit parameters :math:`\Gamma`, :math:`f_0`, and :math:`\tau_0` all be of order unity.  In non-linear least-squares fitting, this order-unity condition is usually achieved by carefully choosing units for the quantities of interest.
 
-We can easily arrange for the independent variable to be of order unity by working with frequency in units of kilohertz, :math:`f \sim [\text{kHz}]`.  We can arrange for the dependent variable to be of order unity by working with the cantilever position :math:`x(t)` in units of nanometers; this will give the dependent variable units of :math:`P_{\delta z}^{\text{therm}} \sim [\text{nm}^2 \: \text{Hz}^{-1}]`.  
+We can easily arrange for the independent variable to be of order unity by working with frequency in units of kilohertz, :math:`f \sim [\text{kHz}]`.  The last term in equation :eq:`Pdzfit1` is unitless as long as :math:`\tau_0` and :math:`f_0`, and :math:`f` have complimentary units. This suggests working with the resonance frequency in units of kilohertz, :math:`f_0 \sim [\text{kHz}]`, and the ringdown time in units of milliseconds, :math:`\tau_0 \sim [\text{ms}]`.   We can arrange for the dependent variable to be of order unity by working with the cantilever position :math:`x(t)` in units of nanometers; this will give the dependent variable units of :math:`P_{\delta z}^{\text{therm}} \sim [\text{nm}^2 \: \text{Hz}^{-1}]`.  It remains to discuss :math:`\Gamma`, the dissipation constant.
  
 .. cross referencing: http://sphinx-doc.org/markup/inline.html
