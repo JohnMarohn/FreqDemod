@@ -1,5 +1,7 @@
+.. _FreqNoise:
+
 Microcantilever Frequency Noise
--------------------------------
+===============================
 
 **Detection of Instantaneous Phase**.  The cantilever signal is
 
@@ -30,9 +32,9 @@ where :math:`\widehat{\delta x}(f)` indicates the Fourier transform of :math:`\d
 .. math::
 
    H(f) = \begin{cases}
-   +j & \text{if } f < 0 \\
+   +\imath & \text{if } f < 0 \\
    0 & \text{if } f = 0 \\
-   -j & \text{if} f > 0
+   -\imath & \text{if} f > 0
    \end{cases}
 
 Since :math:`H(f) H^{*}(f) = 1` (except for the single point at :math:`f=0`), it follows that :math:`\delta y(t)` has essentially essentially the same power spectrum as :math:`\delta x(t)`.
