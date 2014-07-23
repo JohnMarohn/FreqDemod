@@ -1,11 +1,11 @@
-license
+License
 =======
 
 ::
   
     FreqDemod and freqdemod
-    This program obtains and formats a bibliographic record 
-     obtained from crossref.org
+    This package provides functions for analyzing and plotting the
+    time-dependent frequency and amplitude of a sinusoidally oscillating signal.
     
     Copyright (C) 2014 John Marohn, Cornell University
 

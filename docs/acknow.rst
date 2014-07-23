@@ -1,4 +1,4 @@
-acknowledgements
+Acknowledgements
 ================
 
 **Contributors**: 
