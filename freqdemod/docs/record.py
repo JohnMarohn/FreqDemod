@@ -6,6 +6,8 @@
 # install pyaudio using the Canopy/Enthought package manager
 # pyaudio 0.2.4
 #
+# Ryan comment
+#
 
 """PyAudio example: Record a few seconds of audio and save to a WAVE file."""
 
