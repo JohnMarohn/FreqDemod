@@ -12,7 +12,7 @@ Unit Testing
 Unit tests for the package `freqdemod.py`were developed using the `unittest` package.  To run the unit tests, open up a terminal in the ``freqdemod`` directory and run::
 
 	python -m unittest discover 
-	
+
 or::
 
 	python -m unittest discover --verbose
@@ -22,7 +22,7 @@ Unit tests
 
 """
 
-from freqdemod import Signal
+from freqdemod.demodulate import Signal
 import unittest
 # import logging
 # import os
@@ -34,10 +34,11 @@ class FilterTests(unittest.TestCase):
     """
     Make sure the filters are set up correctly
     """
-    
-    def setUp(self):
-        
-        self.s = Signal(1)
+
+    def test(self):
+        """A dummy test; just so that we can be sure the tests are running.
+        Delete when more tests are added to the package.""" 
+        pass
     
     #def setUp(self):
     #    """
