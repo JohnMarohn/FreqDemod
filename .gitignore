@@ -57,4 +57,11 @@ docs/_build/
 # Mac junk
 .DS_Store
 
+# custom
+# ======
+#
+# iPython notebook checkpoints
+
+freqdemod/docs/.ipynb_checkpoints/
+
 
