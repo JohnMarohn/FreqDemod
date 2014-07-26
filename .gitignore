@@ -62,6 +62,6 @@ docs/_build/
 #
 # iPython notebook checkpoints
 
-freqdemod/docs/.ipynb_checkpoints/
+freqdemod/docs/.ipynb_checkpoints/*
 
 
