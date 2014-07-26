@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # #
-# freqdemod.py John A. Marohn 2014/06/28
+# demodulate.py John A. Marohn 2014/06/28
 # 
 # For formatting fields, see 
 # http://sphinx-doc.org/domains.html#info-field-lists
@@ -62,7 +62,7 @@ import copy
 import time
 
 import matplotlib.pyplot as plt 
-from util import eng
+from freqdemod.util import eng
 
 # Set the default font and size for the figure
 
