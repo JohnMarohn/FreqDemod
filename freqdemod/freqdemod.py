@@ -29,7 +29,7 @@ We demodulate the signal in the following steps:
    components of :math:`\\hat{S}(f)`.
 
 5. Apply an Inverse Fast Fourier Transform to the resulting data to
-   obtain a complex signal :math:`z(t) = x(t) + i \: y(t)`.
+   obtain a complex signal :math:`z(t) = x(t) + \imath \: y(t)`.
 
 6. Compute the instantaneous phase :math:`\\phi` and amplitude
    :math:`a(t)` using the following equations. Unwrap the phase.
