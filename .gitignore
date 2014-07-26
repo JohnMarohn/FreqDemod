@@ -64,4 +64,5 @@ docs/_build/
 
 freqdemod/docs/.ipynb_checkpoints/*
 
-
+# html; it is generated from other source files
+*.html
