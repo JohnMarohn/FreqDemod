@@ -166,7 +166,7 @@ For lack of a better term, we'll call :math:`\text{Hc}` the complex Hilbert tran
     =  \dfrac{k_b T \tau_0^2}{\Gamma} 
         \dfrac{1}{(\pi \tau_0)^4(f_0^2 - f^2)^2 + (\pi \tau_0)^2 f^2}
 
-using non-linear least-squares fitting.  To avoid numerical-precision problems in the  curve fitting algorithm, it is important for the fits :math:`y` axis (:math:`P_{\delta z}^{\text{therm}}`), :math:`x` axis (:math:`f`), and parameters (:math:`\Gamma`, :math:`\tau_0`, and :math:`f_0`) to be within a few orders of magnitude of 1.  There are two ways to achieve this condition: (1) arbitrarily scale the :math:`x` and :math:`y` axis data so the data ranges from 0 to 1, or (2) carefully choose units for all the quantities of interest.  We will take the second approach.
+using non-linear least-squares fitting.  To avoid numerical-precision problems in the  curve fitting algorithm, it is important for the fit's :math:`y` axis (:math:`P_{\delta z}^{\text{therm}}`), :math:`x` axis (:math:`f`), and parameters (:math:`\Gamma`, :math:`\tau_0`, and :math:`f_0`) to be within a few orders of magnitude of 1.  There are two ways to achieve this condition: (1) apply a scale factor to the :math:`x` and :math:`y` axis data so the scaled data ranges from 0 to 1, or (2) carefully choose units for all the quantities of interest.  We will take the second approach.
 
 Working with frequency in units of kilohertz will make the fit's :math:`x` axis data be order unity: :math:`f \sim [\text{kHz}]`.  To make the :math:`y` axis data of order unity, we will work with the cantilever position :math:`x(t)` in units of nanometers, so that :math:`P_{\delta z}^{\text{therm}} \sim [\text{nm}^2 \: \text{Hz}^{-1}]`. 
 
@@ -236,7 +236,7 @@ with the temperature :math:`\overline{T}` given.  To this equation we will add t
      + 1000 \: \overline{p}_1 (\overline{f} - \overline{f}_0)
     }
 
-with :math:`{\overline{P}}_{\! \delta z}^{\, \text{det}}` the detector noise power spectrum in units of :math:`\text{nm}^2 \: \text{Hz}^{-1}` and :math:`\overline{p}_1` the Taylor-series coefficient in units of :math:`\text{nm}^2 \: \text{Hz}^{-2}`.  The factor of 1000 in the above equation results from a kHz to Hz units conversion. 
+with :math:`{\overline{P}}_{\! \delta z}^{\, \text{det}}` the detector noise power spectrum in units of :math:`\text{nm}^2 \: \text{Hz}^{-1}` and :math:`\overline{p}_1` the Taylor-series coefficient in units of :math:`\text{nm}^2 \: \text{Hz}^{-2}`.  The factor of 1000 in the above equation results from a :math:`\text{kHz}` to :math:`\text{Hz]` units conversion. 
 
 The power spectrum of force fluctuations, which determines cantilever force sensitivity, is easily expressed in terms of the unitless parameters.  In practical units,
 
