@@ -12,7 +12,7 @@ Contents:
    background1.rst
    background2.rst
    background3.rst
-   freqdemod.rst
+   demodulate.rst
    util.rst
    develop.rst
    license.rst
