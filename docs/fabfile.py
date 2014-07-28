@@ -21,6 +21,7 @@ from fabric.api import *
 from fabric.context_managers import lcd
 import os
 import glob
+import webbrowser
 
 env.ipython_dir = os.path.join(os.path.join('..','freqdemod'),'docs')
 home = os.getcwd()
@@ -75,6 +76,7 @@ def html():
     print "Build finished; see _build/html/index.html"
     
 def open():
-    """Open the HTML documentation."""
-
-    local('open _build/html/index.html')
+    """Open the HTML documentation in a cross-platform way."""
+    cwd = os.getcwd()
+    index_path = "file://{cwd}/_build/html/index.html".format(cwd=cwd)
+    webbrowser.open(index_path)
