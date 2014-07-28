@@ -8,7 +8,8 @@
 # :ref: http://ipython.org/ipython-doc/1/interactive/nbconvert.html
 
 """
-This is a fabric file to help compile sphinx HTML documentation for the ``FreqDemod`` project.  The following commands are defined::
+This is a fabric file to help compile sphinx HTML documentation for the
+``FreqDemod`` project.  The following commands are defined::
 
     fab cleab
     fab html
