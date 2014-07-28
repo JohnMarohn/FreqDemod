@@ -1,7 +1,7 @@
-:mod:`freqdemod` module
+:mod:`demodulate` module
 =======================
 
-.. automodule:: freqdemod
+.. automodule:: demodulate
     :members:
     :undoc-members:
     :show-inheritance:
