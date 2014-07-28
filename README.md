@@ -12,7 +12,23 @@ To install the development version
     nosetests
 ```
 
-You will need a couple of packages: sphinx, nose, numpy, scipy, matplotlib, ipython.  If you have Canopy, you should have numpy, scipy, and matplotlib.  You can install nose and sphinx using the Canopy package manager.
+You will need a couple of packages:
+
+* sphinx
+
+* fabric
+
+* nose
+
+* numpy
+
+* scipy
+
+* matplotlib
+
+* ipython.
+
+If you have Canopy, you should have numpy, scipy, and matplotlib.  You can install nose and sphinx using the Canopy package manager.
 
 To test whether the local installation worked, try
 
@@ -46,7 +62,7 @@ If you find yourself in trouble, want to trash the uncommitted changes in your s
 Documentation
 =============
 
-To create the html documentation
+To create the html documentation, you will need the sphinx and fabric packages.  Then,
 
 ```bash
     cd docs
