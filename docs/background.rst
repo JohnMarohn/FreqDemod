@@ -3,7 +3,7 @@
 Conventions and Background
 ==========================
 
-**Fourier Transform**.  Our frequency-demodulation algorithm implements the Hilbert Transform indirectly, *via* a Discrete Fourier Transform (DFT).  We use the ``numpy.fft`` package [#numpy.fft]_ to carry our the DFT.  This package defines the Fourier transform of the signal :math:`a_n` (having :math:`N` data points, :math:`n = 0, 1, .\ldots, N - 1`) as
+**Fourier Transform**.  Our frequency-demodulation algorithm implements the Hilbert Transform indirectly, *via* a Discrete Fourier Transform (DFT).  We use the ``numpy.fft`` package [#numpy.fft]_ to carry out the DFT.  This package defines the Fourier transform of the signal :math:`a_n` (having :math:`N` data points, :math:`n = 0, 1, .\ldots, N - 1`) as
 
 .. math::
     :label: eq:DFT  
