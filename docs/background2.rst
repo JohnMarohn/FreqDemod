@@ -37,7 +37,7 @@ where :math:`\widehat{\delta x}(f)` indicates the Fourier transform of :math:`\d
    -\imath & \text{if} f > 0
    \end{cases}
 
-Since :math:`H(f) H^{*}(f) = 1` (except for the single point at :math:`f=0`), it follows that :math:`\delta y(t)` has essentially essentially the same power spectrum as :math:`\delta x(t)`.
+Since :math:`H(f) H^{*}(f) = 1` (except for the single point at :math:`f=0`), it follows that :math:`\delta y(t)` has essentially the same power spectrum as :math:`\delta x(t)`.
 
 In our frequency-detection algorithm we measure the instantaneous phase of the cantilever using
 
