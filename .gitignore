@@ -57,6 +57,9 @@ docs/_build/
 # Mac junk
 .DS_Store
 
+# PC junk
+*.bak
+
 # custom
 # ======
 #

@@ -7,6 +7,7 @@ To install the development version
 
 ```bash
     git clone git@github.com:JohnMarohn/FreqDemod.git
+    cd FreqDemod    
     git pull 
     find . -name "*.pyc" -delete
     nosetests
