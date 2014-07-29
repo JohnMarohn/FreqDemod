@@ -29,4 +29,11 @@ Workup
 Plotting
 ========
 
-* Modify all the plotting functions so that using LaTeX to typeset the plot labels is optional.  This is because some people have trouble getting the LaTeX plot labels to work in matplotlib; for them, the plotting functions don't work presently.   
+* Modify all the plotting functions so that using LaTeX to typeset the plot labels is optional.  This is because some people have trouble getting the LaTeX plot labels to work in matplotlib; for them, the plotting functions don't work presently.
+
+Documentation and Testing
+=========================
+
+* Review the `quickstart` files -- split into true `quickstart` files and `development` files.  
+
+* We need some units tests!
