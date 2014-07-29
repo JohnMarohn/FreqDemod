@@ -6,10 +6,17 @@ Git workflow
 
 Example workflow::
 
-    <On branch master>
-    
-
+    git checkout master # make sure you are on the local master branch
+    git pull # make sure it is up to date (resolve conflicts here ...)
+    git checkout develop # put me on the develop branch way down there
+    git merge master # a lot happens .. look for "Fast-forward" = good sign
+    git push # get develop and origin/develop in sync
+    <now work on develop>        
+            
+            
 **Background Reading**
+
+* "Think Like (a) Git: A Guide for the Perplexed" by Sam Livingston-Gray [`link <http://think-like-a-git.net/>`].  A graph-theory view of the git workflow.
 
 * "Git Workflow Tutorial" at Atlassian [`link <https://www.atlassian.com/git/workflows>`].  An overview of the possible workflows: centralized, feature branch, gitflow, forking, and pull requests.
 
