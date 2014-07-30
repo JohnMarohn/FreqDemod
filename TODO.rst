@@ -21,11 +21,6 @@ Workup
 
 * Define another object (``PSD`` perhaps) and make methods that computes a power spectrum, saves the power spectum as an hdf5 file, and fits the power spectrum to one of two models.  You should also just be able to read in power-spectrum data from an hdf5 files and fit it. 
 
-Plotting
-^^^^^^^^
-
-* Modify all the plotting functions so that using LaTeX to typeset the plot labels is optional.  This is because some people have trouble getting the LaTeX plot labels to work in matplotlib; for them, the plotting functions don't work presently.
-
 Documentation and Testing
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -44,3 +39,7 @@ Done
 * Get the units right on the FT y axis (e.g., nm/Hz).
 
 * Change all the ``yes`` or ``no`` inputs to ``True`` and ``False``.  
+
+* Modify all the plotting functions so that using LaTeX to typeset the plot labels is optional.  This is because some people have trouble getting the LaTeX plot labels to work in matplotlib; for them, the plotting functions don't work presently.  This took quite a bit of work!
+
+* Add command-line demodulate.py which takes options for LaTeX plotting.
