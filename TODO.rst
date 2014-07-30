@@ -21,6 +21,8 @@ Workup
 
 * Get the units right on the FT y axis.
 
+* Harrell 2014/07/30: Would be handy to have a method to extract oscillator Q from an object of type Signal that contained a trace from a ping experiment.  Idea: curve fit the decay to an exponential.
+
 * Define another object (``PSD`` perhaps) and make methods that computes a power spectrum, saves the power spectum as an hdf5 file, and fits the power spectrum to one of two models.  You should also just be able to read in power-spectrum data from an hdf5 files and fit it. 
 
 Plotting
