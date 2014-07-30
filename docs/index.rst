@@ -14,6 +14,7 @@ Contents:
    background3.rst
    demodulate.rst
    util.rst
+   hdf5.rst
    develop.rst
    license.rst
    acknow.rst
