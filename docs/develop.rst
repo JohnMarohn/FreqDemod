@@ -16,13 +16,13 @@ Example workflow::
             
 **Background Reading**
 
-* "Think Like (a) Git: A Guide for the Perplexed" by Sam Livingston-Gray [`link <http://think-like-a-git.net/>`].  A graph-theory view of the git workflow.
+* "Think Like (a) Git: A Guide for the Perplexed" by Sam Livingston-Gray [`link <http://think-like-a-git.net/>`__].  A graph-theory view of the git workflow.
 
-* "Git Workflow Tutorial" at Atlassian [`link <https://www.atlassian.com/git/workflows>`].  An overview of the possible workflows: centralized, feature branch, gitflow, forking, and pull requests.
+* "Git Workflow Tutorial" at Atlassian [`link <https://www.atlassian.com/git/workflows>`__].  An overview of the possible workflows: centralized, feature branch, gitflow, forking, and pull requests.
 
-* "Simple Git workflow is simple: A basic basic branching workflow for continuous delivery" by Nicola Paolucci at Atlassian [`link <http://blogs.atlassian.com/2014/01/simple-git-workflow-simple/>`].  Described the ``rebase`` approach. 
+* "Simple Git workflow is simple: A basic basic branching workflow for continuous delivery" by Nicola Paolucci at Atlassian [`link <http://blogs.atlassian.com/2014/01/simple-git-workflow-simple/>`__].  Described the ``rebase`` approach. 
 
 Preparing for distribution
 --------------------------
 
-* "Open Sourcing the Project the Right Way" by Keff Knupp [`link <http://www.jeffknupp.com/blog/2013/08/16/open-sourcing-a-python-project-the-right-way/>`]
+* "Open Sourcing the Project the Right Way" by Keff Knupp [`link <http://www.jeffknupp.com/blog/2013/08/16/open-sourcing-a-python-project-the-right-way/>`__].
