@@ -52,6 +52,18 @@ To create a branch, play with it, and merge its code back into the master copy o
     git push
 ```
 
+If you want to see the commit tree nicely in the terminal, type
+
+```bash
+    git config --global alias.tree "log --oneline --decorate --all --graph"
+```
+
+and from then on
+
+```bash
+    git tree
+```
+
 If you find yourself in trouble, want to trash the uncommitted changes in your sandbox, to make your working version the last version of the master copy:
 
 ```bash
