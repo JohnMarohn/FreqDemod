@@ -1,6 +1,8 @@
 Development Notes
 =================
 
+.. include:: ../TODO.rst
+
 Git workflow
 ------------
 
