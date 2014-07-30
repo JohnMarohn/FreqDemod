@@ -6,15 +6,9 @@ Creation, reading, and writing
 
 * Rename the internal variables in the **Signal** object so that the original data is stored in a dictionary called **signal** while the derived, worked-up data is stored in a separate dictionary called **workup**.  This arrangement will correspond more closely to how the data will be stored in the hdf5 file.
 
-* Rewrite how the data is loaded into the **Signal** object:
+* Add a function ``.load_hd5(filename="my_signal.h5")``, that populates the data structure from an hdf5 array.  This function should load not only any signal data, but also any worked-up data as well.
 
-    - Rewrite ``__init__`` to be an empty constructor, e.g., taking zero arguments.  Replace with two functions:
-
-    - ``.load_nparray(s,s_name,s_unit,dt)``, which plays the role of the present ``.__init__ `` function
-
-    - ``.load_hd5(filename="my_signal.h5")``, that populates the data structure from an hdf5 array.  This function should load not only any signal data, but any worked-up data as well.
-
-* Write a function that saves the signal *and* worked-up data as an hdf5 file.  Could call the function, for example, ``.load_hd5(filename="my_worked_up_signal.h5")``.  
+* Write a function that saves the signal *and* worked-up data as an hdf5 file.  Could call the function, for example, ``.save_hd5(filename="my_worked_up_signal.h5")``.  
 
 Workup
 ^^^^^^
@@ -27,7 +21,7 @@ Workup
 
 * Get the units right on the FT y axis.
 
-* Make function that takes a power spectrum.  Make a second function that saves the power spectum as an hdf5 file.  You will then read in the hdf5 file into a new data structure to fit it.  The power-spectrum function should work on a separate object I think.
+* Define another object (``PSD`` perhaps) and make methods that computes a power spectrum, saves the power spectum as an hdf5 file, and fits the power spectrum to one of two models.  You should also just be able to read in power-spectrum data from an hdf5 files and fit it. 
 
 Plotting
 ^^^^^^^^
@@ -44,3 +38,7 @@ Documentation and Testing
 
 Done
 ----
+
+* Rewrite ``__init__`` to be an empty constructor, e.g., taking zero arguments.  Replace it with ``.load_nparray(s,s_name,s_unit,dt)``.  Add units tests.
+
+* Modify ``demodulate.py`` so that it takes command-line arguments allowing you to choose a test signal.

@@ -20,99 +20,45 @@ or::
 Unit tests
 ----------
 
+See: http://stackoverflow.com/questions/14920837/comparing-numpy-float-arrays-in-unit-tests
+
 """
+
+# if a function is *expected *to fail, then
+#
+#    @unittest.expectedFailure
+#    def test_that_fails():
+#
 
 from freqdemod.demodulate import Signal
 import unittest
+import numpy as np
 # import logging
 # import os
 # import re
 
 
 
-class FilterTests(unittest.TestCase):
+class InitializationTests(unittest.TestCase):
     """
-    Make sure the filters are set up correctly
+    Make sure the *Signal* object is set up correctly.
     """
 
-    def test(self):
-        """A dummy test; just so that we can be sure the tests are running.
-        Delete when more tests are added to the package.""" 
-        pass
-    
-    #def setUp(self):
-    #    """
-    #    Set up the logger.  Load the user's preferences file.  Override the 
-    #    logging level read in from the preferences file; set the logging level
-    #    to high so that no messages are printed out during unit testing.
-    #    
-    #    """
-    #    
-    #    logging.basicConfig()
-    #    p = Preferences()
-    #    p.Load()        
-    #    p.pref['logging_level'] = 40
-    #    self.p = p    
-            
-    #def test_ref__xml__accented_1(self):
-    #    """crossref.org test #1: retrieve xml data for
-    #    10.1016/j.ccr.2011.01.042, which has accented characters."""
-    #    
-    #    b = BibData(self.p)        
-    #    b.set_doi('10.1016/j.ccr.2011.01.042')   
-    #    b.query_crossref()
-    #    b.decode_XML()
-    #
-    #    self.assertEqual(b.xml, b1)
+    def setUp(self):
+        """
+        Create an empty *Signal* object
+        """
         
-# ===============================================
-# ===== XML to BIB (expected failures) ==========
-# ===============================================
+        self.s = Signal()
 
-#class BibTestsExpectedFailures(unittest.TestCase):
-#    """See if we can convert xml to bib properly."""
-# 
-#    def setUp(self):
-#        """
-#        Set up the logger.  Load the user's preferences file.  Override the 
-#        logging level read in from the preferences file; set the logging level
-#        to high so that no messages are printed out during unit testing.
-#        
-#        """
-#        
-#        logging.basicConfig()
-#        p = Preferences()
-#        p.Load()        
-#        p.pref['logging_level'] = 40
-#        self.p = p
-#        
-#    def get_doi(self,doi):
-#        """ 
-#        Workhorse function to get the xml from crossref.org, determine 
-#        the month, generate the bibkey, and convert the xml to bib.
-#        
-#        """
-#        
-#        a = ArticleData(self.p)
-#        a.set_doi(doi)   
-#        a.query_crossref()
-#        a.decode_XML()
-#        
-#        a.generate_bib()
-#        a.determine_month()
-#        a.generate_bibkey()
-#        a.order_bib()       
-#        
-#        self.a = a
-#
-#    @unittest.expectedFailure
-#    def test_ref__bib__poorly_formed_xml_1(self):
-#        """ 
-#        Poorly formed xml:  This is an example of an author conversion
-#        that fails, I believe, because the xml returned by crossref.org
-#        is poorly formed. 
-#        
-#        """
-#                               
-#        self.get_doi('10.1109/JSSC.2002.808283')
-#        self.assertEqual(self.a.bib['author'],u"Ham, D. and Hajimiri, A.")
+    def test_init(self):
+        """Signal object initialized"""
+
+        self.assertEqual(self.s.report[0],'Empty Signal object created')
+
+    def test_load_nparray(self):
+        """Signal.load_nparray saves the array"""
+        
+        self.s.load_nparray(np.arange(3),"x","nm",10E-6)        
+        self.assertTrue(np.allclose(self.s.signal['s'],np.array([0, 1, 2]), rtol=1e-05, atol=1e-08))
+        

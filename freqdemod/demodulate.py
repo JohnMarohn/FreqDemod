@@ -64,18 +64,19 @@ import time
 import matplotlib.pyplot as plt 
 from freqdemod.util import eng
 
-# Set the default font and size for the figure
-
-font = {'family' : 'serif',
-        'weight' : 'normal',
-        'size'   : 18}
-
-plt.rc('font', **font)
-plt.rcParams['figure.figsize'] =  8.31,5.32
-
 class Signal(object):
 
-    def __init__(self, s, s_name, s_unit, dt):
+    def __init__(self):
+        
+        self.signal = {}
+        self.workup = {}
+        self.report = []
+        
+        new_report = []
+        new_report.append("Empty Signal object created")
+        self.report.append(" ".join(new_report))
+
+    def load_nparray(self, s, s_name, s_unit, dt):
 
         """ 
         Create a *Signal* object from the following inputs.
@@ -103,13 +104,10 @@ class Signal(object):
         signal['s'] = np.array(s)
         signal['s_name'] = s_name
         signal['s_unit'] = s_unit
-
         signal['dt'] = dt
         signal['t'] = dt*np.arange(0,len(np.array(s)))
 
         self.signal = signal        
-                        
-        self.report = []
         
         new_report = []
         new_report.append("Add a signal {0}[{1}]".format(s_name,s_unit))
@@ -951,95 +949,78 @@ class Signal(object):
         
         """
 
-        s_rms = np.sqrt(np.mean(self.signal['s']**2))
-        s_min = np.min(self.signal['s'])
-        s_max = np.max(self.signal['s'])
+        #s_rms = np.sqrt(np.mean(self.signal['s']**2))
+        #s_min = np.min(self.signal['s'])
+        #s_max = np.max(self.signal['s'])
 
         temp = []
         
-        temp.append("Signal")
-        temp.append("======")
-        temp.append("signal name: {0}".format(self.signal['s_name']))
-        temp.append("signal unit: {0}".format(self.signal['s_unit']))
-        temp.append("signal lenth = {}".format(len(self.signal['s'])))
-        temp.append("time step = {0:.3f} us".format(self.signal['dt']*1E6))
-        temp.append("rms = {}".format(eng(s_rms)))
-        temp.append("max = {}".format(eng(s_max)))
-        temp.append("min = {}".format(eng(s_min)))
-        temp.append(" ")
+        #temp.append("Signal")
+        #temp.append("======")
+        #temp.append("signal name: {0}".format(self.signal['s_name']))
+        #temp.append("signal unit: {0}".format(self.signal['s_unit']))
+        #temp.append("signal lenth = {}".format(len(self.signal['s'])))
+        #temp.append("time step = {0:.3f} us".format(self.signal['dt']*1E6))
+        #temp.append("rms = {}".format(eng(s_rms)))
+        #temp.append("max = {}".format(eng(s_max)))
+        #temp.append("min = {}".format(eng(s_min)))
+        #temp.append(" ")
         temp.append("Signal Report")
         temp.append("=============")
         temp.append("\n\n".join(["* " + msg for msg in self.report]))
 
         return '\n'.join(temp)
 
-def main():
-    
-    # Generate a signal
-    #
-    # f0 = signal frequency
-    # fd = digitization frequency
-    # nt = number of signal points
-    # sn_rms = root-mean-square of noise
-    # sn = signal amplitude
-    
-    f0 = 5.00E3  
-    fd = 50.0E3 
-    # nt = 512*1024
-    nt = 600E3
-    
-    sn = 1.0
-    sn_rms = 0.20
+def testsignal_sine():
+        
+    fd = 50.0E3    # digitization frequency
+    f0 = 5.00E3    # signal frequency
+    nt = 60E3      # number of signal points    
+    sn = 1.0       # signal zero-to-peak amplitude
+    sn_rms = 0.20  # noise rms amplitude
     
     dt = 1/fd
     t = dt*np.arange(nt)
     s = sn*np.sin(2*np.pi*f0*t) + np.random.normal(0,sn_rms,t.size)
     
-
-    # Create the signal, force its lenth to be 
-    #  a power of two, apply a winodwing function,
-    #  and plot the winowed signal
-    
-    R = Signal(s,"x","nm",1/fd)
-    R.binarate("middle")
-    R.window(3E-3)
-
-    R.plot_signal()
-
-    # FFT the data, filter it, and plot the
-    #  result
-
-    R.fft()
-    R.filter(bw=1E3)
-    R.plot_fft(autozoom="no")
-    R.plot_fft(autozoom="yes")
-
-    # IFFT the frequency-domain signal, trim away
-    #  the leading and lagging ripple, plot the phase
-    #  *vs* time
-
-    R.ifft()
-    R.trim()
-    
-    # R.plot_phase()
-    # R.plot_phase(delta="yes")
-
-    # Divide the phase *vs* time data into chunks,
-    #  fit each chunk to obtain the frequency,
-    #  and plot the result   
-            
-    R.fit(201.34E-6)
-
-    # R.plot_phase_fit()
-    # R.plot_phase_fit(delta="yes")
-    # R.plot_phase_fit(delta="yes",baseline=0.1)                                            
-
-
-    # Print out a report
-
-    print(R)                                                                                                                                                                                                                                                                                                                                                                                                   
-    return(R)
+    S = Signal()
+    S.load_nparray(s,"x","nm",dt)
+    S.binarate("middle")   
+    S.window(3E-3)
+    S.fft()
+    S.filter(1E3)
+    S.ifft()
+    S.trim()
+    S.fit(201.34E-6)
+    S.plot_phase_fit(delta='yes') 
+         
+    print(S)
+    return(S)
 
 if __name__ == "__main__":
     
-    R = main()
+    # Parge command-line arguments
+    # https://docs.python.org/2/library/argparse.html#module-argparse
+    
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='demonstrate freqdemod.demodulate')
+    parser.add_argument('--testsignal', default='sine', help='sine or ---')
+    args = parser.parse_args()
+    
+    # Set the default font and size for the figure
+
+    import matplotlib.pyplot as plt 
+    
+    font = {'family' : 'serif',
+            'weight' : 'normal',
+            'size'   : 18}
+
+    plt.rc('font', **font)
+    plt.rcParams['figure.figsize'] =  8.31,5.32
+    
+    # Do one of the tests
+    
+    if args.testsignal == 'sine':
+        
+        S = testsignal_sine()
