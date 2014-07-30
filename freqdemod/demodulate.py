@@ -62,7 +62,6 @@ import copy
 import time
 
 import matplotlib.pyplot as plt 
-from freqdemod.util import eng
 
 class Signal(object):
 
@@ -577,7 +576,7 @@ class Signal(object):
                  
         self.report.append(" ".join(new_report))       
                        
-    def plot_phase_fit(self, delta=False, baseline=0):
+    def plot_phase_fit(self, delta=False, baseline=0, LaTeX=False):
        
         """
         Plot the frequency [Hz] *vs* time [s].   
@@ -586,6 +585,8 @@ class Signal(object):
             or the absolute frequency :math:`f` (``False``; default).
         :param float baseline: the duration of time used to compute the
             baseline frequency
+        :param boolean LaTeX: use LaTeX axis labels; ``True`` or ``False``
+            (default) 
            
         In the ``True`` case, the frequency shift is calculated by subtracting
         the peak frequency **.signal['f00']** determined by the *filter()* 
@@ -598,6 +599,21 @@ class Signal(object):
         
         """
         
+        # plotting using tex is nice, but slow
+        #  so only use it temporarily for this plot
+        
+        old_param = plt.rcParams['text.usetex']
+        
+        if LaTeX == True:
+            
+            plt.rcParams['text.usetex'] = True
+            x_labelstr = r"$t \: \mathrm{[s]}$"
+            
+        elif LaTeX == False:
+            
+            plt.rcParams['text.usetex'] = False
+            x_labelstr = "t [s]"
+        
         # decide what data to plot
         
         x = self.signal['fit_time']
@@ -605,14 +621,21 @@ class Signal(object):
         if delta == False: 
             
             y = self.signal['fit_freq']/1E3
-            y_labelstr = r"$f \: \mathrm{[kHz]}$"
             y_lim = [0,1.5*self.signal['fit_freq'].max()/1E3]
-            titlestr = ""
-        
+                            
+            if LaTeX == True:
+                
+                y_labelstr = r"$f \: \mathrm{[kHz]}$"
+                titlestr = ""
+                
+            elif LaTeX == False:
+                
+                y_labelstr = "f [kHz]"
+                titlestr = ""
+                
         elif delta == True:
             
             y = self.signal['fit_freq']
-            y_labelstr = r"$\Delta f \: \mathrm{[Hz]}$"
             
             if baseline == 0:
             
@@ -637,20 +660,24 @@ class Signal(object):
                 
             y = y - self.signal['f_baseline']
             y_value = max(abs(y.min()),abs(y.max()))
-            y_lim = [-1.5*y_value,1.5*y_value]                    
-            titlestr = r"$f_0 = " + \
+            y_lim = [-1.5*y_value,1.5*y_value] 
+            
+            if LaTeX == True:
+            
+                y_labelstr = r"$\Delta f \: \mathrm{[Hz]}$"                          
+                titlestr = r"$f_0 = " + \
                         "{0:.3f}".format(self.signal['f_baseline']) + \
                         r" \: \mathrm{Hz}$"
+                        
+            elif LaTeX == False:
+                
+                y_labelstr = "Delta f [Hz]"
+                titlestr = "f_0 = {0:.3f} [Hz]".format(self.signal['f_baseline'])
                                                 
         else:
             
             print r"delta option not understood -- should be False or True "
         
-        # plotting using tex is nice, but slow
-        #  so only use it temporarily for this plot
-        
-        old_param = plt.rcParams['text.usetex']
-        plt.rcParams['text.usetex'] = True
         
         # create the plot
         
@@ -661,7 +688,7 @@ class Signal(object):
         
         plt.xlim([self.signal['t_original'][0],self.signal['t_original'][-1]])
         plt.ylim(y_lim)
-        plt.xlabel(r"$t \: \mathrm{[s]}$")
+        plt.xlabel(x_labelstr)
         plt.ylabel(y_labelstr)
         plt.title(titlestr)
         
@@ -676,7 +703,7 @@ class Signal(object):
         plt.show()
         plt.rcParams['text.usetex'] = old_param
 
-    def plot_phase(self, delta=False):
+    def plot_phase(self, delta=False, LaTeX=False):
         
         """
         Plot the phase *vs* time.
@@ -684,6 +711,9 @@ class Signal(object):
         :param str delta: plot the phase shift :math:`\\Delta\\phi/2\\pi`
             (``True``) [cycles] or the absolute phase :math:`\\phi/2\\pi` 
             [kilocycles] (``False``; default).
+            
+        :param boolean LaTeX: use LaTeX axis labels; ``True`` or ``False``
+            (default) 
            
         The phase shift :math:`\\Delta\\phi/2\\pi` is calculated by fitting
         the phase *vs* time data to a line and subtracting off the best-fit
@@ -701,35 +731,59 @@ class Signal(object):
            
         """ 
  
-        # decide that  plot
+        # use tex-formatted axes labels temporarily for this plot
+        
+        old_param = plt.rcParams['text.usetex']
+        
+        if LaTeX == True:
+        
+            plt.rcParams['text.usetex'] = True
+            x_label = r"$t \: \mathrm{[s]}$"
+            
+        elif LaTeX == False:
+            
+            plt.rcParams['text.usetex'] = False
+            x_label = "t [s]"
+ 
+        # decide what to plot
         
         x = self.signal['t']
  
         if delta == False: 
             
             y = self.signal['theta']/1E3
-            
-            y_labelstr = r"$\phi /2 \pi \: \mathrm{[kilocycles]}$"
             y_lim = [0,self.signal['theta'].max()/1E3]
-            titlestr = ""  
+            
+            if LaTeX == True:                        
+                                                
+                y_labelstr = r"$\phi /2 \pi \: \mathrm{[kilocycles]}$"
+                titlestr = ""  
        
+            elif LaTeX == False:
+                
+                 y_labelstr = "phase/(2*pi) [kilocycles]"
+                 titlestr = ""    
+                  
         elif delta == True:
        
             coeff = np.polyfit(self.signal['t'], self.signal['theta'], 1)
             y_calc = coeff[0]*self.signal['t'] + coeff[1]
             y = self.signal['theta'] - y_calc
-       
-            y_labelstr = r"$\Delta\phi /2 \pi \: \mathrm{[cycles]}$"
             y_value = max(abs(y.min()),abs(y.max()))
             y_lim = [-1.5*y_value,1.5*y_value]
-            titlestr = r"$\phi_0 = " + \
+            
+            if LaTeX == True:
+                
+                y_labelstr = r"$\Delta\phi /2 \pi \: \mathrm{[cycles]}$"
+                titlestr = r"$\phi_0 = " + \
                         "{0:.3f} t  {1:+.3f}".format(coeff[0],coeff[1]) + \
                         r" \: \mathrm{cycles}$"
                         
-        # use tex-formatted axes labels temporarily for this plot
-        
-        old_param = plt.rcParams['text.usetex']
-        plt.rcParams['text.usetex'] = True
+            elif LaTeX == False:
+                
+                y_labelstr = "Delta phase/(2*pi) [cycles]"
+                titlestr = "phase(0) = {0:.3f} t + " \
+                    "{1:+.3f} [cycles]".format(coeff[0],coeff[1])
         
         # create the plot
         
@@ -740,7 +794,7 @@ class Signal(object):
         
         plt.xlim([self.signal['t_original'][0],self.signal['t_original'][-1]])
         plt.ylim(y_lim)
-        plt.xlabel(r"$t \: \mathrm{[s]}$")
+        plt.xlabel(x_label)
         plt.ylabel(y_labelstr)
         plt.title(titlestr)
                 
@@ -755,13 +809,17 @@ class Signal(object):
         plt.show()
         plt.rcParams['text.usetex'] = old_param
         
-    def plot_signal(self):
+    def plot_signal(self, LaTeX=False):
         
-        """Plot the windowed signal *vs* time.  Before you call this function,
-        you must have run the ``.window()`` function first.  Because the signal
-        is likely to have many oscillations that would be too difficult to see
-        if we plotted all the signal, instead draw subplots that zoom in 
-        to the beginning, middle, and end of the data. 
+        """Plot the windowed signal *vs* time.  
+        
+        :param boolean LaTeX: use LaTeX axis labels; ``True`` or ``False``
+            (default) 
+            
+        Before you call this function, you must have run the ``.window()`` 
+        function first.  Because the signal is likely to have many oscillations
+        that would be too difficult to see if we plotted all the signal, instead
+        draw subplots that zoom in to the beginning, middle, and end of the data. 
         
         Decide what duration of data to plot as follows: 
         
@@ -809,16 +867,26 @@ class Signal(object):
         t_delta = 10/abs(f0_est)
         i1_del = int(math.floor(t_delta/self.signal['dt']))
                 
-        # use tex-formatted axes labels temporarily for this plot
-        
-        old_param = plt.rcParams['text.usetex']
-        plt.rcParams['text.usetex'] = True        
-        
+        # posslby use tex-formatted axes labels temporarily for this plot
         # compute plot labels
         
-        x_label = r"$\Delta t \: \mathrm{[ms]}$"
-        y_label = r"$" + "{}".format(self.signal['s_name']) + \
-            "\: \mathrm{[" + "{}".format(self.signal['s_unit']) + "]}$"
+        old_param = plt.rcParams['text.usetex']
+        
+        if LaTeX == True:
+        
+            plt.rcParams['text.usetex'] = True
+
+            x_label = r"$\Delta t \: \mathrm{[ms]}$"
+            y_label = r"$" + "{}".format(self.signal['s_name']) + \
+                "\: \mathrm{[" + "{}".format(self.signal['s_unit']) + "]}$"            
+                                    
+        elif LaTeX == False:
+            
+            plt.rcParams['text.usetex'] = False                
+        
+            x_label = "Delta t [ms]"
+            y_label = "{0} [{1}]".format(self.signal['s_name'],
+                self.signal['s_unit'])
         
         # create the plot
         
@@ -876,6 +944,9 @@ class Signal(object):
             peak in the FT-ed signal (``True`` default) or display the FT-ed signal
             over the full range of positive frequencies (``False``).
             
+        :param boolean LaTeX: use LaTeX axis labels; ``True`` or ``False``
+            (default) 
+            
         If ``autozoom=True``, then determine the region of interest using 
         **.signal['bw']** and **.self.signal['f0']**.  For purposes of display,
         the filter is scaled to the maximum of the FT-ed signal.
@@ -905,7 +976,7 @@ class Signal(object):
             plt.rcParams['text.usetex'] = False
             x_label = "f [kHz]"
             y_label = "FT{{{0}}} [{1}/Hz]".format(self.signal['s_name'],
-                        self.signal['s_unit'])       
+                self.signal['s_unit'])       
              
         # set the plotting range (e.g., zoomed or not)              
                                         
@@ -1016,13 +1087,15 @@ def testsignal_sine():
     S.load_nparray(s,"x","nm",dt)
     S.binarate("middle")   
     S.window(3E-3)
+    S.plot_signal(LaTeX=latex)
     S.fft()
     S.filter(1E3)
-    S.plot_fft(autozoom=True)
+    S.plot_fft(autozoom=True,LaTeX=latex)
     S.ifft()
     S.trim()
+    S.plot_phase(delta=True,LaTeX=latex)
     S.fit(201.34E-6)
-    S.plot_phase_fit(delta=True) 
+    S.plot_phase_fit(delta=True,LaTeX=latex) 
          
     print(S)
     return(S)
@@ -1033,14 +1106,28 @@ if __name__ == "__main__":
     # https://docs.python.org/2/library/argparse.html#module-argparse
     
     import argparse
+    from argparse import RawTextHelpFormatter
     
-    parser = argparse.ArgumentParser(description='demonstrate freqdemod.demodulate')
-    parser.add_argument('--testsignal', default='sine', help='sine or ---')
+    parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter,
+        description="Determine a signal's frequency vs time.\n"
+        "Example usage:\n"
+        "    python demodulate.py --testsignal=sine --LaTeX\n\n")
+    parser.add_argument('--testsignal',
+        default='sine',
+        choices = ['sine', 'sineexp'],
+        help='analyze one of the available test signals')
+    parser.add_argument('--LaTeX',
+        dest='latex',
+        action='store_true',
+        help = 'use LaTeX plot labels')
+    parser.add_argument('--no-LaTeX',
+        dest='latex',
+        action='store_false',
+        help = 'do not use LaTeX plot labels (default)')
+    parser.set_defaults(latex=False)    
     args = parser.parse_args()
     
     # Set the default font and size for the figure
-
-    import matplotlib.pyplot as plt 
     
     font = {'family' : 'serif',
             'weight' : 'normal',
@@ -1049,8 +1136,15 @@ if __name__ == "__main__":
     plt.rc('font', **font)
     plt.rcParams['figure.figsize'] =  8.31,5.32
     
+    latex = args.latex
+    
     # Do one of the tests
     
     if args.testsignal == 'sine':
         
         S = testsignal_sine()
+        
+    else:
+        
+        print "**warning **"
+        print "--testsignal={} not implimented yet".format(args.testsignal)
