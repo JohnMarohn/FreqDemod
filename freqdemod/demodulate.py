@@ -68,6 +68,16 @@ class Signal(object):
 
     def __init__(self):
         
+        """
+        Initialize the *Signal* object.  No inputs.  Add the following objects
+        to the *Signal* object
+        
+        :param str report: a string summarizing in words what has
+            been done to the signal (e.g., "Empty signal object created")
+            
+        """
+        
+        
         self.signal = {}
         self.workup = {}
         self.report = []
@@ -567,24 +577,24 @@ class Signal(object):
                  
         self.report.append(" ".join(new_report))       
                        
-    def plot_phase_fit(self, delta="no", baseline=0):
+    def plot_phase_fit(self, delta=False, baseline=0):
        
         """
         Plot the frequency [Hz] *vs* time [s].   
         
-        :param str delta: plot the frequency shift :math:`\\Delta f` ("yes") or 
-            the absolute frequency :math:`f` ("no"; default "no").
+        :param str delta: plot the frequency shift :math:`\\Delta f` (``False``) 
+            or the absolute frequency :math:`f` (``False``; default).
         :param float baseline: the duration of time used to compute the
             baseline frequency
            
-        In the "yes" case, the frequency shift is calculated by subtracting
+        In the ``True`` case, the frequency shift is calculated by subtracting
         the peak frequency **.signal['f00']** determined by the *filter()* 
         function.  If a non-zero number is given for ``baseline``, then the
         first ``baseline`` seconds of frequency shift is used as the reference
         from which the frequency shift is computed.  Display the baseline
         frequency used to compute the frequency shift in the plot title.  
-        If ``delta="no"`` then plot the frequency shift in units of kHz; if
-        ``delta="yes"``, then plot the frequency shift in Hz.
+        If ``delta=False`` then plot the frequency shift in units of kHz; if
+        ``delta=True``, then plot the frequency shift in Hz.
         
         """
         
@@ -592,14 +602,14 @@ class Signal(object):
         
         x = self.signal['fit_time']
         
-        if delta == "no": 
+        if delta == False: 
             
             y = self.signal['fit_freq']/1E3
             y_labelstr = r"$f \: \mathrm{[kHz]}$"
             y_lim = [0,1.5*self.signal['fit_freq'].max()/1E3]
             titlestr = ""
         
-        elif delta == "yes":
+        elif delta == True:
             
             y = self.signal['fit_freq']
             y_labelstr = r"$\Delta f \: \mathrm{[Hz]}$"
@@ -634,7 +644,7 @@ class Signal(object):
                                                 
         else:
             
-            print r"delta option not understood -- should be 'no' or 'yes' "
+            print r"delta option not understood -- should be False or True "
         
         # plotting using tex is nice, but slow
         #  so only use it temporarily for this plot
@@ -666,14 +676,14 @@ class Signal(object):
         plt.show()
         plt.rcParams['text.usetex'] = old_param
 
-    def plot_phase(self, delta="no"):
+    def plot_phase(self, delta=False):
         
         """
         Plot the phase *vs* time.
         
         :param str delta: plot the phase shift :math:`\\Delta\\phi/2\\pi`
-            ("yes") [cycles] or the absolute phase :math:`\\phi/2\\pi` 
-            [kilocycles] ("no"; default "no").
+            (``True``) [cycles] or the absolute phase :math:`\\phi/2\\pi` 
+            [kilocycles] (``False``; default).
            
         The phase shift :math:`\\Delta\\phi/2\\pi` is calculated by fitting
         the phase *vs* time data to a line and subtracting off the best-fit
@@ -686,7 +696,7 @@ class Signal(object):
             \\end{equation}
             
         where :math:`c_0` is the best-fit phase at :math:`t=0` and :math:`c_1` 
-        is the best-fit frequency [Hz].  If ``delta="yes"``, then display the 
+        is the best-fit frequency [Hz].  If ``delta=True``, then report the 
         best-fit line in the plot title.    
            
         """ 
@@ -695,7 +705,7 @@ class Signal(object):
         
         x = self.signal['t']
  
-        if delta == "no": 
+        if delta == False: 
             
             y = self.signal['theta']/1E3
             
@@ -703,7 +713,7 @@ class Signal(object):
             y_lim = [0,self.signal['theta'].max()/1E3]
             titlestr = ""  
        
-        elif delta == "yes":
+        elif delta == True:
        
             coeff = np.polyfit(self.signal['t'], self.signal['theta'], 1)
             y_calc = coeff[0]*self.signal['t'] + coeff[1]
@@ -854,7 +864,7 @@ class Signal(object):
         plt.show()
         plt.rcParams['text.usetex'] = old_param  
 
-    def plot_fft(self, autozoom="yes"):
+    def plot_fft(self, autozoom=True):
         
         """
         Plot on a logarithmic scale the absolute value of the FT-ed signal, 
@@ -863,10 +873,10 @@ class Signal(object):
         have run the ``.fft()`` and ``.filter()`` functions first.  
         
         :param str autozoom: zoom into a region of interest near the primary 
-            peak in the FT-ed signal ("yes; default) or display the FT-ed signal
-            over the full range of positive frequencies ("no").
+            peak in the FT-ed signal (``True`` default) or display the FT-ed signal
+            over the full range of positive frequencies (``False``).
             
-        If ``autozoom="yes"``, then determine the region of interest using 
+        If ``autozoom=True``, then determine the region of interest using 
         **.signal['bw']** and **.self.signal['f0']**.  For purposes of display,
         the filter is scaled to the maximum of the FT-ed signal.
         
@@ -887,11 +897,11 @@ class Signal(object):
             "}(f) \: \mathrm{[" + "{}".format(self.signal['s_unit']) + \
             "/\mathrm{Hz}]}$"
                         
-        if autozoom == "yes":
+        if autozoom == True:
             
             test = (f >= 0) & (f <= f_upper) & (f >= f_lower)
         
-        elif autozoom == "no":
+        elif autozoom == False:
             
             test = (f >= 0)
             
@@ -989,10 +999,11 @@ def testsignal_sine():
     S.window(3E-3)
     S.fft()
     S.filter(1E3)
+    S.plot_fft(autozoom=True)
     S.ifft()
     S.trim()
     S.fit(201.34E-6)
-    S.plot_phase_fit(delta='yes') 
+    S.plot_phase_fit(delta=True) 
          
     print(S)
     return(S)

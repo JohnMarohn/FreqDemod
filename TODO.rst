@@ -17,10 +17,6 @@ Workup
 
 * Think about modifying ``.binarate()`` to also simply generate a masking array.
 
-* Change all the ``yes`` or ``no`` inputs to ``True`` and ``False``.  
-
-* Get the units right on the FT y axis.
-
 * Harrell 2014/07/30: Would be handy to have a method to extract oscillator Q from an object of type Signal that contained a trace from a ping experiment.  Idea: curve fit the decay to an exponential.
 
 * Define another object (``PSD`` perhaps) and make methods that computes a power spectrum, saves the power spectum as an hdf5 file, and fits the power spectrum to one of two models.  You should also just be able to read in power-spectrum data from an hdf5 files and fit it. 
@@ -44,3 +40,7 @@ Done
 * Rewrite ``__init__`` to be an empty constructor, e.g., taking zero arguments.  Replace it with ``.load_nparray(s,s_name,s_unit,dt)``.  Add units tests.
 
 * Modify ``demodulate.py`` so that it takes command-line arguments allowing you to choose a test signal.
+
+* Get the units right on the FT y axis (e.g., nm/Hz).
+
+* Change all the ``yes`` or ``no`` inputs to ``True`` and ``False``.  
