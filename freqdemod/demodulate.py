@@ -864,7 +864,7 @@ class Signal(object):
         plt.show()
         plt.rcParams['text.usetex'] = old_param  
 
-    def plot_fft(self, autozoom=True):
+    def plot_fft(self, autozoom=True, LaTeX=False):
         
         """
         Plot on a logarithmic scale the absolute value of the FT-ed signal, 
@@ -888,14 +888,30 @@ class Signal(object):
                 
         """
 
+        # possibly use tex-formatted axes labels temporarily for this plot
+        
+        old_param = plt.rcParams['text.usetex']
+        
+        if LaTeX == True:
+            
+            plt.rcParams['text.usetex'] = True
+            x_label = r"$f \: \mathrm{[kHz]}$"
+            y_label = r"$\hat{" + "{}".format(self.signal['s_name']) + \
+                "}(f) \: \mathrm{[" + "{}".format(self.signal['s_unit']) + \
+                "/\mathrm{Hz}]}$"
+                
+        elif LaTeX == False:
+            
+            plt.rcParams['text.usetex'] = False
+            x_label = "f [kHz]"
+            y_label = "FT{{{0}}} [{1}/Hz]".format(self.signal['s_name'],
+                        self.signal['s_unit'])       
+             
+        # set the plotting range (e.g., zoomed or not)              
+                                        
         f = self.signal['f']
         f_lower = self.signal['f0'] - 1.50*self.signal['bw']
         f_upper = self.signal['f0'] + 1.50*self.signal['bw']
-        
-        x_label = r"$f \: \mathrm{[kHz]}$"
-        y_label = r"$\hat{" + "{}".format(self.signal['s_name']) + \
-            "}(f) \: \mathrm{[" + "{}".format(self.signal['s_unit']) + \
-            "/\mathrm{Hz}]}$"
                         
         if autozoom == True:
             
@@ -922,19 +938,22 @@ class Signal(object):
         
         y2 = (y1_max*self.signal['bp'])[sub_indices]        
         y3 = abs(nc*0.5*self.signal['swFTfilt'])[sub_indices] 
-            
-        # use tex-formatted axes labels temporarily for this plot
-        
-        old_param = plt.rcParams['text.usetex']
-        plt.rcParams['text.usetex'] = True
 
         # create the plot
         
         fig=plt.figure(facecolor='w')
-        
-        plt.plot(x,y1, label=r"$\mathrm{fft}$")
-        plt.plot(x,y2, label=r"$\mathrm{filter}$")
-        plt.plot(x,y3, label=r"$\mathrm{fft, filtered}$")
+
+        if LaTeX == True:        
+                        
+            plt.plot(x,y1, label=r"$\mathrm{fft}$")
+            plt.plot(x,y2, label=r"$\mathrm{filter}$")
+            plt.plot(x,y3, label=r"$\mathrm{fft, filtered}$")
+            
+        elif LaTeX == False:
+            
+            plt.plot(x,y1, label="fft")
+            plt.plot(x,y2, label="filter")
+            plt.plot(x,y3, label="fft, filtered")            
         
         # add legend, labels, and y-axis limits
         
