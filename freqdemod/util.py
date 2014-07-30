@@ -6,6 +6,7 @@
 # 2014/06/28
 
 import math
+import os
 
 # Modified from http://code.activestate.com/recipes/578238-engineering-notation/
 

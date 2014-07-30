@@ -70,3 +70,13 @@ parameters to a group called ``workup``.
 
 .. _HDF5: http://www.hdfgroup.org/HDF5/
 """
+
+
+def update_attrs(h5_attrs, attrs):
+    """Update the attributes in ``h5_attrs``, an ``h5py`` group or dataset,
+    by adding attributes in the dictionary attrs.
+
+    This will overwrite existing attributes.
+    """
+    for key, val in attrs.viewitems():
+        h5_attrs[key] = val
