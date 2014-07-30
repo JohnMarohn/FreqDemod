@@ -6,11 +6,12 @@
 # 2014/06/28
 
 import math
+import os
 
 # Modified from http://code.activestate.com/recipes/578238-engineering-notation/
 
 def powerise10(x):
-    """ Returns x as a * 10 ^ b with 0<= a <10"""
+    """ Return x as a * 10 ^ b with 1 <= a <10"""
     if x == 0: return 0 , 0
     Neg = x <0
     if Neg : x = -x
@@ -26,3 +27,12 @@ def eng(x):
     a = a * 10**(b%3)
     b = b - b%3
     return "%.4gE%s" %(a,b)
+
+def silentremove(filename):
+    """If ``filename`` exists, delete it. Otherwise, return nothing.
+       See http://stackoverflow.com/q/10840533/2823213."""
+    try:
+        os.remove(filename)
+    except OSError as e:  # this would be "except OSError, e:" before Python 2.6
+        if e.errno != errno.ENOENT:  # errno.ENOENT = no such file or directory
+            raise  # re-raise exception if a different error occured
