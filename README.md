@@ -75,10 +75,11 @@ If you find yourself in trouble, want to trash the uncommitted changes in your s
 Documentation
 =============
 
-To create the html documentation, you will need the sphinx and fabric packages.  Then,
+To create the html documentation, you will need the sphinx and fabric packages.  Then, from the FreqDemod directory
 
 ```bash
     cd docs
     fab html_full
     fab open
 ```
+The documentation is created in FreqDemod/docs/_build/html.
