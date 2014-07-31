@@ -39,7 +39,7 @@ import numpy as np
 
 
 
-class InitializationTests(unittest.TestCase):
+class InitLoadSaveTests(unittest.TestCase):
     """
     Make sure the *Signal* object is set up correctly.
     """
