@@ -69,3 +69,6 @@ freqdemod/docs/.ipynb_checkpoints/*
 
 # html; it is generated from other source files
 *.html
+
+# HDF5 files generated during unit testing
+*.h5

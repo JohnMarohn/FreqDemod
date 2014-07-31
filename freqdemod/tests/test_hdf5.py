@@ -24,6 +24,8 @@ Additional Resources
 
 * HDF5 Command-line Tools [`link <http://www.hdfgroup.org/products/hdf5_tools/>`__]
 
+* h5ls command line tool [`link <http://www.hdfgroup.org/HDF5/doc/RM/Tools.html#Tools-Ls>`__]
+
 Unit Tests
 ----------
 
@@ -31,6 +33,8 @@ Unit Tests
 import unittest
 import h5py
 import numpy as np
+import datetime
+import itertools
 
 from freqdemod.util import silentremove
 from freqdemod.hdf5 import (update_attrs)
@@ -64,7 +68,7 @@ class Test_update_attrs(unittest.TestCase):
     def tearDown(self):
         """Close the h5 file, and remove the file for the next iteration."""
         self.f.close()
-        silentremove(self.filename)
+        # silentremove(self.filename)
         
 class Test_memory_data(unittest.TestCase):
     """Write to memory, read, close; Write to memory, read, close; etc""" 
@@ -159,7 +163,135 @@ class Test_disk_data2(unittest.TestCase):
         cls.g.close()                                                                                                                                                                                                                   
             
     tearDownClass = classmethod(tearDownClass)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+
+class Test_update_attrs_extended(unittest.TestCase):
+    """
+    Read and write an x and y dataset representing a cantielver oscillation.
+    Use an HDF5 file format that Dwyer, Marohn, and Harrell have agreed upon (with
+    minor modifications).  This class's unit tests create a hidden HDF5 whose 
+    contents can be examined using the command-line call:: 
+    
+            h5ls -v .Test_update_attrs_extended.h5
+            
+    The function ``test_02_read`` reads the h5 file and prints out its contents.
+    The outputs of print statements are usually swallowed during the unit test.
+    To display the informative print statements, you can initiate unit testing
+    using the following command::
+    
+            nosetests -sv
+    """
+
+
+    filename = '.Test_update_attrs_extended.h5'
+
+    def setUpClass(cls):
+        """"
+        Record the date and time for use by the functions below. 
+        Delete the output file if it exists so we can make it anew.
+        """
+
+        try:
+            silentremove(cls.filename)
+        except:
+            pass  
+            
+        # today = datetime.datetime.today()
+        today = datetime.datetime(2014, 7, 31, 18, 29, 12, 137998)    
+            
+        cls.date = today.strftime("%Y-%m-%d")
+        cls.time = today.strftime("%H:%M:%S")
+
+    setUpClass = classmethod(setUpClass)    
+            
+    def test_01_write(self):
+        """Write the representative dataset to a file."""
+        
+        f = h5py.File(self.filename, 'w')
+        
+        f.attrs['date'] = self.date
+        f.attrs['time'] = self.time
+        f.attrs['h5py_version'] = h5py.__version__
+        f.attrs['source'] = 'test_hdf5.py'
+        f.attrs['help'] = 'This is a test file created during unit testing'
+               
+        dt = 10.0E-6       
+        t = dt*np.arange(32*1024)       
+               
+        dset = f.create_dataset('x',data=t)
+        dset.attrs['name'] = 't'
+        dset.attrs['unit'] = 's'
+        dset.attrs['label'] = 't [s]'
+        dset.attrs['label_latex'] = '$t \: [\mathrm{s}]$'
+        dset.attrs['help'] = 'time axis'
+        dset.attrs['initial'] = t[0]
+        dset.attrs['step'] = t[1] - t[0]
+        
+        f0 = 0.013/(2*dt)
+        x = np.sin(2*np.pi*f0*t)
+        
+        dset = f.create_dataset('y',data=x)
+        dset.attrs['name'] = 'x'
+        dset.attrs['unit'] = 'nm'
+        dset.attrs['label'] = 'x [nm]'
+        dset.attrs['label_latex'] = '$x \: [\mathrm{nm}]$'
+        dset.attrs['help'] = 'cantilever amplitude'
+        dset.attrs['n_avg'] = 1       
+        
+        f.close()
+
+    def test_02_read(self):
+        """
+        Read the representative dataset, print out the elements, and compare
+        the printout with the expected string.
+        """
+        
+        f = h5py.File(self.filename, 'r')
+        
+        report = []
+        
+        for key, val in f.attrs.iteritems():
+            report.append("{0}: {1}".format(key, val))
+        
+        for item in f:
+            
+            report.append("{}".format(f[item].name))
+            for key, val in f[item].attrs.iteritems():
+                report.append("    {0}: {1}".format(key, val))
+        
+        report_string = "\n".join(report)
+
+        f.close()        
+                        
+        print "\nObjects in file {0}".format(self.filename)
+        print report_string               
+        print ""                                                
+        print "Try:"
+        print "{0}".format("h5ls -rv {}".format(self.filename))                
+                        
+        self.assertEqual(report_string,Test_update_attrs_extended__contents)
+
+
+Test_update_attrs_extended__contents = r"""date: 2014-07-31
+time: 18:29:12
+h5py_version: 2.2.1
+source: test_hdf5.py
+help: This is a test file created during unit testing
+/x
+    name: t
+    unit: s
+    label: t [s]
+    label_latex: $t \: [\mathrm{s}]$
+    help: time axis
+    initial: 0.0
+    step: 1e-05
+/y
+    name: x
+    unit: nm
+    label: x [nm]
+    label_latex: $x \: [\mathrm{nm}]$
+    help: cantilever amplitude
+    n_avg: 1"""        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 if __name__ == '__main__':
     
     unittest.main(verbosity=2)
