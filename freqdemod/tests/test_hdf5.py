@@ -7,7 +7,7 @@
 """
 
 Tests for the hdf5 module. In writing units tests, it is crucially important
-too remember that the unittest object is recreated *every function call* 
+to remember that the unittest object is recreated *every function call* 
 [`see here <http://stackoverflow.com/questions/10570307/self-attr-resets-between-tests-in-unittest-testcase>`__].
 You thus cannot expect, say, ``self.f`` to retain a value if it is passed
 between functions.  You cannot pass a value between functions this way if
