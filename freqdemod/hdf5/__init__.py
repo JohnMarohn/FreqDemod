@@ -79,5 +79,6 @@ def update_attrs(h5_attrs, attrs):
 
     This will overwrite existing attributes.
     """
-    for key, val in attrs.viewitems():
+    for key, val in attrs.items():
+        print key, val
         h5_attrs[key] = val

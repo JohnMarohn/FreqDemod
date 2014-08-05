@@ -9,5 +9,5 @@ def update_attrs(h5_attrs, attrs):
     This will overwrite existing attributes; it is functionally equivalent to
     a python dictionary's update method.
     """
-    for key, val in attrs.viewitems():
+    for key, val in attrs.items():
         h5_attrs[key] = val

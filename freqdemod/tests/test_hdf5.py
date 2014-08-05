@@ -35,7 +35,7 @@ import unittest
 import h5py
 import numpy as np
 import datetime
-import itertools
+from collections import OrderedDict
 
 from freqdemod.util import silentremove
 from freqdemod.hdf5 import (update_attrs)
@@ -218,6 +218,7 @@ class Test_update_attrs_extended(unittest.TestCase):
         dt = 10.0E-6       
         t = dt*np.arange(32*1024)       
                
+        # set the attributes by brute force       
         dset = f.create_dataset('x',data=t)
         dset.attrs['name'] = 't'
         dset.attrs['unit'] = 's'
@@ -230,14 +231,22 @@ class Test_update_attrs_extended(unittest.TestCase):
         f0 = 0.013/(2*dt)
         x = np.sin(2*np.pi*f0*t)
         
-        dset = f.create_dataset('y',data=x)
-        dset.attrs['name'] = 'x'
-        dset.attrs['unit'] = 'nm'
-        dset.attrs['label'] = 'x [nm]'
-        dset.attrs['label_latex'] = '$x \: [\mathrm{nm}]$'
-        dset.attrs['help'] = 'cantilever amplitude'
-        dset.attrs['n_avg'] = 1       
+        # set the attributes more succinctly using an OrderedDict
+        # we need an OrderedDict here so that the keys will add in the
+        #  given order; neccessary so that the string comparison in 
+        #  the assertEqual test of test_02_read () will succeed
         
+        dset = f.create_dataset('y',data=x)        
+        attrs = OrderedDict([ \
+            ('name','x'),
+            ('unit','nm'),
+            ('label','x [nm]'),
+            ('label_latex','$x \: [\mathrm{nm}]$'),
+            ('help', 'cantilever amplitude'),
+            ('n_avg', 1)
+            ])
+        update_attrs(dset.attrs,attrs)
+             
         f.close()
 
     def test_02_read(self):
@@ -250,13 +259,13 @@ class Test_update_attrs_extended(unittest.TestCase):
         
         report = []
         
-        for key, val in f.attrs.iteritems():
+        for key, val in f.attrs.items():
             report.append("{0}: {1}".format(key, val))
         
         for item in f:
             
             report.append("{}".format(f[item].name))
-            for key, val in f[item].attrs.iteritems():
+            for key, val in f[item].attrs.items():
                 report.append("    {0}: {1}".format(key, val))
         
         report_string = "\n".join(report)
