@@ -19,11 +19,7 @@ Tests for the demodulate module.
 from freqdemod.demodulate import Signal
 import unittest
 import numpy as np
-# import logging
-# import os
-# import re
-
-
+import h5py
 
 class InitLoadSaveTests(unittest.TestCase):
     """
@@ -32,19 +28,63 @@ class InitLoadSaveTests(unittest.TestCase):
 
     def setUp(self):
         """
-        Create an empty *Signal* object
+        Create an trial *Signal* object
         """
         
-        self.s = Signal()
+        self.s = Signal('.InitLoadSaveTests_1.h5')
+        self.s.load_nparray(np.arange(3),"x","nm",10E-6)
 
-    def test_init(self):
-        """Signal object initialized"""
+    def test_report(self):
+        """Initialize Signal object"""
 
-        self.assertEqual(self.s.report[0],'Empty Signal object created')
+        self.assertEqual(self.s.report[0],'HDF5 file .InitLoadSaveTests_1.h5 created in core memory')
 
-    def test_load_nparray(self):
-        """Signal.load_nparray saves the array"""
+    def test_x(self):
+        """Check x-array data."""
+              
+        self.assertTrue(np.allclose(self.s.f['x'],10E-6*np.array([0, 1, 2]), rtol=1e-05, atol=1e-08))
+
+    def test_y(self):
+        """Check y-array data."""
         
-        self.s.load_nparray(np.arange(3),"x","nm",10E-6)        
-        self.assertTrue(np.allclose(self.s.signal['s'],np.array([0, 1, 2]), rtol=1e-05, atol=1e-08))
+        self.assertTrue(np.allclose(self.s.f['y'],np.array([0, 1, 2]), rtol=1e-05, atol=1e-08))
+    
+    def test_close(self):
+        """Verify closed object by testing one of the attributes"""
+        
+        self.s.f.close()
+        g = h5py.File('.InitLoadSaveTests_1.h5','r')
+        
+        # print out the contents of the file nicely        
+                                
+        report = []
+        
+        for key, val in g.attrs.items():
+            report.append("{0}: {1}".format(key, val))
+        
+        for item in g:
+            
+            report.append("{}".format(g[item].name))
+            for key, val in g[item].attrs.items():
+                report.append("    {0}: {1}".format(key, val))
+        
+        report_string = "\n".join(report)
+        
+        print "\nObjects in file .InitLoadSaveTests_1.h5"
+        print report_string
+
+        # test one of the attributes
+
+        self.assertTrue(g.attrs['source'],'demodulate.py')
+    
+    def tearDown(self):
+        """Close the h5 files before the next iteration."""
+        try:
+            self.s.f.close()
+        except:
+            pass
+        try:
+            self.s.g.close()
+        except:
+            pass        
         

@@ -42,7 +42,7 @@ from freqdemod.hdf5 import (update_attrs)
 
 class Test_update_attrs(unittest.TestCase):
     
-    filename = '.temp_update_h5_attrs.h5'
+    filename = '.Test_update_h5_attrs.h5'
 
     def setUp(self):
         self.f = h5py.File(self.filename, 'w')
@@ -74,7 +74,7 @@ class Test_update_attrs(unittest.TestCase):
 class Test_memory_data(unittest.TestCase):
     """Write to memory, read, close; Write to memory, read, close; etc""" 
     
-    filename = '.temp_update_h5_data.h5'
+    filename = '.Test_update_h5_data.h5'
     
     def setUp(self):
         self.f = h5py.File(self.filename, 'w', driver = 'core')
@@ -97,7 +97,7 @@ class Test_memory_data(unittest.TestCase):
 class Test_disk_data(unittest.TestCase):
     """Write to disk, open, read, close; Write to disk, open, read, close; etc"""     
          
-    filename = '.temp_update_h5_data.h5'
+    filename = '.Test_update_h5_data.h5'
     
     def setUp(self):
         self.f = h5py.File(self.filename, 'w')

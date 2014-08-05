@@ -72,13 +72,12 @@ parameters to a group called ``workup``.
         
 """
 
-
 def update_attrs(h5_attrs, attrs):
     """Update the attributes in ``h5_attrs``, an ``h5py`` group or dataset,
     by adding attributes in the dictionary attrs.
 
     This will overwrite existing attributes.
     """
+    
     for key, val in attrs.items():
-        print key, val
         h5_attrs[key] = val
