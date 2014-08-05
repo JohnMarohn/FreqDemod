@@ -6,21 +6,7 @@
 
 """
 
-Unit Testing
-------------
-
-Unit tests for the package `freqdemod.py`were developed using the `unittest` package.  To run the unit tests, open up a terminal in the ``freqdemod`` directory and run::
-
-	python -m unittest discover 
-
-or::
-
-	python -m unittest discover --verbose
-
-Unit tests
-----------
-
-See: http://stackoverflow.com/questions/14920837/comparing-numpy-float-arrays-in-unit-tests
+Tests for the demodulate module. 
 
 """
 

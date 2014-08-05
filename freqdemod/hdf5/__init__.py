@@ -3,7 +3,7 @@ This module will collect tools for reading, writing and testing structured
 HDF5_ files.
 
 HDF5 Format Specification
-=========================
+-------------------------
 
 Here is a sample of the HDF5 file format.
 
@@ -69,6 +69,7 @@ After the data has been processed, you can output any fitting or workup
 parameters to a group called ``workup``.
 
 .. _HDF5: http://www.hdfgroup.org/HDF5/
+        
 """
 
 

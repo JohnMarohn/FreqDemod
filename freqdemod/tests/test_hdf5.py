@@ -1,6 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# 
+# John A. Marohn (jam99@cornell.edu)
+# 2014/06/28
+
 """
-Summary
--------
 
 Tests for the hdf5 module. In writing units tests, it is crucially important
 too remember that the unittest object is recreated *every function call* 
@@ -19,15 +23,12 @@ object ``Test_disk_data2``.  This test mimics how we would like to use
 HDF5 data: open file on disk, pass the data between object methods, reading
 and writing the data as needed.
 
-Additional Resources
---------------------
+**Additional Resources**
+
 
 * HDF5 Command-line Tools [`link <http://www.hdfgroup.org/products/hdf5_tools/>`__]
 
 * h5ls command line tool [`link <http://www.hdfgroup.org/HDF5/doc/RM/Tools.html#Tools-Ls>`__]
-
-Unit Tests
-----------
 
 """
 import unittest

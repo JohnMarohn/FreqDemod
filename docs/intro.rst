@@ -1,9 +1,9 @@
 Introduction
 ============
 
-**Summary**.  This package provides functions for analyzing and plotting the time-dependent frequency and amplitude of a sinusoidally oscillating signal.  Additional functions are provided for analyzing fluctuations in oscillator amplitude, phase, or frequency.  The provided functions should work equally well for any oscillating signal, although thee data-fitting and -plotting functions have been written with an oscillating atomic force microscope cantilever in mind.  The algorithm's only assumption is that the oscillating signal contains a single frequency component (the carrier, in FM-radio terminology).
+**Summary**.  This package provides functions for analyzing and plotting the time-dependent frequency and amplitude of a sinusoidally oscillating signal.  Additional functions are provided for analyzing fluctuations in oscillator amplitude, phase, or frequency.  The provided functions should work equally well for any oscillating signal, although the included data-fitting and -plotting functions have been written with an oscillating atomic force microscope cantilever in mind.  The main frequency-demodulation algorithm's only assumption is that the oscillating signal contains a single frequency component (the carrier, in FM-radio terminology).
 
-**Motivation**: The microcantilevers used in an atomic force microscope experiment oscillate with an amplitude between 0.1 to 100 nanometers and a frequency in the kilohertz range.  A number of microcantilever-based experiments rely on measuring the time-dependent oscillation frequency of a cantilever.  These experiments include
+**Motivation**: The microcantilevers used in an atomic force microscope experiment oscillate with an amplitude between 0.1 to 100 nanometers and with a frequency in the kilohertz range.  A number of microcantilever-based experiments rely on measuring the time-dependent oscillation frequency of a cantilever.  These experiments include
 
 * frequency-modulation scanning Kelvin probe force microscopy (FM-SKPM) [#Kikukawa1995jun]_, used to measure a thin film's local capacitance and electrostatic potential;   
 

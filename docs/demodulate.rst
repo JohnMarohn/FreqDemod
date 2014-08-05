@@ -1,5 +1,5 @@
 :mod:`demodulate` module
-=======================
+========================
 
 .. automodule:: demodulate
     :members:

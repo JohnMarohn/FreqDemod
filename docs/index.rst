@@ -15,6 +15,7 @@ Contents:
    demodulate.rst
    util.rst
    hdf5.rst
+   tests.rst
    develop.rst
    license.rst
    acknow.rst

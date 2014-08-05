@@ -17,9 +17,11 @@ import sys, os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# Modified 2014/06/28 by jam99@cornell.edu:
+# Modified 2014/08/05 by jam99@cornell.edu:
 
 sys.path.insert(0, os.path.abspath('../freqdemod'))
+sys.path.insert(0, os.path.abspath('../freqdemod/tests'))
+sys.path.insert(0, os.path.abspath('../freqdemod/hdf5'))
 
 # Modified 2014/04/03 by jam99@cornell.edu, following advice at http://stackoverflow.com/questions/5599254/how-to-use-sphinxs-autodoc-to-document-a-classs-init-self-method
 
@@ -142,7 +144,9 @@ html_theme = 'sphinxdoc'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# jam99@cornell.edu; 2014/08/05; comment out, was generating a warning
+# 
+# html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -205,7 +209,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'wxresthelper.tex', u'wxresthelper Documentation',
+  ('index', 'FreqDemod.tex', u'FreqDemod Documentation',
    u'John A. Marohn', 'manual'),
 ]
 
@@ -235,7 +239,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'wxresthelper', u'wxresthelper Documentation',
+    ('index', 'FreqDemod', u'FreqDemod Documentation',
      [u'John A. Marohn'], 1)
 ]
 
@@ -249,8 +253,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'wxresthelper', u'wxresthelper Documentation',
-   u'John A. Marohn', 'wxresthelper', 'One line description of project.',
+  ('index', 'FreqDemod', u'FreqDemod Documentation',
+   u'John A. Marohn', 'FreqDemodulate', 'Software to determine the time-dependent frequency and amplitude of a sinusoidally oscillating signal.',
    'Miscellaneous'),
 ]
 
