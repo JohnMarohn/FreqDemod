@@ -59,7 +59,7 @@ import h5py
 import numpy as np 
 import scipy as sp 
 import math
-import copy
+# import copy
 import time
 import datetime
 from freqdemod.hdf5 import (update_attrs)
@@ -85,8 +85,9 @@ class Signal(object):
             been done to the signal (e.g., "Empty signal object created")
             
         """
-        
-        if filename != None:
+        new_report = []
+                
+        if not(filename is None):
         
             self.f = h5py.File(filename, 'w', driver = 'core')
             
@@ -101,11 +102,14 @@ class Signal(object):
                 ])
             
             update_attrs(self.f.attrs,attrs)
-            
-            self.report = []
-            new_report = []
             new_report.append("HDF5 file {0} created in core memory".format(filename))
-            self.report.append(" ".join(new_report))
+            
+        elif filename is None:
+            
+            new_report.append("Container Signal object created")    
+            
+        self.report = []
+        self.report.append(" ".join(new_report))
 
     def load_nparray(self, s, s_name, s_unit, dt):
 
@@ -159,14 +163,20 @@ class Signal(object):
         self.report.append(" ".join(new_report))
 
     def close(self):
+        """Update report; write the file to disk; close the file."""
+        
+        attrs = OrderedDict([('report',self.report)])            
+        update_attrs(self.f.attrs,attrs)
         
         self.f.close()
         
     def open(self, filename):
+        """Open the file for reading and writing.  The report comes back
+        as a np.ndarray.  Need to convert back to a 1D array by 
+        flattening, then convert to a list so we can continue appending."""
         
-        self.f = h5py.File(filename, 'r')
-
-    # =======================================================================
+        self.f = h5py.File(filename, 'r+')
+        self.report = list(self.f.attrs['report'].flatten())
 
     def plot(self, ordinate, LaTeX=False):
         
@@ -226,76 +236,67 @@ class Signal(object):
         plt.show()
         plt.rcParams['text.usetex'] = old_param  
         
-    # =======================================================================
-
-
-    def binarate(self,mode):
-
+    def binarate(self, mode):
+ 
         """
-        Truncate the signal **signal['s']**, if needed, so that it is a
+        Create a mask to truncate the, if needed, so that it is a
         factor of two in length.
         
         :param str mode: "start", "middle", or "end" 
         
-        With "start", the beginning of the signal array is left intact and the 
-        end is truncated; with "middle", the signal array is shortened
+        With "start", the beginning of the signal array will be left intact and the 
+        end truncated; with "middle", the signal array will be shortened
         symmetically from both ends; and with "end" the end of the signal array
-        is left intact while the beginning of the array is chopped away.  The
-        time array is truncated analogously.
+        will be left intact while the beginning of the array will be chopped away.
+        """       
         
-        Add or modify the following objects to the *Signal* object
-        
-        :param np.array signal['s']: shortened so it is a power of 2 in length
-        :param np.array signal['t']: shortened so it is a power of 2 in length
-        :param np.array signal['s_original']: a copy of the (unshortened) 
-            original signal
-        :param np.array signal['t_original']: a copy of the (unshortened) 
-            original time array
-        
-        """
+        n = self.f['y'].size     # number of points, n, in the signal
+        indices = np.arange(n)   # np.array of indices
 
-        self.signal['s_original'] = copy.deepcopy(self.signal['s'])
-        self.signal['t_original'] = copy.deepcopy(self.signal['t'])
-
-        n = self.signal['s'].size 
+        # nearest power of 2 to n
         n2 = int(math.pow(2,int(math.floor(math.log(n, 2)))))
-
-        n_start = 0
-        n_stop = n
-        n_msg = "N/A"
-
+        
+        
         if mode == "middle":
 
             n_start = int(math.floor((n - n2)/2))
             n_stop = int(n_start + n2)
-            n_msg = "beginning and end"
-
+            
         elif mode == "start":
             
             n_start = 0
-            n_stop = n2
-            n_msg = "end"           
+            n_stop = n2    
 
         elif mode == "end":
 
             n_start = n-n2
-            n_stop = n
-            n_msg = "beginning"
-
-        array_indices = list(np.arange(n_start,n_stop))
-
-        self.signal['s'] = self.signal['s'][array_indices]
-        self.signal['t'] = self.signal['t'][array_indices]
-
+            n_stop = n            
+                                    
+        mask = (indices >= n_start) & (indices < n_stop)
+        
+        dset = self.f.create_dataset('mask/binarate',data=mask)            
+        attrs = OrderedDict([
+            ('name','mask'),
+            ('unit','unitless'),
+            ('label','mask'),
+            ('label_latex','mask'),
+            ('help','mask to make data a power of two in length'),
+            ('abscissa','x'),
+            ('n_avg',1)
+            ])
+        update_attrs(dset.attrs,attrs)
+        
         new_report = []
         new_report.append("Truncate the signal to be {0}".format(n2))
         new_report.append("points long, a power of two.")
-        new_report.append("This was done by chopping points off the")
-        new_report.append("{0} of the signal array,".format(n_msg))
-        new_report.append("that is, by using points")
+        new_report.append("This was done by using points")
         new_report.append("{0} up to {1}.".format(n_start,n_stop))
         
-        self.report.append(" ".join(new_report))
+        self.report.append(" ".join(new_report))  
+
+    # ===== START HERE ====================================================
+
+
 
     def window(self,tw):
 
@@ -1192,7 +1193,10 @@ def testsignal_sine():
     S.close()
     
     S.open('temp.h5')
-    S.plot('y', LaTeX=latex)
+    # S.plot('y', LaTeX=latex)
+    S.binarate("middle")
+    # S.plot('mask/binarate', LaTeX=latex)
+    print(S)
     
     return S
     

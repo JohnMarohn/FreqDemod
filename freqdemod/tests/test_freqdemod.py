@@ -19,7 +19,7 @@ Tests for the demodulate module.
 from freqdemod.demodulate import Signal
 import unittest
 import numpy as np
-import h5py
+# import h5py
 
 class InitLoadSaveTests(unittest.TestCase):
     """
@@ -52,8 +52,7 @@ class InitLoadSaveTests(unittest.TestCase):
     def test_close(self):
         """Verify closed object by testing one of the attributes"""
         
-        self.s.f.close()
-        
+        self.s.close()
         self.snew = Signal()
         self.snew.open('.InitLoadSaveTests_1.h5')
         
@@ -90,3 +89,43 @@ class InitLoadSaveTests(unittest.TestCase):
         except:
             pass        
         
+class MaskTests(unittest.TestCase):
+    
+    def setUp(self):
+        """
+        Create an trial *Signal* object
+        """
+        
+        self.s = Signal('.InitLoadSaveTests_1.h5')
+        self.s.load_nparray(np.arange(60000),"x","nm",10E-6)
+        
+    def test_binarate_1(self):
+        """Binarate mask middle; test length is 2^n"""
+        
+        self.s.binarate("middle")
+        m = self.s.f['mask/binarate']
+
+        self.assertEqual(np.count_nonzero(m),32*1024)    
+        
+    def test_binarate_2(self):
+        """Binarate mask start; test length is 2^n"""
+        
+        self.s.binarate("start")
+        m = self.s.f['mask/binarate']
+
+        self.assertEqual(np.count_nonzero(m),32*1024)   
+        
+    def test_binarate_3(self):
+        """Binarate mask end test length is 2^n"""
+        
+        self.s.binarate("end")
+        m = self.s.f['mask/binarate']
+
+        self.assertEqual(np.count_nonzero(m),32*1024)   
+ 
+    def tearDown(self):
+        """Close the h5 files before the next iteration."""
+        try:
+            self.s.f.close()
+        except:
+            pass       
