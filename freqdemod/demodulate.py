@@ -69,7 +69,9 @@ import matplotlib.pyplot as plt
 
 class Signal(object):
 
-    def __init__(self, filename):
+    # =======================================================================
+
+    def __init__(self, filename=None):
         
         """
         Initialize the *Signal* object. Inputs:
@@ -84,24 +86,26 @@ class Signal(object):
             
         """
         
-        self.f = h5py.File(filename, 'w', driver = 'core')
+        if filename != None:
         
-        today = datetime.datetime.today()
-        
-        attrs = OrderedDict([ \
-            ('date',today.strftime("%Y-%m-%d")),
-            ('time',today.strftime("%H:%M:%S")),
-            ('h5py_version',h5py.__version__),
-            ('source','demodulate.py'),
-            ('help','Sinusoidally oscillating signal and workkup')
-            ])
-        
-        update_attrs(self.f.attrs,attrs)
-        
-        self.report = []
-        new_report = []
-        new_report.append("HDF5 file {0} created in core memory".format(filename))
-        self.report.append(" ".join(new_report))
+            self.f = h5py.File(filename, 'w', driver = 'core')
+            
+            today = datetime.datetime.today()
+            
+            attrs = OrderedDict([ \
+                ('date',today.strftime("%Y-%m-%d")),
+                ('time',today.strftime("%H:%M:%S")),
+                ('h5py_version',h5py.__version__),
+                ('source','demodulate.py'),
+                ('help','Sinusoidally oscillating signal and workkup')
+                ])
+            
+            update_attrs(self.f.attrs,attrs)
+            
+            self.report = []
+            new_report = []
+            new_report.append("HDF5 file {0} created in core memory".format(filename))
+            self.report.append(" ".join(new_report))
 
     def load_nparray(self, s, s_name, s_unit, dt):
 
@@ -128,7 +132,7 @@ class Signal(object):
             ('unit','s'),
             ('label','t [s]'),
             ('label_latex','$t \: [\mathrm{s}]$'),
-            ('help','time axis'),
+            ('help','time'),
             ('initial',0.0),
             ('step',dt)
             ])          
@@ -140,7 +144,8 @@ class Signal(object):
             ('unit',s_unit),
             ('label','{0} [{1}]'.format(s_name,s_unit)),
             ('label_latex','${0} \: [\mathrm{{{1}}}]$'.format(s_name,s_unit)),
-            ('help','oscillating signal'),
+            ('help','cantilever displacement'),
+            ('abscissa','x'),
             ('n_avg',1)
             ])
         update_attrs(dset.attrs,attrs)    
@@ -156,6 +161,73 @@ class Signal(object):
     def close(self):
         
         self.f.close()
+        
+    def open(self, filename):
+        
+        self.f = h5py.File(filename, 'r')
+
+    # =======================================================================
+
+    def plot(self, ordinate, LaTeX=False):
+        
+        """ 
+        Plot a component of the *Signal* object.  
+        
+            :param str ordinate: the name the y-axis data key 
+            :param boolean LaTeX: use LaTeX axis labels; ``True`` or ``False``
+            (default)
+            
+        Plot ``self.f[ordinate]`` versus self.f[y.attrs['abscissa']].
+        
+        """
+        
+        y = self.f[ordinate]
+        x = self.f[y.attrs['abscissa']]
+        
+        # posslby use tex-formatted axes labels temporarily for this plot
+        # compute plot labels
+        
+        old_param = plt.rcParams['text.usetex']        
+                        
+        if LaTeX == True:
+        
+            plt.rcParams['text.usetex'] = True
+            x_label_string = x.attrs['label_latex']
+            y_label_string = y.attrs['label_latex']
+            
+        elif LaTeX == False:
+            
+            plt.rcParams['text.usetex'] = False
+            x_label_string = x.attrs['label']
+            y_label_string = y.attrs['label']
+
+        title_string = "{0} vs. {1}".format(y.attrs['help'],x.attrs['help'])
+
+        # create the plot
+        
+        fig=plt.figure(facecolor='w')
+        plt.plot(x,y)
+                        
+        # axes limits and labels
+        
+        plt.xlabel(x_label_string)
+        plt.ylabel(y_label_string)
+        plt.title(title_string)
+                
+        # set text spacing so that the plot is pleasing to the eye
+
+        plt.locator_params(axis = 'x', nbins = 4)
+        plt.locator_params(axis = 'y', nbins = 4)
+        fig.subplots_adjust(bottom=0.15,left=0.12)  
+
+        # clean up label spacings, show the plot, and reset the tex option
+          
+        fig.subplots_adjust(bottom=0.15,left=0.12)   
+        plt.show()
+        plt.rcParams['text.usetex'] = old_param  
+        
+    # =======================================================================
+
 
     def binarate(self,mode):
 
@@ -1117,6 +1189,10 @@ def testsignal_sine():
     
     S = Signal('temp.h5')
     S.load_nparray(s,"x","nm",dt)
+    S.close()
+    
+    S.open('temp.h5')
+    S.plot('y', LaTeX=latex)
     
     return S
     
@@ -1136,55 +1212,52 @@ def testsignal_sine():
 #    return(S)
 #
 
+
 if __name__ == "__main__":
     
-    S = testsignal_sine()
+    # Parge command-line arguments
+    # https://docs.python.org/2/library/argparse.html#module-argparse
+    
+    import argparse
+    from argparse import RawTextHelpFormatter
+    
+    parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter,
+        description="Determine a signal's frequency vs time.\n"
+        "Example usage:\n"
+        "    python demodulate.py --testsignal=sine --LaTeX\n\n")
+    parser.add_argument('--testsignal',
+        default='sine',
+        choices = ['sine', 'sineexp'],
+        help='analyze one of the available test signals')
+    parser.add_argument('--LaTeX',
+        dest='latex',
+        action='store_true',
+        help = 'use LaTeX plot labels')
+    parser.add_argument('--no-LaTeX',
+        dest='latex',
+        action='store_false',
+        help = 'do not use LaTeX plot labels (default)')
+    parser.set_defaults(latex=False)    
+    args = parser.parse_args()
+    
+    # Set the default font and size for the figure
+    
+    font = {'family' : 'serif',
+            'weight' : 'normal',
+            'size'   : 18}
 
-#if __name__ == "__main__":
-#    
-#    # Parge command-line arguments
-#    # https://docs.python.org/2/library/argparse.html#module-argparse
-#    
-#    import argparse
-#    from argparse import RawTextHelpFormatter
-#    
-#    parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter,
-#        description="Determine a signal's frequency vs time.\n"
-#        "Example usage:\n"
-#        "    python demodulate.py --testsignal=sine --LaTeX\n\n")
-#    parser.add_argument('--testsignal',
-#        default='sine',
-#        choices = ['sine', 'sineexp'],
-#        help='analyze one of the available test signals')
-#    parser.add_argument('--LaTeX',
-#        dest='latex',
-#        action='store_true',
-#        help = 'use LaTeX plot labels')
-#    parser.add_argument('--no-LaTeX',
-#        dest='latex',
-#        action='store_false',
-#        help = 'do not use LaTeX plot labels (default)')
-#    parser.set_defaults(latex=False)    
-#    args = parser.parse_args()
-#    
-#    # Set the default font and size for the figure
-#    
-#    font = {'family' : 'serif',
-#            'weight' : 'normal',
-#            'size'   : 18}
-#
-#    plt.rc('font', **font)
-#    plt.rcParams['figure.figsize'] =  8.31,5.32
-#    
-#    latex = args.latex
-#    
-#    # Do one of the tests
-#    
-#    if args.testsignal == 'sine':
-#        
-#        S = testsignal_sine()
-#        
-#    else:
-#        
-#        print "**warning **"
-#        print "--testsignal={} not implimented yet".format(args.testsignal)
+    plt.rc('font', **font)
+    plt.rcParams['figure.figsize'] =  8.31,5.32
+    
+    latex = args.latex
+    
+    # Do one of the tests
+    
+    if args.testsignal == 'sine':
+        
+        S = testsignal_sine()
+        
+    else:
+        
+        print "**warning **"
+        print "--testsignal={} not implimented yet".format(args.testsignal)

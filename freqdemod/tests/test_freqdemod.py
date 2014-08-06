@@ -53,19 +53,21 @@ class InitLoadSaveTests(unittest.TestCase):
         """Verify closed object by testing one of the attributes"""
         
         self.s.f.close()
-        g = h5py.File('.InitLoadSaveTests_1.h5','r')
+        
+        self.snew = Signal()
+        self.snew.open('.InitLoadSaveTests_1.h5')
         
         # print out the contents of the file nicely        
                                 
         report = []
         
-        for key, val in g.attrs.items():
+        for key, val in self.snew.f.attrs.items():
             report.append("{0}: {1}".format(key, val))
         
-        for item in g:
+        for item in self.snew.f:
             
-            report.append("{}".format(g[item].name))
-            for key, val in g[item].attrs.items():
+            report.append("{}".format(self.snew.f[item].name))
+            for key, val in self.snew.f[item].attrs.items():
                 report.append("    {0}: {1}".format(key, val))
         
         report_string = "\n".join(report)
@@ -75,7 +77,7 @@ class InitLoadSaveTests(unittest.TestCase):
 
         # test one of the attributes
 
-        self.assertTrue(g.attrs['source'],'demodulate.py')
+        self.assertTrue(self.snew.f.attrs['source'],'demodulate.py')
     
     def tearDown(self):
         """Close the h5 files before the next iteration."""
@@ -84,7 +86,7 @@ class InitLoadSaveTests(unittest.TestCase):
         except:
             pass
         try:
-            self.s.g.close()
+            self.snew.f.close()
         except:
             pass        
         
