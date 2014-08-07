@@ -183,14 +183,16 @@ class Signal(object):
         self.f = h5py.File(filename, 'r+')
         self.report = list(self.f.attrs['report'].flatten())
 
-    def plot(self, ordinate, LaTeX=False):
+    def plot(self, ordinate, LaTeX=False, component='abs'):
         
         """ 
         Plot a component of the *Signal* object.  
         
-            :param str ordinate: the name the y-axis data key 
+            :param str ordinate: the name the y-axis data key
+            :param str component: `abs` (default), `real`, `imag`, or `both`;
+               if the dataset is complex, which component do we plot 
             :param boolean LaTeX: use LaTeX axis labels; ``True`` or ``False``
-            (default)
+                (default)
             
         Plot ``self.f[ordinate]`` versus self.f[y.attrs['abscissa']]
         
@@ -229,8 +231,24 @@ class Signal(object):
         fig=plt.figure(facecolor='w')
 
         if isinstance(y[0],complex) == True:
-            plt.plot(x,abs(np.array(y)))
-            y_label_string = "abs of {}".format(y_label_string) 
+            
+            if component == 'abs':
+                plt.plot(x,abs(np.array(y)))
+                y_label_string = "abs of {}".format(y_label_string)
+                
+            if component == 'real':
+                plt.plot(x,(np.array(y)).real)
+                y_label_string = "real part of {}".format(y_label_string) 
+                
+            if component == 'imag':
+                plt.plot(x,(np.array(y)).imag)
+                y_label_string = "imag part of {}".format(y_label_string)
+                
+            if component == 'both':
+                plt.plot(x,(np.array(y)).real)
+                plt.plot(x,(np.array(y)).imag)
+                y_label_string = "real and imag part of {}".format(y_label_string)                
+                    
         else:
            plt.plot(x,y)               
                                 
@@ -596,9 +614,56 @@ class Signal(object):
                 
         self.report.append(" ".join(new_report))
         
+    def ifft(self):
+        
+        """
+        If they exist, 
+        
+        * apply the complex Hilbert transform window
+        
+        * apply the bandpass filter
+        
+        and then 
+        
+        * compute the inverse Fourier transform.
+        
+        """
+        
+        # Divide the FT-ed data by the timestep to recover the 
+        # digital Fourier transformed data.  Carry out the 
+        # transforms.
+        
+        s = self.f['workup/freq/FT'][:]/self.f['x'].attrs['step']
+
+        if self.f.__contains__('workup/freq/filter/Hc') == True:
+            s = s*self.f['workup/freq/filter/Hc']            
+                                    
+        if self.f.__contains__('workup/freq/filter/bp') == True:
+            s = s*self.f['workup/freq/filter/bp']
+            
+        # Compute the IFT    
+            
+        sIFT = np.fft.ifft(np.fft.fftshift(s))
+        
+        dset = self.f.create_dataset('workup/time/z',data=sIFT)
+        unit_y = self.f['y'].attrs['unit']
+        attrs = OrderedDict([
+            ('name','z'),
+            ('unit',unit_y),
+            ('label','z [{0}]'.format(unit_y)),
+            ('label_latex','$z \: [\mathrm{{{0}}}]$'.format(unit_y)),
+            ('help','complex cantilever displacement'),
+            ('abscissa','workup/x_masked')
+            ])
+        update_attrs(dset.attrs,attrs)         
+
+        new_report = []
+        new_report.append("Apply an inverse Fourier transform.")
+        self.report.append(" ".join(new_report))                        
+                                                                        
     # ===== START HERE ====================================================
 
-    def ifft(self):
+    def ifft_old(self):
 
         """
         Apply an Inverse Fast Fourier Transform to the filtered FT'ed data
@@ -1282,10 +1347,10 @@ class Signal(object):
 def testsignal_sine():
         
     fd = 50.0E3    # digitization frequency
-    f0 = 5.00E3    # signal frequency
+    f0 = 2.00E3    # signal frequency
     nt = 60E3      # number of signal points    
     sn = 1.0       # signal zero-to-peak amplitude
-    sn_rms = 0.20  # noise rms amplitude
+    sn_rms = 0.01  # noise rms amplitude
     
     dt = 1/fd
     t = dt*np.arange(nt)
@@ -1301,14 +1366,17 @@ def testsignal_sine():
     S.fft()
     S.freq_filter_Hilbert_complex()
     S.freq_filter_bp(1.00)
+    S.ifft()
     
     # S.plot('y', LaTeX=latex)
     # S.plot('workup/time/mask/binarate', LaTeX=latex)
     # S.plot('workup/time/window/cyclicize', LaTeX=latex) 
-    # S.plot('workup/freq/FT', LaTeX=latex)
+    # S.plot('workup/freq/FT', LaTeX=latex, part=abs)
     # S.plot('workup/freq/filter/Hc', LaTeX=latex)
-    S.plot('workup/freq/filter/bp', LaTeX=latex)
-              
+    # S.plot('workup/freq/filter/bp', LaTeX=latex)
+    
+    S.plot('workup/time/z', LaTeX=latex, component='both')
+                      
     print(S)
     
     return S
