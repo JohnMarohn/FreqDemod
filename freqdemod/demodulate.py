@@ -363,8 +363,8 @@ class Signal(object):
         densign the window to be applied to the full signal array instead.
         
         If workup/time/mask/binarate is defined, then also create
-        a masked version of the x-axis for plotting, x_masked.  Make 
-        the x_masked array the new abscissa associated with the new
+        a masked version of the x-axis for plotting, x_binarated.  Make 
+        the x_binarated array the new abscissa associated with the new
         workup/time/window/cyclicize array.
         """
         
@@ -378,20 +378,20 @@ class Signal(object):
         
             n = np.count_nonzero(m)
             x = self.f['x']
-            x_masked = x[m] 
+            x_binarated = x[m] 
               
-            dset = self.f.create_dataset('workup/x_masked',data=x_masked)            
+            dset = self.f.create_dataset('workup/x_binarated',data=x_binarated)            
             attrs = OrderedDict([
                 ('name','t_masked'),
                 ('unit','s'),
                 ('label','t [s]'),
                 ('label_latex','$t \: [\mathrm{s}]$'),
                 ('help','time'),
-                ('initial', x_masked[0]),
-                ('step', x_masked[1]-x_masked[0])
+                ('initial', x_binarated[0]),
+                ('step', x_binarated[1]-x_binarated[0])
                 ])
             update_attrs(dset.attrs,attrs)
-            abscissa = 'workup/x_masked'  
+            abscissa = 'workup/x_binarated'  
             
         else:
             
@@ -617,15 +617,17 @@ class Signal(object):
     def ifft(self):
         
         """
-        If they exist, 
+        If they are defined, 
         
-        * apply the complex Hilbert transform window
+        * apply the complex Hilbert transform filter,
         
-        * apply the bandpass filter
+        * apply the bandpass filter,
         
-        and then 
+        then 
         
-        * compute the inverse Fourier transform.
+        * compute the inverse Fourier transform,
+        
+        * if a trimming window is defined then trim the result
         
         """
         
@@ -653,7 +655,7 @@ class Signal(object):
             ('label','z [{0}]'.format(unit_y)),
             ('label_latex','$z \: [\mathrm{{{0}}}]$'.format(unit_y)),
             ('help','complex cantilever displacement'),
-            ('abscissa','workup/x_masked')
+            ('abscissa','workup/x_binarated')
             ])
         update_attrs(dset.attrs,attrs)         
 
