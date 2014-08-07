@@ -97,7 +97,7 @@ class MaskTests(unittest.TestCase):
         """
         
         self.s = Signal('.InitLoadSaveTests_1.h5')
-        self.s.load_nparray(np.arange(60000),"x","nm",10E-6)
+        self.s.load_nparray(np.arange(60000),"x","nm",10E-6)    
         
     def test_binarate_1(self):
         """Binarate mask middle; test length is 2^n"""
@@ -123,6 +123,17 @@ class MaskTests(unittest.TestCase):
 
         self.assertEqual(np.count_nonzero(m),32*1024)   
  
+    def test_binarate_4(self):
+        """If we have not called binarate, then mask/binrate does not exist"""
+        
+        self.assertEqual(self.s.f.__contains__('mask/binarate'),False)
+
+    def test_binarate_5(self):
+        """If we have called binarate, then mask/binrate does exist"""
+        
+        self.s.binarate("middle")
+        self.assertEqual(self.s.f.__contains__('mask/binarate'),True)  
+   
     def tearDown(self):
         """Close the h5 files before the next iteration."""
         try:

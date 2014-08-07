@@ -248,6 +248,14 @@ class Signal(object):
         end truncated; with "middle", the signal array will be shortened
         symmetically from both ends; and with "end" the end of the signal array
         will be left intact while the beginning of the array will be chopped away.
+        
+        Creates the mask in the np.array 
+        
+        :param bool self.f['mask/binarate']: the mask; a np.array of boolean values
+        
+        We note that this boolean array of ``True`` and ``False`` values can 
+        be plotted directly -- ``True`` is converted to 1.0 and ``False`` is 
+        converted to 0 by the ``matplotlib`` plotting function.
         """       
         
         n = self.f['y'].size     # number of points, n, in the signal
@@ -296,7 +304,9 @@ class Signal(object):
 
     # ===== START HERE ====================================================
 
-
+    def window_time_rampupdown(self, tw):
+        
+        pass
 
     def window(self,tw):
 
