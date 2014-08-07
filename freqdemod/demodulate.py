@@ -431,8 +431,7 @@ class Signal(object):
             
             m = np.array(self.f['workup/time/mask/binarate'])
             s = s[m]
-            
-        
+                  
         if self.f.__contains__('workup/time/window/cyclicize') == True:
             
             w = self.f['workup/time/window/cyclicize']
@@ -514,7 +513,7 @@ class Signal(object):
         update_attrs(dset.attrs,attrs)        
         
         new_report = []
-        new_report.append("Create the complex Hilbert transform filter")
+        new_report.append("Create the complex Hilbert transform filter.")
         self.report.append(" ".join(new_report))
         
     def freq_filter_bp(self, bw, order=50):
