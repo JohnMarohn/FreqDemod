@@ -287,28 +287,116 @@ class Signal(object):
         attrs = OrderedDict([
             ('name','mask'),
             ('unit','unitless'),
-            ('label','mask'),
-            ('label_latex','mask'),
+            ('label','masking function'),
+            ('label_latex','masking function'),
             ('help','mask to make data a power of two in length'),
             ('abscissa','x'),
             ('n_avg',1)
             ])
-        update_attrs(dset.attrs,attrs)
-        
+        update_attrs(dset.attrs,attrs)      
+                        
         new_report = []
         new_report.append("Make an array, workup/time/mask/binarate, to be used")
         new_report.append("to truncate the signal to be {0}".format(n2))
-        new_report.append("points long (a power of two).")
-        new_report.append("The truncated array will start and stop at points")
-        new_report.append("{0} and {1}, respectively.".format(n_start,n_stop))
+        new_report.append("points long (a power of two). The truncated array")
+        new_report.append("will start at point {0}".format(n_start))
+        new_report.append("and stop before point {0}.".format(n_stop))
         
         self.report.append(" ".join(new_report))  
 
-    # ===== START HERE ====================================================
-
-    def time_window_rampupdown(self, tw):
+    def time_window_cyclicize(self, tw):
         
-        pass
+        """
+        Create a windowing function with
+        
+        :param float tw: the window's target rise/fall time [s] 
+        
+        The windowing function is a concatenation of
+        
+        1. the rising half of a Blackman filter;
+        
+        2. a constant 1.0; and
+        
+        3. the falling half of a Blackman filter.
+        
+        The actual rise/fall time may not exactly equal the target rise/fall
+        time if the requested time is not an integer multiple of the signal's
+        time per point.
+        
+        If the masking array workup/time/mask/binarate is defined
+        then design the windowing function workup/time/window/cyclicize so 
+        that is is the right length to be applied to the *masked* signal array.
+        If on the other hand the masking array is not already defined, then
+        densign the window to be applied to the full signal array instead.
+        
+        If workup/time/mask/binarate is defined, then also create
+        a masked version of the x-axis for plotting, x_masked.  Make 
+        the x_masked array the new abscissa associated with the new
+        workup/time/window/cyclicize array.
+        """
+        
+        if self.f.__contains__('workup/time/mask/binarate') == True:
+            
+            # you have to cast the HSF5 dataset to a np.array
+            # so you can use the array of True/False values as 
+            # array indices
+            
+            m = np.array(self.f['workup/time/mask/binarate'])
+        
+            n = np.count_nonzero(m)
+            x = self.f['x']
+            x_masked = x[m] 
+              
+            dset = self.f.create_dataset('workup/x_masked',data=x_masked)            
+            attrs = OrderedDict([
+                ('name','t_masked'),
+                ('unit','s'),
+                ('label','t [s]'),
+                ('label_latex','$t \: [\mathrm{s}]$'),
+                ('help','time'),
+                ('initial', x_masked[0]),
+                ('step', x_masked[1]-x_masked[0])
+                ])
+            update_attrs(dset.attrs,attrs)
+            abscissa = 'workup/x_masked'  
+            
+        else:
+            
+            n = self.f['y'].size
+            abscissa = 'x'
+            
+        dt = self.f['x'].attrs['step']          # time per point
+        ww = int(math.ceil((1.0*tw)/(1.0*dt)))  # window width (points)
+        tw_actual = ww*dt                       # actual window width (seconds)
+
+        w = np.concatenate([sp.blackman(2*ww)[0:ww],
+                            np.ones(n-2*ww),
+                            sp.blackman(2*ww)[-ww:]])
+
+        dset = self.f.create_dataset('workup/time/window/cyclicize',data=w)            
+        attrs = OrderedDict([
+            ('name','window'),
+            ('unit','unitless'),
+            ('label','windowing function'),
+            ('label_latex','windowing function'),
+            ('help','window to force the data to start and end at zero'),
+            ('abscissa',abscissa),
+            ('n_avg',1),
+            ('t_window',tw),
+            ('t_window_actual',tw_actual)
+            ])
+        update_attrs(dset.attrs,attrs)
+        
+        new_report = []
+        new_report.append("Create a windowing function,"
+        new_report.append("workup/time/window/cyclicize, with a rising/falling")
+        new_report.append("blackman filter having a rise/fall time of")
+        new_report.append("{0:.3f} us".format(1E6*tw_actual))
+        new_report.append("({0} points).".format(ww))
+        
+        self.report.append(" ".join(new_report))        
+ 
+     # ===== START HERE ====================================================
 
     def window(self,tw):
 
@@ -1205,9 +1293,13 @@ def testsignal_sine():
     S.close()
     
     S.open('temp.h5')
+    S.time_mask_binarate("middle")
+    S.time_window_cyclicize(3E-3)
+    
     # S.plot('y', LaTeX=latex)
-    S.binarate("middle")
-    # S.plot('mask/binarate', LaTeX=latex)
+    # S.plot('workup/time/mask/binarate', LaTeX=latex)
+    S.plot('workup/time/window/cyclicize', LaTeX=latex)    
+    
     print(S)
     
     return S
