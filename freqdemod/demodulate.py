@@ -779,6 +779,32 @@ class Signal(object):
             ])
         update_attrs(dset.attrs,attrs)         
 
+        # Compute and save the phase and amplitude
+        
+        p = np.unwrap(np.angle(sIFT))/(2*np.pi)
+        dset = self.f.create_dataset('workup/time/p',data=p)
+        attrs = OrderedDict([
+            ('name','phase'),
+            ('unit','cyc/s'),
+            ('label','phase [cyc/s]'),
+            ('label_latex','$\phi \: [\mathrm{cyc/s}]$'),
+            ('help','cantilever phase'),
+            ('abscissa',abscissa)
+            ])
+        update_attrs(dset.attrs,attrs)
+                  
+        a = abs(sIFT)
+        dset = self.f.create_dataset('workup/time/a',data=a)
+        attrs = OrderedDict([
+            ('name','amplitude'),
+            ('unit',unit_y),
+            ('label','a [{0}]'.format(unit_y)),
+            ('label_latex','$a \: [\mathrm{{{0}}}]$'.format(unit_y)),
+            ('help','cantilever amplitude'),
+            ('abscissa',abscissa)
+            ])
+        update_attrs(dset.attrs,attrs)
+          
         new_report = []
         new_report.append("Apply an inverse Fourier transform.")
         self.report.append(" ".join(new_report))                        
@@ -1427,9 +1453,10 @@ def testsignal_sine():
     S.fft()
     S.freq_filter_Hilbert_complex()
     S.freq_filter_bp(1.00)
-    S.time_mask_rippleless(30E-3)
+    S.time_mask_rippleless(15E-3)
     S.ifft()
-    
+    # S.fit(201.34E-6)
+        
     # S.plot('y', LaTeX=latex)
     # S.plot('workup/time/mask/binarate', LaTeX=latex)
     # S.plot('workup/time/window/cyclicize', LaTeX=latex) 
@@ -1437,7 +1464,11 @@ def testsignal_sine():
     # S.plot('workup/freq/filter/Hc', LaTeX=latex)
     # S.plot('workup/freq/filter/bp', LaTeX=latex)
     # S.plot('workup/time/mask/rippleless', LaTeX=latex)
-    S.plot('workup/time/z', LaTeX=latex, component='both')
+    # S.plot('workup/time/z', LaTeX=latex, component='both')
+    S.plot('workup/time/p', LaTeX=latex)
+    S.plot('workup/time/a', LaTeX=latex)
+    
+
                       
     print(S)
     
