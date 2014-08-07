@@ -665,36 +665,6 @@ class Signal(object):
                                                                         
     # ===== START HERE ====================================================
 
-    def ifft_old(self):
-
-        """
-        Apply an Inverse Fast Fourier Transform to the filtered FT'ed data
-        **signal['swFTfilt']**.
-        
-        Add the following objects to the *Signal* object
-        
-        :param np.array signal['z']: complex-valued signal; 
-            **z.real** is a filtered copy of the original signal, while
-            **z.imag** is a phase-shifted (quadrature) copy of the original
-            signal
-        :param np.array signal['theta']: the signal phase [cycles, not radians]
-        :param np.array signal['a']: the signal amplitude
-        
-        """
-
-        self.signal['z'] = \
-            np.fft.ifft(
-                np.fft.fftshift(
-                    self.signal['swFTfilt']))
-
-        self.signal['theta'] = np.unwrap(np.angle(self.signal['z']))/(2*np.pi)
-        self.signal['a'] = abs(self.signal['z'])
-        
-        new_report = []
-        new_report.append("Apply an inverse Fourier transform.")
-        
-        self.report.append(" ".join(new_report))
-        
     def trim(self):
     
         """
