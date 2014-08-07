@@ -93,7 +93,7 @@ class MaskTests(unittest.TestCase):
     
     def setUp(self):
         """
-        Create an trial *Signal* object
+        Create a trial *Signal* object
         """
         
         self.s = Signal('.InitLoadSaveTests_1.h5')
@@ -140,3 +140,53 @@ class MaskTests(unittest.TestCase):
             self.s.f.close()
         except:
             pass       
+            
+class FFTTests(unittest.TestCase):
+    
+    def setUp(self):
+        """
+        Create an trial *Signal* object
+        """
+        
+        fd = 50.0E3    # digitization frequency
+        f0 = 5.00E3    # signal frequency
+        nt = 512     # number of signal points    
+
+        dt = 1/fd
+        t = dt*np.arange(nt)
+        s = 1.0*np.sin(2*np.pi*f0*t) 
+
+        self.s = Signal('.FFTTests_1.h5')
+        self.s.load_nparray(s,"x","nm",dt)
+        self.s.time_mask_binarate("middle")
+        self.s.time_window_cyclicize(10*dt)
+        self.s.fft()
+        self.s.freq_filter_Hilbert_complex()
+        
+    def testfft_1(self):
+        """FFT: test that the resulting data is complex"""
+        
+        first_point = self.s.f['workup/freq/FT'][0]
+        self.assertEqual(isinstance(first_point, complex),True)
+        
+    def testfft_2(self):
+        """FFT: test that the complex Hilbert transform filter is real"""
+        
+        first_point = self.s.f['workup/freq/filter/Hc'][0]
+        self.assertEqual(isinstance(first_point, complex),False)
+        
+    def testfft_3(self):
+        """FFT: test the complex Hilbert transform filter near freq = 0"""
+        
+        freq = self.s.f['workup/freq/freq'][:]
+        index = np.roll(freq == 0,-1) + np.roll(freq == 0,0) + np.roll(freq == 0,1)
+        filt = self.s.f['workup/freq/filter/Hc'][index]
+        
+        self.assertTrue(np.allclose(filt,np.array([0, 1, 2])))
+                           
+    def tearDown(self):
+        """Close the h5 files before the next iteration."""
+        try:
+            self.s.f.close()
+        except:
+            pass                

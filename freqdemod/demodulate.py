@@ -84,6 +84,11 @@ class Signal(object):
         :param str report: a string summarizing in words what has
             been done to the signal (e.g., "Empty signal object created")
             
+        If no filename is given, then create an object containing just a 
+        report.  Note that you can't *do* anything with this empty object
+        except to call the *open* function.  If you intend to use the object
+        but not save it to disk, then you should create it with a dummy filename.
+            
         """
         new_report = []
                 
@@ -187,15 +192,19 @@ class Signal(object):
             :param boolean LaTeX: use LaTeX axis labels; ``True`` or ``False``
             (default)
             
-        Plot ``self.f[ordinate]`` versus self.f[y.attrs['abscissa']].
+        Plot ``self.f[ordinate]`` versus self.f[y.attrs['abscissa']]
+        
+        If the data is complex, plot the absolute value.
         
         """
-        
+
+        # Get the x and y axis. 
+
         y = self.f[ordinate]
-        x = self.f[y.attrs['abscissa']]
+        x = self.f[y.attrs['abscissa']] 
         
-        # posslby use tex-formatted axes labels temporarily for this plot
-        # compute plot labels
+        # Posslby use tex-formatted axes labels temporarily for this plot
+        # and compute plot labels
         
         old_param = plt.rcParams['text.usetex']        
                         
@@ -213,11 +222,18 @@ class Signal(object):
 
         title_string = "{0} vs. {1}".format(y.attrs['help'],x.attrs['help'])
 
-        # create the plot
+        # Create the plot. If the y-axis is complex, then
+        # plot the abs() of it. To use the abs() method, we need to force the 
+        # HDF5 dataset to be of type np.ndarray 
         
         fig=plt.figure(facecolor='w')
-        plt.plot(x,y)
-                        
+
+        if isinstance(y[0],complex) == True:
+            plt.plot(x,abs(np.array(y)))
+            y_label_string = "abs of {}".format(y_label_string) 
+        else:
+           plt.plot(x,y)               
+                                
         # axes limits and labels
         
         plt.xlabel(x_label_string)
@@ -290,8 +306,7 @@ class Signal(object):
             ('label','masking function'),
             ('label_latex','masking function'),
             ('help','mask to make data a power of two in length'),
-            ('abscissa','x'),
-            ('n_avg',1)
+            ('abscissa','x')
             ])
         update_attrs(dset.attrs,attrs)      
                         
@@ -381,7 +396,6 @@ class Signal(object):
             ('label_latex','windowing function'),
             ('help','window to force the data to start and end at zero'),
             ('abscissa',abscissa),
-            ('n_avg',1),
             ('t_window',tw),
             ('t_window_actual',tw_actual)
             ])
@@ -396,41 +410,75 @@ class Signal(object):
         
         self.report.append(" ".join(new_report))        
  
-     # ===== START HERE ====================================================
-
     def fft(self):
 
         """
-        Take a Fast Fourier transform of the windowed signal **signal['sw']**.
-        
-        Add the following objects to the *Signal* object
-        
-        :param np.array signal['swFT']: FT of the windowed 
-            signal **signal['sw']**
-        :param np.array signal['f']: a frequency axis [Hz]
-        :param float signal['df']: the spacing points along the 
-            frequency axis [Hz]
+        Take a Fast Fourier transform of the windowed signal. If the signal
+        has units of nm, then the FT will have units of nm/Hz.
         
         """
+         
+        # start timer 
+         
+        start = time.time()         
+        
+        # mask the data if a mask is defined and multiply by the
+        # windowing array if the window is defined          
+           
+        s = self.f['y']   
 
-        # Fourier transform the data
-         
-        start = time.time() 
-         
-        self.signal['swFT'] = \
+        if self.f.__contains__('workup/time/mask/binarate') == True:
+            
+            m = np.array(self.f['workup/time/mask/binarate'])
+            s = s[m]
+            
+        
+        if self.f.__contains__('workup/time/window/cyclicize') == True:
+            
+            w = self.f['workup/time/window/cyclicize']
+            s = w*s
+          
+        # take the Fourier transform      
+                    
+        dt = self.f['x'].attrs['step']
+          
+        freq = \
             np.fft.fftshift(
-                np.fft.fft(
-                    self.signal['sw']))
-
-        # make a frequency axis
-         
-        self.signal['f'] = \
+                np.fft.fftfreq(s.size,dt))   
+                        
+        sFT = dt * \
             np.fft.fftshift(
-                np.fft.fftfreq(
-                    self.signal['swFT'].size,
-                    d=self.signal['dt']))
+                np.fft.fft(s))
+                                    
+        # save the data
+        
+        dset = self.f.create_dataset('workup/freq/freq',data=freq/1E3)
+        attrs = OrderedDict([
+            ('name','f'),
+            ('unit','kHz'),
+            ('label','f [kHz]'),
+            ('label_latex','$f \: [\mathrm{kHz}]$'),
+            ('help','frequency'),
+            ('initial',freq[0]),
+            ('step',freq[1]-freq[0])
+            ])          
+        update_attrs(dset.attrs,attrs)        
 
-        self.signal['df'] = self.signal['f'][1] - self.signal['f'][0]
+        dset = self.f.create_dataset('workup/freq/FT',data=sFT)
+        name_orig = self.f['y'].attrs['name']
+        unit_orig = self.f['y'].attrs['unit']
+        attrs = OrderedDict([
+            ('name','FT({0})'.format(name_orig)),
+            ('unit','{0}/Hz'.format(unit_orig)),
+            ('label','FT({0}) [{1}/Hz]'.format(name_orig,unit_orig)),
+            ('label_latex','$\hat{{{0}}} \: [\mathrm{{{1}/Hz}}]$'.format(name_orig,unit_orig)),
+            ('help','Fourier transform of {0}(t)'.format(name_orig)),
+            ('abscissa','workup/freq/freq'),
+            ('n_avg',1)
+            ])
+        update_attrs(dset.attrs,attrs)           
+           
+        #stop timer and make a report
 
         stop = time.time()
         t_calc = stop - start
@@ -438,9 +486,38 @@ class Signal(object):
         new_report = []
         new_report.append("Fourier transform the windowed signal.")
         new_report.append("It took {0:.1f} ms".format(1E3*t_calc))
-        new_report.append("to compute the FFT.")
-        
+        new_report.append("to compute the FFT.") 
         self.report.append(" ".join(new_report))
+
+    def freq_filter_Hilbert_complex(self):
+        
+        """
+        Generate the complex Hilbert transform filter (:math:`Hc` in the
+        attached notes). Store the filter in::
+        
+            workup/freq/filter/Hc    
+        
+        """
+        
+        freq = self.f['workup/freq/freq'][:]
+        filt = 0.0*(freq < 0) + 1.0*(freq == 0) + 2.0*(freq > 0)
+        
+        dset = self.f.create_dataset('workup/freq/filter/Hc',data=filt)            
+        attrs = OrderedDict([
+            ('name','Hc'),
+            ('unit','unitless'),
+            ('label','Hc(f)'),
+            ('label_latex','$H_c(f)$'),
+            ('help','complex Hilbert transform filter'),
+            ('abscissa','workup/freq/freq')
+            ])
+        update_attrs(dset.attrs,attrs)        
+        
+        new_report = []
+        new_report.append("Create the complex Hilbert transform filter")
+        self.report.append(" ".join(new_report))
+        
+    # ===== START HERE ====================================================
 
     def filter(self,bw,order=50):
 
@@ -1245,11 +1322,15 @@ def testsignal_sine():
     S.open('temp.h5')
     S.time_mask_binarate("middle")
     S.time_window_cyclicize(3E-3)
+    S.fft()
+    S.freq_filter_Hilbert_complex()
     
     # S.plot('y', LaTeX=latex)
     # S.plot('workup/time/mask/binarate', LaTeX=latex)
-    S.plot('workup/time/window/cyclicize', LaTeX=latex)    
-    
+    # S.plot('workup/time/window/cyclicize', LaTeX=latex) 
+    # S.plot('workup/freq/FT', LaTeX=latex)
+    S.plot('workup/freq/filter/Hc', LaTeX=latex)
+              
     print(S)
     
     return S
@@ -1286,7 +1367,7 @@ if __name__ == "__main__":
     parser.add_argument('--testsignal',
         default='sine',
         choices = ['sine', 'sineexp'],
-        help='analyze one of the available test signals')
+        help='create analyze a test signal')
     parser.add_argument('--LaTeX',
         dest='latex',
         action='store_true',
