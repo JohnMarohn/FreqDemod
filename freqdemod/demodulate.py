@@ -517,6 +517,39 @@ class Signal(object):
         new_report.append("Create the complex Hilbert transform filter")
         self.report.append(" ".join(new_report))
         
+    def freq_filter_bp(self, bw, order=50):
+        
+        """
+        Generate the bandpass filter and store it in::
+        
+            workup/freq/filter/bp        
+                                
+        """
+        
+        # The center frequency fc is the peak in the abs of the FT spectrum
+        
+        freq = np.array(self.f['workup/freq/freq'][:])
+        Hc = np.array(self.f['workup/freq/filter/Hc'][:])
+        FTrh = Hc*abs(np.array(self.f['workup/freq/FT'][:]))
+        fc = freq[np.argmax(FTrh)]
+        
+        # Compute the filter
+                        
+        freq_scaled = (freq - fc)/bw
+        bp = 1.0/(1.0+np.power(abs(freq_scaled),order))
+
+        dset = self.f.create_dataset('workup/freq/filter/bp',data=bp)            
+        attrs = OrderedDict([
+            ('name','bp'),
+            ('unit','unitless'),
+            ('label','bp(f)'),
+            ('label_latex','$\mathrm{bp}(f)$'),
+            ('help','bandpass filter'),
+            ('abscissa','workup/freq/freq')
+            ])
+        update_attrs(dset.attrs,attrs)          
+        
+        
     # ===== START HERE ====================================================
 
     def filter(self,bw,order=50):
@@ -1324,12 +1357,14 @@ def testsignal_sine():
     S.time_window_cyclicize(3E-3)
     S.fft()
     S.freq_filter_Hilbert_complex()
+    S.freq_filter_bp(1.00)
     
     # S.plot('y', LaTeX=latex)
     # S.plot('workup/time/mask/binarate', LaTeX=latex)
     # S.plot('workup/time/window/cyclicize', LaTeX=latex) 
     # S.plot('workup/freq/FT', LaTeX=latex)
-    S.plot('workup/freq/filter/Hc', LaTeX=latex)
+    # S.plot('workup/freq/filter/Hc', LaTeX=latex)
+    S.plot('workup/freq/filter/bp', LaTeX=latex)
               
     print(S)
     
