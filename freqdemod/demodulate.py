@@ -370,7 +370,7 @@ class Signal(object):
         
         if self.f.__contains__('workup/time/mask/binarate') == True:
             
-            # you have to cast the HSF5 dataset to a np.array
+            # You have to cast the HSF5 dataset to a np.array
             # so you can use the array of True/False values as 
             # array indices
             
@@ -436,26 +436,28 @@ class Signal(object):
         
         """
          
-        # start timer 
+        # Start timer 
          
         start = time.time()         
         
-        # mask the data if a mask is defined and multiply by the
-        # windowing array if the window is defined          
+        # If a mask is defined then select out a subset of the signal to be FT'ed
+        # The signal array, s, should be a factor of two in length at this point        
            
-        s = self.f['y']   
+        s = np.array(self.f['y'])   
 
         if self.f.__contains__('workup/time/mask/binarate') == True:
             
             m = np.array(self.f['workup/time/mask/binarate'])
             s = s[m]
-                  
+
+        # If the cyclicizing window is defined then apply it to the signal                
+                                                      
         if self.f.__contains__('workup/time/window/cyclicize') == True:
             
-            w = self.f['workup/time/window/cyclicize']
+            w = np.array(self.f['workup/time/window/cyclicize'])
             s = w*s
           
-        # take the Fourier transform      
+        # Take the Fourier transform      
                     
         dt = self.f['x'].attrs['step']
           
@@ -467,7 +469,7 @@ class Signal(object):
             np.fft.fftshift(
                 np.fft.fft(s))
                                     
-        # save the data
+        # Save the data
         
         dset = self.f.create_dataset('workup/freq/freq',data=freq/1E3)
         attrs = OrderedDict([
@@ -495,7 +497,7 @@ class Signal(object):
             ])
         update_attrs(dset.attrs,attrs)           
            
-        #stop timer and make a report
+        # Stop the timer and make a report
 
         stop = time.time()
         t_calc = stop - start
@@ -610,9 +612,109 @@ class Signal(object):
         new_report.append("bandwidth = {0:.1f} kHz,".format(bw))
         new_report.append("and order = {0}.".format(order))
         new_report.append("Best estimate of the resonance")
-        new_report.append("frequency = {0:.6f} kHz,".format(fc_improved))
+        new_report.append("frequency = {0:.6f} kHz.".format(fc_improved))
                 
         self.report.append(" ".join(new_report))
+        
+    def time_mask_rippleless(self, td): 
+        
+        """
+        Defined using
+        
+        :param float td: the dead time [s] 
+
+        that will remove the leading and trailing rippled from the phase (and
+        amplitude) versus time data.
+
+        **Programming notes**.  As a result of the applying cyclicizing window
+        in the time domain and the bandpass filter in the frequency domain,
+        the phase (and amplitude) will have a ripple at its leading and trailing
+        edge.  We want to define a mask that will let us focus on the 
+        uncorrupted data in the middle of the phase (and amplitude) array
+        
+        Defining the required mask takes a little thought.We need to first
+        think about what the relevant time xis is.  If::
+        
+            self.f.__contains__('workup/time/mask/binarate') == True:
+            
+        then the data has been trimmed to a factor of two and the relevant 
+        time axis is::
+            
+            self.f['/workup/x_binarated']
+            
+        Otherwise, the relevant time axis is::
+        
+            self.f['x'] 
+        
+        We will call this trimming mask::
+        
+            self.f['workup/time/mask/rippleless']
+        
+        We will apply this mask to either ``self.f['/workup/x_binarated']``
+        or ``self.f['x']`` to yield a new time array for plotting phase (and 
+        amplitude) data::
+        
+            self.f['/workup/x_rippleless']
+            
+        If no bandpass filter was defined, then the relevant time axis for the 
+        phase (and amplitude) data is either::
+        
+            self.f['/workup/x_binarated']
+            (if self.f.__contains__('workup/time/mask/binarate') == True)    
+        
+        or::
+        
+            self.f['x']
+            (if self.f.__contains__('workup/time/mask/binarate') == False) 
+        
+        """        
+
+        dt = self.f['x'].attrs['step']          # time per point
+        ww = int(math.ceil((1.0*td)/(1.0*dt)))  # window width (points)
+        td_actual = ww*dt                       # actual dead time (seconds)        
+           
+        if self.f.__contains__('workup/time/mask/binarate') == True:
+            x = np.array(self.f['/workup/x_binarated'][:])
+            abscissa = '/workup/x_binarated'
+
+        else:
+            x = np.array(self.f['x'][:])
+            abscissa = 'x'
+            
+        n = x.size
+        indices = np.arange(n)
+        mask = (indices >= ww) & (indices < n - ww)
+        x_rippleless = x[mask]
+        
+        dset = self.f.create_dataset('workup/time/mask/rippleless',data=mask)            
+        attrs = OrderedDict([
+            ('name','mask'),
+            ('unit','unitless'),
+            ('label','masking function'),
+            ('label_latex','masking function'),
+            ('help','mask to remove leading and trailing ripple'),
+            ('abscissa',abscissa)
+            ])
+        update_attrs(dset.attrs,attrs)
+        
+        dset = self.f.create_dataset('workup/x_rippleless',data=x_rippleless)            
+        attrs = OrderedDict([
+            ('name','t_masked'),
+            ('unit','s'),
+            ('label','t [s]'),
+            ('label_latex','$t \: [\mathrm{s}]$'),
+            ('help','time'),
+            ('initial', x_rippleless[0]),
+            ('step', x_rippleless[1]-x_rippleless[0])
+            ])
+        update_attrs(dset.attrs,attrs)              
+                        
+        new_report = []
+        new_report.append("Make an array, workup/time/mask/rippleless, to be")
+        new_report.append("used to remove leading and trailing ripple.  The")
+        new_report.append("dead time is {0:.3f} us.".format(1E6*td_actual))
+        
+        self.report.append(" ".join(new_report))          
         
     def ifft(self):
         
@@ -628,6 +730,7 @@ class Signal(object):
         * compute the inverse Fourier transform,
         
         * if a trimming window is defined then trim the result
+         
         
         """
         
@@ -647,6 +750,23 @@ class Signal(object):
             
         sIFT = np.fft.ifft(np.fft.fftshift(s))
         
+        # Trim if a rippleless masking array is defined
+        # Carefullly define what we should plot the complex
+        # FT-ed data against.
+        
+        if self.f.__contains__('workup/time/mask/rippleless') == True:
+            
+            mask = np.array(self.f['workup/time/mask/rippleless'])
+            sIFT = sIFT[mask]
+            abscissa = 'workup/x_rippleless'
+            
+        else:
+            
+            if self.f.__contains__('workup/time/mask/binarate') == True:
+                abscissa = '/workup/x_binarated'
+            else:
+                abscissa = 'x'
+        
         dset = self.f.create_dataset('workup/time/z',data=sIFT)
         unit_y = self.f['y'].attrs['unit']
         attrs = OrderedDict([
@@ -655,7 +775,7 @@ class Signal(object):
             ('label','z [{0}]'.format(unit_y)),
             ('label_latex','$z \: [\mathrm{{{0}}}]$'.format(unit_y)),
             ('help','complex cantilever displacement'),
-            ('abscissa','workup/x_binarated')
+            ('abscissa',abscissa)
             ])
         update_attrs(dset.attrs,attrs)         
 
@@ -1338,6 +1458,7 @@ def testsignal_sine():
     S.fft()
     S.freq_filter_Hilbert_complex()
     S.freq_filter_bp(1.00)
+    S.time_mask_rippleless(30E-3)
     S.ifft()
     
     # S.plot('y', LaTeX=latex)
@@ -1346,7 +1467,7 @@ def testsignal_sine():
     # S.plot('workup/freq/FT', LaTeX=latex, part=abs)
     # S.plot('workup/freq/filter/Hc', LaTeX=latex)
     # S.plot('workup/freq/filter/bp', LaTeX=latex)
-    
+    # S.plot('workup/time/mask/rippleless', LaTeX=latex)
     S.plot('workup/time/z', LaTeX=latex, component='both')
                       
     print(S)
