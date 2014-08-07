@@ -102,37 +102,37 @@ class MaskTests(unittest.TestCase):
     def test_binarate_1(self):
         """Binarate mask middle; test length is 2^n"""
         
-        self.s.binarate("middle")
-        m = self.s.f['mask/binarate']
+        self.s.time_mask_binarate("middle")
+        m = self.s.f['workup/time/mask/binarate']
 
         self.assertEqual(np.count_nonzero(m),32*1024)    
         
     def test_binarate_2(self):
         """Binarate mask start; test length is 2^n"""
         
-        self.s.binarate("start")
-        m = self.s.f['mask/binarate']
+        self.s.time_mask_binarate("start")
+        m = self.s.f['workup/time/mask/binarate']
 
         self.assertEqual(np.count_nonzero(m),32*1024)   
         
     def test_binarate_3(self):
         """Binarate mask end test length is 2^n"""
         
-        self.s.binarate("end")
-        m = self.s.f['mask/binarate']
+        self.s.time_mask_binarate("end")
+        m = self.s.f['workup/time/mask/binarate']
 
         self.assertEqual(np.count_nonzero(m),32*1024)   
  
     def test_binarate_4(self):
-        """If we have not called binarate, then mask/binrate does not exist"""
+        """If we have not called binarate, then workup/time/mask/binarate does not exist"""
         
-        self.assertEqual(self.s.f.__contains__('mask/binarate'),False)
+        self.assertEqual(self.s.f.__contains__('workup/time/mask/binarate'),False)
 
     def test_binarate_5(self):
-        """If we have called binarate, then mask/binrate does exist"""
+        """If we have called binarate, then workup/time/mask/binarate does exist"""
         
-        self.s.binarate("middle")
-        self.assertEqual(self.s.f.__contains__('mask/binarate'),True)  
+        self.s.time_mask_binarate("middle")
+        self.assertEqual(self.s.f.__contains__('workup/time/mask/binarate'),True)  
    
     def tearDown(self):
         """Close the h5 files before the next iteration."""

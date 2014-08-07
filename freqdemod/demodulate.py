@@ -236,26 +236,27 @@ class Signal(object):
         plt.show()
         plt.rcParams['text.usetex'] = old_param  
         
-    def binarate(self, mode):
+    def time_mask_binarate(self, mode):
  
         """
-        Create a mask to truncate the, if needed, so that it is a
-        factor of two in length.
-        
+        Create a masking array of ``True``/``False`` values that can be used to
+        mask an array so that an array is a power of two in length, as required
+        to perform a Fast Fourier Transform.  
+         
         :param str mode: "start", "middle", or "end" 
         
-        With "start", the beginning of the signal array will be left intact and the 
-        end truncated; with "middle", the signal array will be shortened
-        symmetically from both ends; and with "end" the end of the signal array
+        With "start", the beginning of the array will be left intact and the 
+        end truncated; with "middle", the array will be shortened
+        symmetically from both ends; and with "end" the end of the array
         will be left intact while the beginning of the array will be chopped away.
         
-        Creates the mask in the np.array 
+        Create the mask in the following ``np.array``:
         
-        :param bool self.f['mask/binarate']: the mask; a np.array of boolean values
+        :param bool self.f['workup/time/mask/binarate']: the mask; a ``np.array`` of boolean values
         
-        We note that this boolean array of ``True`` and ``False`` values can 
-        be plotted directly -- ``True`` is converted to 1.0 and ``False`` is 
-        converted to 0 by the ``matplotlib`` plotting function.
+        This boolean array of ``True`` and ``False`` values can be plotted
+        directly -- ``True`` is converted to 1.0 and ``False`` is converted to
+        0 by the ``matplotlib`` plotting function.
         """       
         
         n = self.f['y'].size     # number of points, n, in the signal
@@ -282,7 +283,7 @@ class Signal(object):
                                     
         mask = (indices >= n_start) & (indices < n_stop)
         
-        dset = self.f.create_dataset('mask/binarate',data=mask)            
+        dset = self.f.create_dataset('workup/time/mask/binarate',data=mask)            
         attrs = OrderedDict([
             ('name','mask'),
             ('unit','unitless'),
@@ -295,16 +296,17 @@ class Signal(object):
         update_attrs(dset.attrs,attrs)
         
         new_report = []
-        new_report.append("Truncate the signal to be {0}".format(n2))
-        new_report.append("points long, a power of two.")
-        new_report.append("This was done by using points")
-        new_report.append("{0} up to {1}.".format(n_start,n_stop))
+        new_report.append("Make an array, workup/time/mask/binarate, to be used")
+        new_report.append("to truncate the signal to be {0}".format(n2))
+        new_report.append("points long (a power of two).")
+        new_report.append("The truncated array will start and stop at points")
+        new_report.append("{0} and {1}, respectively.".format(n_start,n_stop))
         
         self.report.append(" ".join(new_report))  
 
     # ===== START HERE ====================================================
 
-    def window_time_rampupdown(self, tw):
+    def time_window_rampupdown(self, tw):
         
         pass
 
