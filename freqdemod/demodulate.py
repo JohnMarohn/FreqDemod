@@ -494,7 +494,20 @@ class Signal(object):
         Generate the complex Hilbert transform filter (:math:`Hc` in the
         attached notes). Store the filter in::
         
-            workup/freq/filter/Hc    
+            workup/freq/filter/Hc
+            
+        The associated filtering function is
+        
+        .. math::
+             
+            \\begin{equation}
+            \\mathrm{rh}(f) = 
+            \\begin{cases}
+            0 & \\text{if $f < 0$} \\\\ 
+            1 & \\text{if $f = 0$} \\\\ 
+            2 & \\text{if $f > 0$}
+            \\end{cases}
+            \\end{equation}   
         
         """
         
@@ -519,9 +532,27 @@ class Signal(object):
     def freq_filter_bp(self, bw, order=50):
         
         """
-        Generate the bandpass filter and store it in::
+        Create a bandpass filter with 
         
-            workup/freq/filter/bp        
+        :param float bw: filter bandwidth. :math:`\\Delta f` [kHz]
+        :param int order: filter order, :math:`n` (defaults to 50)
+        
+        Note that the filter width should be speficied in kHz and 
+        not Hz.  Store the filter in::
+        
+            workup/freq/filter/bp  
+            
+        The associated filtering function is:  
+                
+        .. math::
+             
+            \\begin{equation}
+            \\mathrm{bp}(f) 
+            = \\frac{1}{1 + (\\frac{|f - f_0|}{\\Delta f})^n}
+            \\end{equation}
+        
+        The absolute value makes the filter symmetric, even for odd values of 
+        :math:`n`.     
                                 
         """
         
@@ -548,111 +579,24 @@ class Signal(object):
             ])
         update_attrs(dset.attrs,attrs)          
         
-        
-    # ===== START HERE ====================================================
-
-    def filter(self,bw,order=50):
-
-        """
-        Apply two filters to the Fourier transformed data.
-        
-        :param float bw: filter bandwidth. :math:`\\Delta f` [Hz]
-        :param int order: filter order, :math:`n` (defaults to 50)
-        
-        Add the following objects to the *Signal* object
-        
-        :param np.array signal['swFTfilt']: the filtered signal
-        :param np.array signal['rh']: the right-handed filter
-        :param np.array signal['bp']: the bandpass filter 
-        :param float signal['td']: ripple caused by the filter [s]
-        
-        The first filter sets the negative-frequency components of the FT'ed
-        data to zero, giving a "right handed" spectrum.  The associated
-        filtering function is
-        
-        .. math::
-            :label: Eq:rh
-             
-            \\begin{equation}
-            \\mathrm{rh}(f) = 
-            \\begin{cases}
-            0 & \\text{if $f \\leq 0$} \\\\ 
-            2 & \\text{if $f > 0$}
-            \\end{cases}
-            \\end{equation}
-        
-        The factor of 2 (instead of 1) results in two quadrature signals --
-        obtained by an inverse Fourier transform below -- that are the same
-        amplitude as the original signal.  The second filter is a bandpass
-        filter centered at the oscillation frequency, :math:`f_0`.  The center
-        frequency is automatically estimated as the largest peak in the right
-        handed spectrum.  The associated filtering function is
-        
-        .. math::
-            :label: Eq:bp
-             
-            \\begin{equation}
-            \\mathrm{bp}(f) 
-            = \\frac{1}{1 + (\\frac{|f - f_0|}{\\Delta f})^n}
-            \\end{equation}
-        
-        The absolute value makes the filter symmetric, even for odd values of 
-        :math:`n`.  When we inverse-FFT the filtered signal, the resulting
-        time-domain signal will now have a leading- and trailing-edge ripple
-        resulting from the filtering.  We therefore compute and save an 
-        estimated delay time, **signal['td']** or :math:`t_d`, that it will take
-        the new signal to settle.  We use :math:`t_d = 1.25/\\Delta f`.   For a
-        high-order filter, :math:`n=50`, this :math:`t_d` value empirically 
-        reduces the remaining ripple in the ampltude of a pure sine wave to less
-        than approximately 2 percent of the full amplitude.
-        
-        """
-
-        # save the filter parameters
-        
-        self.signal['bw'] = bw
-        self.signal['order'] = order
-
-        # the right-hand filter
-        
-        f_shifted = self.signal['f'] - self.signal['df']/2
-        self.signal['rh'] = (abs(f_shifted) + f_shifted)/(abs(f_shifted))
-        swFTrh = self.signal['rh']*self.signal['swFT']
-
-        # the bandpass filter 
-         
-        self.signal['f0'] = self.signal['f'][np.argmax(abs(swFTrh))]
-        f_scaled = (self.signal['f'] - self.signal['f0'])/bw
-        self.signal['bp'] = 1.0/(1.0+np.power(abs(f_scaled),order))
-        self.signal['swFTfilt'] = swFTrh*self.signal['bp']
-        
-        # an improved estimate of the center frequency
+        # For fun, make an improved estimate of the center frequency
         #  using the method of moments -- this only gives the right answer
         #  because we have applied the nice bandpass filter first
         
-        a = self.signal['f']
-        b = abs(self.signal['swFTfilt'])
-        
-        self.signal['f00'] = (a*b).sum()/b.sum()
-    
-        # the estimated delay time
-        
-        self.signal['td'] = 1.25/bw
-        
-        # report
+        FT_filt = Hc*bp*abs(self.f['workup/freq/FT'][:])
+        fc_improved = (freq*FT_filt).sum()/FT_filt.sum()
         
         new_report = []
-        new_report.append("Reject negative frequencies;")
-        new_report.append("apply a bandpass filter (center frequency")
-        new_report.append("{0:.3f} Hz,".format(self.signal['f0']))
-        new_report.append("bandwidth {0:.1f} Hz, ".format(bw))
-        new_report.append("& order {0});".format(order))
-        new_report.append("and set the delay time to")
-        new_report.append("{0} us.".format(1E6*self.signal['td']))
-        new_report.append("Make an improved estimate of the center")
-        new_report.append("frequency: {0:.3f} Hz.".format(self.signal['f00']))
-        
+        new_report.append("Create a bandpass filter with center frequency")
+        new_report.append("= {0:.6f} kHz,".format(fc))
+        new_report.append("bandwidth = {0:.1f} kHz,".format(bw))
+        new_report.append("and order = {0}.".format(order))
+        new_report.append("Best estimate of the resonance")
+        new_report.append("frequency = {0:.6f} kHz,".format(fc_improved))
+                
         self.report.append(" ".join(new_report))
+        
+    # ===== START HERE ====================================================
 
     def ifft(self):
 
