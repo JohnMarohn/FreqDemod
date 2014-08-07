@@ -784,37 +784,6 @@ class Signal(object):
         self.report.append(" ".join(new_report))                        
                                                                         
     # ===== START HERE ====================================================
-
-    def trim(self):
-    
-        """
-        Remove the leading and trailing ripple from the complex signal, phase,
-        and amplitude data.  The amount of leading and trailing data removed is 
-        determined by the time delay, **signal['td']**, computed in the 
-        *filter()* function.
-        
-        Modify the following objects in the *Signal* object
-        
-        :param np.array signal['z']: truncated complex signal
-        :param np.array signal['theta']: truncated phase [Hz]
-        :param np.array signal['a']: truncated amplitude
-        :param np.array signal['t']: truncated time [s]
-        
-        """
-        
-        id = int(self.signal['td']/self.signal['dt'])
-        
-        self.signal['z'] = self.signal['z'][id:-id]
-        self.signal['theta'] = self.signal['theta'][id:-id]
-        self.signal['a'] = self.signal['a'][id:-id]
-        self.signal['t'] = self.signal['t'][id:-id]
- 
-        new_report = []
-        new_report.append("Remove the leading and trailing ripple")
-        new_report.append("({0} points) from the complex signal.".format(id))
-        new_report.append("Compute the signal phase and amplitude.")
-        
-        self.report.append(" ".join(new_report))
         
     def fit(self,dt_chunk_target):
         
