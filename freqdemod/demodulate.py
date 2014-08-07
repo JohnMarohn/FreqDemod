@@ -388,7 +388,7 @@ class Signal(object):
         update_attrs(dset.attrs,attrs)
         
         new_report = []
-        new_report.append("Create a windowing function,"
+        new_report.append("Create a windowing function,")
         new_report.append("workup/time/window/cyclicize, with a rising/falling")
         new_report.append("blackman filter having a rise/fall time of")
         new_report.append("{0:.3f} us".format(1E6*tw_actual))
@@ -397,56 +397,6 @@ class Signal(object):
         self.report.append(" ".join(new_report))        
  
      # ===== START HERE ====================================================
-
-    def window(self,tw):
-
-        """
-        Create a windowing function and apply it to the signal array
-        **signal['s']**.
-        
-        :param float tw: the window's target rise/fall time [s] 
-        
-        The windowing function is a concatenation of
-        
-        1. the rising half of a Blackman filter;
-        
-        2. a constant 1.0; and
-        
-        3. the falling half of a Blackman filter.
-        
-        Add the following objects to the *Signal* object
-        
-        :param np.array signal['w']: the windowing function
-        :param np.array signal['sw']: the signal multiplied by the 
-            windowing function
-        :param np.array signal[tw_actual]: the actual rise/fall file [s]
-
-        The actual rise/fall time may not exactly equal the target rise/fall
-        time if the requested time is not an integer multiple of the signal's
-        time per point.
-                
-        """
-
-        ww = int(math.ceil((1.0*tw)/(1.0*self.signal['dt']))) 
-        n = len(self.signal['s'])
-        tw_actual = ww*self.signal['dt'] 
-
-        w = np.concatenate([sp.blackman(2*ww)[0:ww],
-                            np.ones(n-2*ww),
-                            sp.blackman(2*ww)[-ww:]])
-
-        self.signal['w'] = w
-        self.signal['sw'] = w*self.signal['s']
-        self.signal['tw_actual'] = tw_actual
-        
-        
-        new_report = []
-        new_report.append("Window the signal with a rising/falling")
-        new_report.append("blackman filter having a rise/fall time of")
-        new_report.append("{0:.3f} us".format(1E6*tw_actual))
-        new_report.append("({0} points).".format(ww))
-        
-        self.report.append(" ".join(new_report))
 
     def fft(self):
 
