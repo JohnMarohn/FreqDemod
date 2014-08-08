@@ -190,3 +190,22 @@ class FFTTests(unittest.TestCase):
             self.s.f.close()
         except:
             pass                
+            
+class MiscTests(unittest.TestCase):
+    
+    def test_array_middle_1(self):
+        """Misc: mean time (n odd)"""
+        
+        n = 5
+        t = np.arange(n) # [0,1,2,3,4] => mean 2 -> t[2]
+        self.assertEqual(np.mean(t,axis=0),2.0)
+        
+                
+    def test_array_middle_2(self):
+        """Misc: mean time (n even)"""
+        
+        n = 6
+        t = np.arange(n) # [0,1,2,3,4,5] => mean 2.5 => (t[2]+t[3])/2.0
+        self.assertEqual(np.mean(t,axis=0),2.5)
+        
+        

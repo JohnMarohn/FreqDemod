@@ -812,14 +812,152 @@ class Signal(object):
     def fit_phase(self, dt_chunk_target):
         
         """
-        Fit the phase *vs* time data to a line.
+         Fit the phase *vs* time data to a line.  The slope of the line is the
+        (instantaneous) frequency. The phase data is broken into "chunks", with  
         
+        :param float dt_chunk_target: the target chunk duration [s]
         
+        If the chosen duration is not an integer multiple of the digitization
+        time, then find the nearest chunk duration which is. 
+               
+        Calculate the slope :math:`m` of the phase *vs* time line using
+        the linear-least squares formula
         
+        .. math::
+            
+            \\begin{equation}
+            m = \\frac{n \\: S_{xy} - S_x S_y}{n \\: S_{xx} - (S_x)^2}
+            \\end{equation}
+        
+        with :math:`x` representing time, :math:`y` representing
+        phase, and :math:`n` the number of data points contributing to the 
+        fit.  The sums involving the :math:`x` (e.g., time) data can be computed
+        analytically because the time data here are equally spaced.  With the 
+        time per point :math:`\\Delta t`, 
+        
+        .. math::
+            
+            \\begin{equation}
+            S_x = \\sum_{k = 0}^{n-1} x_k = \\sum_{k = 0}^{n-1} k \\: \\Delta t
+             = \\frac{1}{2} \\Delta t \\: n (n-1)
+            \\end{equation}
+            
+            \\begin{equation}
+            S_{xx} = \\sum_{k = 0}^{n-1} x_k^2 = \\sum_{k = 0}^{n-1} k^2 \\: {\\Delta t}^2
+             = \\frac{1}{6} \\Delta t \\: n (n-1) (2n -1)
+            \\end{equation}
+        
+        The sums involving :math:`y` (e.g., phase) can not be similarly
+        precomputed. These sums are
+
+        .. math:: 
+                       
+             \\begin{equation}
+             S_y =  \\sum_{k = 0}^{n-1} y_k = \\sum_{k = 0}^{n-1} \\phi_k
+             \\end{equation} 
+
+             \\begin{equation}
+             S_{xy} =  \\sum_{k = 0}^{n-1} x_k y_k = \\sum_{k = 0}^{n-1} (k \\Delta t) \\: \\phi_k
+             \\end{equation}         
+        
+        To avoid problems with round-off error, a constant is subtracted from 
+        the time and phase arrays in each chuck so that the time array
+        and phase array passed to the least-square formula each start at
+        zero.  
+                
         """                        
 
+        # work out the chunking details
 
-                                                                                                                                                
+        dt = self.f['x'].attrs['step']                # time per phase point
+        n = np.array(self.f['workup/time/p'][:]).size # no. of phase points
+        
+        n_per_chunk = int(round(dt_chunk_target/dt)) # points per chunck
+        dt_chunk = dt*n_per_chunk                    # actual time per chunk
+        n_tot_chunk = int(round(n/n_per_chunk))      # total number of chunks
+        n_total = n_per_chunk*n_tot_chunk            # (realizable) no. of phase points
+        
+        # report the chunking details
+        
+        new_report = []
+        new_report.append("Curve fit the phase data.")
+        new_report.append("The target chunk duration is")
+        new_report.append("{0:.3f} us;".format(1E6*dt_chunk_target))
+        new_report.append("the actual chunk duration is")
+        new_report.append("{0:.3f} us".format(1E6*dt_chunk))
+        new_report.append("({0} points).".format(n_per_chunk))
+        new_report.append("The associated Nyquist")
+        new_report.append("frequency is {0:.3f} kHz.".format(1/(2*1E3*dt_chunk)))
+        new_report.append("A total of {0} chunks will be curve fit,".format(n_tot_chunk))
+        new_report.append("corresponding to {0:.3f} ms of data.".format(1E3*dt*n_total))
+        
+        self.report.append(" ".join(new_report))
+        start = time.time() 
+        
+        # Reshape the phase data and 
+        #  zero the phase at start of each chunk
+        
+        y = np.array(self.f['workup/time/p'][0:n_total])        
+        y_sub = y.reshape((n_tot_chunk,n_per_chunk))
+        y_sub_reset = y_sub - y_sub[:,:,np.newaxis][:,0,:]*np.ones(n_per_chunk)
+
+        # Reshape the time data
+        #  zero the time at start of each chunk
+
+        abscissa = self.f['workup/time/p'].attrs['abscissa']
+        x = np.array(self.f[abscissa])[0:n_total]
+        x_sub = x.reshape((n_tot_chunk,n_per_chunk))
+        x_sub_reset = x_sub - x_sub[:,:,np.newaxis][:,0,:]*np.ones(n_per_chunk)
+
+        # use linear least-squares fitting formulas
+        #  to calculate the best-fit slope
+
+        SX = dt*0.50*(n_per_chunk-1)*(n_per_chunk)
+        SXX = (dt)**2*(1/6.0)*(n_per_chunk)*(n_per_chunk-1)*(2*n_per_chunk-1)
+        SY = np.sum(y_sub_reset,axis=1)
+        SXY = np.sum(x_sub_reset*y_sub_reset,axis=1)
+        slope = (n_per_chunk*SXY-SX*SY)/(n_per_chunk*SXX-SX*SX)
+
+        stop = time.time()
+        t_calc = stop - start
+                                
+        # Save the time axis and the slope
+        #
+        # Tricky: the time we want is the time in the ~middle~ of each chunk
+        #
+        #     old: x_sub[:,0]
+        #     new: x_sub_middle = np.mean(x_sub[:,:],axis=1)
+
+        x_sub_middle = np.mean(x_sub[:,:],axis=1)
+        dset = self.f.create_dataset('workup/fit/x',data=x_sub_middle)
+        attrs = OrderedDict([
+            ('name','t'),
+            ('unit','s'),
+            ('label','t [s]'),
+            ('label_latex','$t \: [\mathrm{s}]$'),
+            ('help','time at the start of each chunk')
+            ])
+        update_attrs(dset.attrs,attrs)
+                  
+        dset = self.f.create_dataset('workup/fit/y',data=slope)
+        attrs = OrderedDict([
+            ('name','f'),
+            ('unit','cyc'),
+            ('label','f [cyc]'),
+            ('label_latex','$f \: [\mathrm{cyc}]$'),
+            ('help','best-fit slope'),
+            ('abscissa','workup/fit/x')
+            ])
+        update_attrs(dset.attrs,attrs)        
+        
+        # report the curve-fitting details
+        #  and prepare the report
+        
+        new_report.append("It took {0:.1f} ms".format(1E3*t_calc))
+        new_report.append("to perform the curve fit and obtain the frequency.")
+                 
+        self.report.append(" ".join(new_report))    
+                                                                                                                                                        
     # ===== START HERE ====================================================
         
     def fit(self,dt_chunk_target):
@@ -1466,39 +1604,26 @@ def testsignal_sine():
     S.freq_filter_bp(1.00)
     S.time_mask_rippleless(15E-3)
     S.ifft()
-    # S.fit(201.34E-6)
+    S.fit_phase(221.34E-6)
         
-    # S.plot('y', LaTeX=latex)
-    # S.plot('workup/time/mask/binarate', LaTeX=latex)
-    # S.plot('workup/time/window/cyclicize', LaTeX=latex) 
-    # S.plot('workup/freq/FT', LaTeX=latex, part=abs)
-    # S.plot('workup/freq/filter/Hc', LaTeX=latex)
-    # S.plot('workup/freq/filter/bp', LaTeX=latex)
-    # S.plot('workup/time/mask/rippleless', LaTeX=latex)
-    # S.plot('workup/time/z', LaTeX=latex, component='both')
-    S.plot('workup/time/p', LaTeX=latex)
+    S.plot('y', LaTeX=latex)
+    S.plot('workup/time/mask/binarate', LaTeX=latex)
+    S.plot('workup/time/window/cyclicize', LaTeX=latex) 
+    S.plot('workup/freq/FT', LaTeX=latex, component='abs')
+    S.plot('workup/freq/filter/Hc', LaTeX=latex)
+    S.plot('workup/freq/filter/bp', LaTeX=latex)
+    S.plot('workup/time/mask/rippleless', LaTeX=latex)
+    S.plot('workup/time/z', LaTeX=latex, component='both')
     S.plot('workup/time/a', LaTeX=latex)
-                   
+    S.plot('workup/time/p', LaTeX=latex)
+    S.plot('workup/fit/y', LaTeX=latex)
+                           
     print(S)
-    
     return S
-    
-#    S.binarate("middle")   
-#    S.window(3E-3)
-#    S.plot_signal(LaTeX=latex)
-#    S.fft()
-#    S.filter(1E3)
-#    S.plot_fft(autozoom=True,LaTeX=latex)
-#    S.ifft()
-#    S.trim()
-#    S.plot_phase(delta=True,LaTeX=latex)
-#    S.fit(201.34E-6)
-#    S.plot_phase_fit(delta=True,LaTeX=latex) 
-#         
-#    print(S)
-#    return(S)
-#
 
+def testsignal_sine_fm():
+    
+    pass
 
 if __name__ == "__main__":
     
@@ -1514,7 +1639,7 @@ if __name__ == "__main__":
         "    python demodulate.py --testsignal=sine --LaTeX\n\n")
     parser.add_argument('--testsignal',
         default='sine',
-        choices = ['sine', 'sineexp'],
+        choices = ['sine', 'sinefm'],
         help='create analyze a test signal')
     parser.add_argument('--LaTeX',
         dest='latex',
@@ -1543,7 +1668,11 @@ if __name__ == "__main__":
     if args.testsignal == 'sine':
         
         S = testsignal_sine()
+
+    elif args.testsignal == 'sinefm':
         
+        S = testsignal_sine_fm()        
+                        
     else:
         
         print "**warning **"
