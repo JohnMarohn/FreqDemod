@@ -318,7 +318,22 @@ class Signal(object):
             ('abscissa','x')
             ])
         update_attrs(dset.attrs,attrs)      
-                        
+                           
+        x = self.f['x']
+        x_binarated = x[mask] 
+            
+        dset = self.f.create_dataset('workup/time/x_binarated',data=x_binarated)            
+        attrs = OrderedDict([
+            ('name','t_masked'),
+            ('unit','s'),
+            ('label','t [s]'),
+            ('label_latex','$t \: [\mathrm{s}]$'),
+            ('help','time'),
+            ('initial', x_binarated[0]),
+            ('step', x_binarated[1]-x_binarated[0])
+            ])
+        update_attrs(dset.attrs,attrs)                
+                                    
         new_report = []
         new_report.append("Make an array, workup/time/mask/binarate, to be used")
         new_report.append("to truncate the signal to be {0}".format(n2))
@@ -365,23 +380,8 @@ class Signal(object):
             # so you can use the array of True/False values as 
             # array indices
             
-            m = np.array(self.f['workup/time/mask/binarate'])
-        
+            m = np.array(self.f['workup/time/mask/binarate'])        
             n = np.count_nonzero(m)
-            x = self.f['x']
-            x_binarated = x[m] 
-              
-            dset = self.f.create_dataset('workup/time/x_binarated',data=x_binarated)            
-            attrs = OrderedDict([
-                ('name','t_masked'),
-                ('unit','s'),
-                ('label','t [s]'),
-                ('label_latex','$t \: [\mathrm{s}]$'),
-                ('help','time'),
-                ('initial', x_binarated[0]),
-                ('step', x_binarated[1]-x_binarated[0])
-                ])
-            update_attrs(dset.attrs,attrs)
             abscissa = 'workup/time/x_binarated'  
             
         else:
@@ -1068,6 +1068,40 @@ def testsignal_sine_fm():
     print(S)
     return S
 
+def testsignal_sine_exp():
+    
+    fd = 50.0E3    # digitization frequency [Hz]
+    f0 = 2.00E3    # signal frequency [Hz]
+    tau = 0.325    # decay time [s]
+    nt = 2.00*fd   # number of signal points (before truncation)    
+    sn = 100.0     # signal zero-to-peak amplitude [nm]
+    sn_rms = 2.0   # noise rms amplitude [nm]
+    
+    dt = 1/fd
+    t = dt*np.arange(nt)
+    s = sn*np.sin(2*np.pi*f0*t)*np.exp(-t/tau) + np.random.normal(0,sn_rms,t.size)
+    
+    S = Signal('.temp_sine_exp.h5')
+    S.load_nparray(s,"x","nm",dt)
+    S.close()
+    
+    S.open('.temp_sine_exp.h5')
+    S.time_mask_binarate("start")
+    S.fft()
+    S.freq_filter_Hilbert_complex()
+    
+    S.freq_filter_bp(1.00)            # 2.00 kHz => 1.0 ms filter timescale
+    S.time_mask_rippleless(10E-3)      # 10 x the filter timescale
+    S.ifft()
+        
+    S.plot('y', LaTeX=latex)
+    S.plot('workup/freq/FT', LaTeX=latex, component='abs')
+    S.plot('workup/freq/filter/bp', LaTeX=latex)
+    S.plot('workup/time/a', LaTeX=latex)
+                           
+    print(S)
+    return S
+    
 if __name__ == "__main__":
     
     # Parge command-line arguments
@@ -1082,7 +1116,7 @@ if __name__ == "__main__":
         "    python demodulate.py --testsignal=sine --LaTeX\n\n")
     parser.add_argument('--testsignal',
         default='sine',
-        choices = ['sine', 'sinefm'],
+        choices = ['sine', 'sinefm', 'sineexp'],
         help='create analyze a test signal')
     parser.add_argument('--LaTeX',
         dest='latex',
@@ -1113,7 +1147,10 @@ if __name__ == "__main__":
 
     elif args.testsignal == 'sinefm': 
         S = testsignal_sine_fm()        
-                        
+
+    elif args.testsignal == 'sineexp': 
+        S = testsignal_sine_exp()                            
+                                                                        
     else:
         print "**warning **"
         print "--testsignal={} not implimented yet".format(args.testsignal)
