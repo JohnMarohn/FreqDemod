@@ -1592,11 +1592,11 @@ def testsignal_sine():
     t = dt*np.arange(nt)
     s = sn*np.sin(2*np.pi*f0*t) + np.random.normal(0,sn_rms,t.size)
     
-    S = Signal('temp.h5')
+    S = Signal('.temp_sine.h5')
     S.load_nparray(s,"x","nm",dt)
     S.close()
     
-    S.open('temp.h5')
+    S.open('.temp_sine.h5')
     S.time_mask_binarate("middle")
     S.time_window_cyclicize(3E-3)
     S.fft()
@@ -1623,7 +1623,66 @@ def testsignal_sine():
 
 def testsignal_sine_fm():
     
-    pass
+    fd = 100E3         # digitization frequency
+    f_start = 4.000E3  # starting frequency
+    f_end = 6.000E3    # ending frequency
+            
+    # time array
+
+    dt = 1/fd    
+    t1 = dt*np.arange(int(round(0.25/dt)))
+    t2 = dt*np.arange(int(round((0.75-0.25)/dt)))
+    t3 = dt*np.arange(128*1024-t1.size-t2.size)
+    
+    t2plus = t2+t1[-1]+dt
+    t3plus = t3+t2plus[-1]+dt
+    
+    t = np.append(np.append(t1,t2plus),t3plus)
+    
+    # frequency array
+    
+    f1 = f_start*np.ones(t1.size)
+    f2 = f_start + t2*(f_end-f_start)/(t2[-1]-t2[0])
+    f3 = f_end*np.ones(t3.size)
+    
+    f = np.append(np.append(f1,f2),f3)
+    
+    # phase accumulator
+    
+    p = np.zeros(t.size)
+    p[0] = 0.0
+    
+    for k in np.arange(1,t.size):
+        p[k] = p[k-1] + dt*f[k-1]
+    
+    p = 2*np.pi*p
+    x = np.cos(p)
+
+    # make the single and work it up
+
+    S = Signal('.temp_sine_fm.h5')
+    S.load_nparray(x,"x","nm",dt)
+    S.close()
+    
+    S.open('.temp_sine_fm.h5')
+    S.time_mask_binarate("middle")
+    S.time_window_cyclicize(3E-3)
+    S.fft()
+    S.freq_filter_Hilbert_complex()
+    S.freq_filter_bp(4.00)
+    S.time_mask_rippleless(15E-3)
+    S.ifft()
+    S.fit_phase(200E-6)
+        
+    S.plot('y', LaTeX=latex)
+    S.plot('workup/freq/FT', LaTeX=latex, component='abs')
+    S.plot('workup/freq/filter/bp', LaTeX=latex)
+    S.plot('workup/time/z', LaTeX=latex, component='both')
+    S.plot('workup/time/p', LaTeX=latex)
+    S.plot('workup/fit/y', LaTeX=latex)
+                           
+    print(S)
+    return S
 
 if __name__ == "__main__":
     
@@ -1665,15 +1724,12 @@ if __name__ == "__main__":
     
     # Do one of the tests
     
-    if args.testsignal == 'sine':
-        
+    if args.testsignal == 'sine': 
         S = testsignal_sine()
 
-    elif args.testsignal == 'sinefm':
-        
+    elif args.testsignal == 'sinefm': 
         S = testsignal_sine_fm()        
                         
     else:
-        
         print "**warning **"
         print "--testsignal={} not implimented yet".format(args.testsignal)
