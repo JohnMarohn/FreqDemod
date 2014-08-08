@@ -380,7 +380,7 @@ class Signal(object):
             x = self.f['x']
             x_binarated = x[m] 
               
-            dset = self.f.create_dataset('workup/x_binarated',data=x_binarated)            
+            dset = self.f.create_dataset('workup/time/x_binarated',data=x_binarated)            
             attrs = OrderedDict([
                 ('name','t_masked'),
                 ('unit','s'),
@@ -391,7 +391,7 @@ class Signal(object):
                 ('step', x_binarated[1]-x_binarated[0])
                 ])
             update_attrs(dset.attrs,attrs)
-            abscissa = 'workup/x_binarated'  
+            abscissa = 'workup/time/x_binarated'  
             
         else:
             
@@ -640,7 +640,7 @@ class Signal(object):
         then the data has been trimmed to a factor of two and the relevant 
         time axis is::
             
-            self.f['/workup/x_binarated']
+            self.f['/workup/time/x_binarated']
             
         Otherwise, the relevant time axis is::
         
@@ -650,16 +650,16 @@ class Signal(object):
         
             self.f['workup/time/mask/rippleless']
         
-        We will apply this mask to either ``self.f['/workup/x_binarated']``
+        We will apply this mask to either ``self.f['/workup/time/x_binarated']``
         or ``self.f['x']`` to yield a new time array for plotting phase (and 
         amplitude) data::
         
-            self.f['/workup/x_rippleless']
+            self.f['/workup/time/x_rippleless']
             
         If no bandpass filter was defined, then the relevant time axis for the 
         phase (and amplitude) data is either::
         
-            self.f['/workup/x_binarated']
+            self.f['/workup/time/x_binarated']
             (if self.f.__contains__('workup/time/mask/binarate') == True)    
         
         or::
@@ -674,8 +674,8 @@ class Signal(object):
         td_actual = ww*dt                       # actual dead time (seconds)        
            
         if self.f.__contains__('workup/time/mask/binarate') == True:
-            x = np.array(self.f['/workup/x_binarated'][:])
-            abscissa = '/workup/x_binarated'
+            x = np.array(self.f['/workup/time/x_binarated'][:])
+            abscissa = '/workup/time/x_binarated'
 
         else:
             x = np.array(self.f['x'][:])
@@ -697,7 +697,7 @@ class Signal(object):
             ])
         update_attrs(dset.attrs,attrs)
         
-        dset = self.f.create_dataset('workup/x_rippleless',data=x_rippleless)            
+        dset = self.f.create_dataset('workup/time/x_rippleless',data=x_rippleless)            
         attrs = OrderedDict([
             ('name','t_masked'),
             ('unit','s'),
@@ -758,12 +758,12 @@ class Signal(object):
             
             mask = np.array(self.f['workup/time/mask/rippleless'])
             sIFT = sIFT[mask]
-            abscissa = 'workup/x_rippleless'
+            abscissa = 'workup/time/x_rippleless'
             
         else:
             
             if self.f.__contains__('workup/time/mask/binarate') == True:
-                abscissa = '/workup/x_binarated'
+                abscissa = '/workup/time/x_binarated'
             else:
                 abscissa = 'x'
         
@@ -807,8 +807,19 @@ class Signal(object):
           
         new_report = []
         new_report.append("Apply an inverse Fourier transform.")
-        self.report.append(" ".join(new_report))                        
-                                                                        
+        self.report.append(" ".join(new_report))
+        
+    def fit_phase(self, dt_chunk_target):
+        
+        """
+        Fit the phase *vs* time data to a line.
+        
+        
+        
+        """                        
+
+
+                                                                                                                                                
     # ===== START HERE ====================================================
         
     def fit(self,dt_chunk_target):
@@ -1467,9 +1478,7 @@ def testsignal_sine():
     # S.plot('workup/time/z', LaTeX=latex, component='both')
     S.plot('workup/time/p', LaTeX=latex)
     S.plot('workup/time/a', LaTeX=latex)
-    
-
-                      
+                   
     print(S)
     
     return S
