@@ -1552,27 +1552,11 @@ class Signal(object):
     def __repr__(self):
 
         """
-        Make a report of the (original) signal's properties including its name,
-        unit, time step, rms, max, and min.
+        Print out the report.
         
         """
 
-        #s_rms = np.sqrt(np.mean(self.signal['s']**2))
-        #s_min = np.min(self.signal['s'])
-        #s_max = np.max(self.signal['s'])
-
         temp = []
-        
-        #temp.append("Signal")
-        #temp.append("======")
-        #temp.append("signal name: {0}".format(self.signal['s_name']))
-        #temp.append("signal unit: {0}".format(self.signal['s_unit']))
-        #temp.append("signal lenth = {}".format(len(self.signal['s'])))
-        #temp.append("time step = {0:.3f} us".format(self.signal['dt']*1E6))
-        #temp.append("rms = {}".format(eng(s_rms)))
-        #temp.append("max = {}".format(eng(s_max)))
-        #temp.append("min = {}".format(eng(s_min)))
-        #temp.append(" ")
         temp.append("Signal Report")
         temp.append("=============")
         temp.append("\n\n".join(["* " + msg for msg in self.report]))
