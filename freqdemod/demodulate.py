@@ -1,15 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# #
-# demodulate.py John A. Marohn 2014/06/28
-# 
-# For formatting fields, see 
-# http://sphinx-doc.org/domains.html#info-field-lists
 #
-# From http://nbviewer.ipython.org/github/jrjohansson/scientific-python-lectures/blob/master/Lecture-4-Matplotlib.ipynb
-# import matplotlib
-# matplotlib.rcParams.update({'font.size': 18, 'font.family': 'STIXGeneral', 'mathtext.fontset': 'stix'})
-
+# demodulate.py
+# John A. Marohn
+# 2014/06/28 -- 2014/08/07
 
 """
 
@@ -59,7 +53,6 @@ import h5py
 import numpy as np 
 import scipy as sp 
 import math
-# import copy
 import time
 import datetime
 from freqdemod.hdf5 import (update_attrs)
@@ -68,8 +61,6 @@ from collections import OrderedDict
 import matplotlib.pyplot as plt 
 
 class Signal(object):
-
-    # =======================================================================
 
     def __init__(self, filename=None):
         
@@ -956,133 +947,7 @@ class Signal(object):
         new_report.append("It took {0:.1f} ms".format(1E3*t_calc))
         new_report.append("to perform the curve fit and obtain the frequency.")
                  
-        self.report.append(" ".join(new_report))    
-                                                                                                                                                        
-    # ===== START HERE ====================================================
-        
-    def fit(self,dt_chunk_target):
-        
-        """
-        Fit the phase *vs* time data to a line.  The slope of the line is the
-        (instantaneous) frequency. The phase data is broken into "chunks", with  
-        
-        :param float dt_chunk_target: the target chunk duration [s]
-        
-        If the chosen duration is not an integer multiple of the digitization
-        time, then find the nearest chunk duration which is.  Create the 
-        following objects in the *Signal* object
-        
-        :param np.array signal['fit_time']: the time at the start of each chunk
-        :param np.array signal['fit_freq']: the best-fit frequency during each chunk
-        
-        Calculate the slope :math:`m` of the phase *vs* time line using
-        the linear-least squares formula
-        
-        .. math::
-            
-            \\begin{equation}
-            m = \\frac{n \\: S_{xy} - S_x S_y}{n \\: S_{xx} - (S_x)^2}
-            \\end{equation}
-        
-        with :math:`x` representing time, :math:`y` representing
-        phase, and :math:`n` the number of data points contributing to the 
-        fit.  The sums involving the :math:`x` (e.g., time) data can be computed
-        analytically because the time data here are equally spaced.  With the 
-        time per point :math:`\\Delta t`, 
-        
-        .. math::
-            
-            \\begin{equation}
-            S_x = \\sum_{k = 0}^{n-1} x_k = \\sum_{k = 0}^{n-1} k \\: \\Delta t
-             = \\frac{1}{2} \\Delta t \\: n (n-1)
-            \\end{equation}
-            
-            \\begin{equation}
-            S_{xx} = \\sum_{k = 0}^{n-1} x_k^2 = \\sum_{k = 0}^{n-1} k^2 \\: {\\Delta t}^2
-             = \\frac{1}{6} \\Delta t \\: n (n-1) (2n -1)
-            \\end{equation}
-        
-        The sums involving :math:`y` (e.g., phase) can not be similarly
-        precomputed. These sums are
-
-        .. math:: 
-                       
-             \\begin{equation}
-             S_y =  \\sum_{k = 0}^{n-1} y_k = \\sum_{k = 0}^{n-1} \\phi_k
-             \\end{equation} 
-
-             \\begin{equation}
-             S_{xy} =  \\sum_{k = 0}^{n-1} x_k y_k = \\sum_{k = 0}^{n-1} (k \\Delta t) \\: \\phi_k
-             \\end{equation}         
-        
-        To avoid problems with round-off error, a constant is subtracted from 
-        the time and phase arrays in each chuck so that the time array
-        and phase array passed to the least-square formula each start at
-        zero.  
-                                                                                                                
-        """
-
-        # work out the chunking details
-
-        n_per_chunk = int(round(dt_chunk_target/self.signal['dt']))
-        dt_chunk = self.signal['dt']*n_per_chunk
-        n_tot_chunk = int(round(self.signal['theta'].size/n_per_chunk))
-        n_total = n_per_chunk*n_tot_chunk
-        
-        # report the chunking details
-        
-        new_report = []
-        new_report.append("Curve fit the phase data.")
-        new_report.append("The target chunk duration is")
-        new_report.append("{0:.3f} us;".format(1E6*dt_chunk_target))
-        new_report.append("the actual chunk duration is")
-        new_report.append("{0:.3f} us".format(1E6*dt_chunk))
-        new_report.append("({0} points).".format(n_per_chunk))
-        new_report.append("{0} chunks will be curve fit;".format(n_tot_chunk))
-        new_report.append("{0:.3f} ms of data.".\
-            format(1E3*self.signal['dt']*n_total))
-        
-        start = time.time() 
-        
-        # reshape the phase data
-        #  zero the phase at start of each chunk
-        
-        s_sub = self.signal['theta'][0:n_total].reshape((n_tot_chunk,n_per_chunk))
-        s_sub_reset = s_sub - s_sub[:,:,np.newaxis][:,0,:]*np.ones(n_per_chunk)
-
-        # reshape the time data
-        #  zero the time at start of each chunk
-
-        t_sub = self.signal['t'][0:n_total].reshape((n_tot_chunk,n_per_chunk))
-        t_sub_reset = t_sub - t_sub[:,:,np.newaxis][:,0,:]*np.ones(n_per_chunk)
-
-        # use linear least-squares fitting formulas
-        #  to calculate the best-fit slope
-
-        SX = (self.signal['dt'])*0.50*(n_per_chunk-1)*(n_per_chunk)
-        SXX = (self.signal['dt'])**2*(1/6.0)*\
-            (n_per_chunk)*(n_per_chunk-1)*(2*n_per_chunk-1)
-
-        SY = np.sum(s_sub_reset,axis=1)
-        SXY = np.sum(t_sub_reset*s_sub_reset,axis=1)
-
-        slope = (n_per_chunk*SXY-SX*SY)/(n_per_chunk*SXX-SX*SX)
-
-        stop = time.time()
-        t_calc = stop - start
-                                
-        # save the slope and the associated time axis
-        
-        self.signal['fit_freq'] = slope
-        self.signal['fit_time'] = t_sub[:,0]
-        
-        # report the curve-fitting details
-        #  and prepare the report
-        
-        new_report.append("It took {0:.1f} ms".format(1E3*t_calc))
-        new_report.append("to perform the curve fit and obtain the frequency.")
-                 
-        self.report.append(" ".join(new_report))       
+        self.report.append(" ".join(new_report))      
 
     def __repr__(self):
 
