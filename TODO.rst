@@ -1,14 +1,14 @@
 To do
 -----
 
-* **Fitting a decay**: Harrell 2014/07/30 suggets that it would be handy to have a method to extract oscillator Q from an object of type Signal that contained a trace from a ping experiment.  Idea: curve fit the decay to an exponential.
-
 * **PSD and fitting**: Define another object (``PSD`` perhaps) and make methods that computes a power spectrum, saves the power spectum as an hdf5 file, and fits the power spectrum to one of two models.  You should also just be able to read in power-spectrum data from an hdf5 files and fit it. 
 
-* **Documentation**.  With the total review, the quickstart files are brokwn.  Rewrite them!  Split the files into a few true ``quickstart`` files and longer ``development`` files.  
+* **Documentation**. (1) With the total review, the quickstart files are brokwn.  Rewrite them!  Split the files into a few true ``quickstart`` files and longer ``development`` files.  (2) The documentation for the new, HDF5-based code is pretty rough; update it.  (3) Update the ``report`` string in all the functions.  The report could be even more informative.
 
 Done
 ----
+
+* Fitting a decay: Harrell 2014/07/30 suggets that it would be handy to have a method to extract oscillator Q from an object of type Signal that contained a trace from a ping experiment.  Idea: curve fit the decay to an exponential.
 
 * Rename the internal variables in the **Signal** object so that the original data is stored in a dictionary called **signal** while the derived, worked-up data is stored in a separate dictionary called **workup**.  This arrangement will correspond more closely to how the data will be stored in the hdf5 file.  
 
