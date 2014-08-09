@@ -949,6 +949,192 @@ class Signal(object):
                  
         self.report.append(" ".join(new_report))      
 
+    def fit_amplitude(self):
+        
+        """
+        Fit the data stored at::
+        
+            workup/time/a
+        
+        To a decaying exponential.  Store the resulting fit at::
+        
+            workup/fit/exp
+        
+        **Programming Notes**
+        
+        * From the ``lmfit`` documentation [`link <http://newville.github.io/lmfit-py/fitting.html#fit_report>`__]:    
+          "Note that the calculation of chi-square and reduced chi-square assume
+          that the returned residual function is scaled properly to the
+          uncertainties in the data. For these statistics to be meaningful,
+          the person writing the function to be minimized must scale 
+          them properly."  
+            
+            
+        """
+        
+        from lmfit import minimize, Parameters, fit_report
+        
+        # extract the data from the Datasets
+        y_dset = self.f['workup/time/a']
+        x = np.array(self.f[y_dset.attrs['abscissa']][:])
+        y = np.array(y_dset[:])
+        
+        # define objective function: returns the array to be minimized
+        def fcn2min(params, x, y, y_stdev):
+            """ model decaying exponentil, subtract data"""
+            a0 = params['a0'].value
+            a1 = params['a1'].value
+            tau = params['tau'].value
+            y_calc = a0*np.exp(-x/tau) + a1
+            return (y_calc - y)/y_stdev
+
+        # create a set of Parameters
+        params = Parameters()
+        params.add('a0', value= 1.0,  min=0)
+        params.add('a1', value= 0.1,  min=0)
+        params.add('tau', value= 1.0)
+
+        # do fit once, here with leastsq model
+        y_stdev = np.ones(y.size)
+        result = minimize(fcn2min, params, args=(x,y,y_stdev))
+
+        # do fit again, using the standard deviation of the residuals
+        #  as an estimate of the standard error in each data point
+        y_stdev = np.std(result.residual)*np.ones(y.size)
+        result = minimize(fcn2min, params, args=(x,y,y_stdev))
+    
+        # calculate final result
+        y_calc = y + y_stdev*result.residual
+
+        # write error report
+        rep = fit_report(params)
+
+        # store fit results!
+        # format string examples: http://mkaz.com/2012/10/10/python-string-format/
+
+        dset = self.f.create_group('workup/fit/exp')
+        
+        title = "a(t) = a0*exp(-t/tau) + a1" \
+                "\n" \
+                "a0 = {0:.6f} +/- {1:.6f}, tau = {2:.6f} +/- {3:.6f}, a1 = {4:.6f} +/- {5:.6f}".\
+                format(params['a0'].value,params['a0'].stderr,
+                        params['tau'].value,params['tau'].stderr,
+                        params['a1'].value,params['a1'].stderr)
+                   
+        title_LaTeX = r'$a(t) = a_0 \exp(-t/\tau) + a_1$' \
+                     '\n' \
+                     r'$a_0 = {0:.6f} \pm {1:.6f}, \tau = {2:.6f} \pm {3:.6f}, a_1 = {4:.6f} \pm {5:.6f}$'. \
+                    format(params['a0'].value,params['a0'].stderr,
+                        params['tau'].value,params['tau'].stderr,
+                        params['a1'].value,params['a1'].stderr)
+                
+        attrs = OrderedDict([
+            ('abscissa',y_dset.attrs['abscissa']),
+            ('ordinate','workup/time/a'),
+            ('fit_report',rep),
+            ('help','fit to decaying exponential'),
+            ('title',title),
+            ('title_LaTeX',title_LaTeX),
+            ('tau',params['tau'].value),
+            ('tau_stderr',params['tau'].stderr),
+            ('a0',params['a0'].value),
+            ('a0_stderr',params['a0'].stderr), 
+            ('a1',params['a1'].value),
+            ('a1_stderr',params['a1'].stderr)         
+            ])
+        update_attrs(dset.attrs,attrs)
+        
+        dset = self.f.create_dataset('workup/fit/exp/y_calc',data=y_calc)
+        a_unit = self.f['workup/time/a'].attrs['unit']
+        attrs = OrderedDict([
+            ('abscissa',y_dset.attrs['abscissa']), 
+            ('name','a (calc)'),
+            ('unit',a_unit),
+            ('label','a (calc) [{0}]'.format(a_unit)),
+            ('label_latex','$a_{{\mathrm{{calc}}}} \: [\mathrm{{{0}}}]$'.format(a_unit)),
+            ('help','cantilever amplitude (calculated)')
+            ])
+        update_attrs(dset.attrs,attrs)
+                
+        dset = self.f.create_dataset('workup/fit/exp/y_resid',data=result.residual) 
+        attrs = OrderedDict([ 
+            ('abscissa',y_dset.attrs['abscissa']),
+            ('name','a (resid)'),
+            ('unit',a_unit),
+            ('label','a (resid) [{0}]'.format(a_unit)),
+            ('label_latex','$a - a_{{\mathrm{{calc}}}} \: [\mathrm{{{0}}}]$'.format(a_unit)),
+            ('help','cantilever amplitude (residual)')
+            ])
+        update_attrs(dset.attrs,attrs)
+                    
+
+    def plot_fit(self, fit_group, LaTeX=False):
+        
+        """
+        Plot the fit stored in ``fit_group``. 
+        """
+        
+        # helpful
+        # http://stackoverflow.com/questions/4209467/matplotlib-share-x-axis-but-dont-show-x-axis-tick-labels-for-both-just-one
+        
+        y_dset = self.f[fit_group].attrs['ordinate']
+        x_dset = self.f[fit_group].attrs['abscissa']
+        y_calc_dset = fit_group + '/y_calc'
+        y_resid_dset = fit_group + '/y_resid'
+
+        # Posslby use tex-formatted axes labels temporarily for this plot
+        # and compute plot labels
+        
+        old_param = plt.rcParams['text.usetex']        
+                        
+        if LaTeX == True:
+        
+            plt.rcParams['text.usetex'] = True
+            x_label_string = self.f[x_dset].attrs['label_latex']
+            y_label_string = self.f[y_dset].attrs['label_latex']
+            y2_label_string = self.f[y_resid_dset].attrs['label_latex']
+            title_string = self.f[fit_group].attrs['title_LaTeX']
+            
+        elif LaTeX == False:
+            
+            plt.rcParams['text.usetex'] = False
+            x_label_string = self.f[x_dset].attrs['label']
+            y_label_string = self.f[y_dset].attrs['label']
+            y2_label_string = self.f[y_resid_dset].attrs['label']
+            title_string = self.f[fit_group].attrs['title']
+
+
+        y = np.array(self.f[y_dset][:])
+        y_calc = np.array(self.f[y_calc_dset][:])
+        y_resid = np.array(self.f[y_resid_dset][:])
+        x = np.array(self.f[x_dset][:])
+
+        fig=plt.figure(facecolor='w')                
+        
+        ax1 = fig.add_subplot(211)
+        ax1.plot(x,y,'k.')
+        ax1.plot(x,y_calc,'r')
+        plt.ylabel(y_label_string)
+        plt.title(title_string, fontsize=16)  
+        plt.setp(ax1.get_xticklabels(), visible=False)
+        
+        ax2 = fig.add_subplot(212,sharex=ax1)
+        ax2.plot(x,y_resid,'k.') 
+        plt.xlabel(x_label_string)
+        plt.ylabel(y2_label_string)      
+
+       # set text spacing so that the plot is pleasing to the eye
+
+        plt.locator_params(axis = 'x', nbins = 4)
+        plt.locator_params(axis = 'y', nbins = 4)
+        fig.subplots_adjust(bottom=0.15,left=0.12)  
+
+        # clean up label spacings, show the plot, ... and reset the tex option
+          
+        fig.subplots_adjust(bottom=0.15,left=0.12) 
+        plt.show()
+        plt.rcParams['text.usetex'] = old_param  
+
     def __repr__(self):
 
         """
@@ -1075,7 +1261,7 @@ def testsignal_sine_exp():
     tau = 0.325    # decay time [s]
     nt = 2.00*fd   # number of signal points (before truncation)    
     sn = 100.0     # signal zero-to-peak amplitude [nm]
-    sn_rms = 2.0   # noise rms amplitude [nm]
+    sn_rms = 20.0   # noise rms amplitude [nm]
     
     dt = 1/fd
     t = dt*np.arange(nt)
@@ -1098,6 +1284,9 @@ def testsignal_sine_exp():
     S.plot('workup/freq/FT', LaTeX=latex, component='abs')
     S.plot('workup/freq/filter/bp', LaTeX=latex)
     S.plot('workup/time/a', LaTeX=latex)
+    
+    S.fit_amplitude()
+    S.plot_fit('/workup/fit/exp', LaTeX=latex)
                            
     print(S)
     return S
