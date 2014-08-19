@@ -41,7 +41,7 @@ from freqdemod.util import silentremove
 from freqdemod.hdf5 import (update_attrs)
 
 class Test_update_attrs(unittest.TestCase):
-    
+    """Test the helper function update_attrs"""
     filename = '.Test_update_h5_attrs.h5'
 
     def setUp(self):
@@ -196,7 +196,6 @@ class Test_update_attrs_extended(unittest.TestCase):
         except:
             pass  
             
-        # today = datetime.datetime.today()
         today = datetime.datetime(2014, 7, 31, 18, 29, 12, 137998)    
             
         cls.date = today.strftime("%Y-%m-%d")
@@ -277,31 +276,35 @@ class Test_update_attrs_extended(unittest.TestCase):
         print ""                                                
         print "Try:"
         print "{0}".format("h5ls -rv {}".format(self.filename))                
-                        
-        self.assertEqual(report_string,Test_update_attrs_extended__contents)
+        
+
+        for report_line, test_line in zip(
+            report, Test_update_attrs_extended__contents_list):
+            self.assertEqual(report_line, test_line)
 
 
-Test_update_attrs_extended__contents = r"""date: 2014-07-31
-time: 18:29:12
-h5py_version: 2.2.1
-source: test_hdf5.py
-help: This is a test file created during unit testing
-/x
-    name: t
-    unit: s
-    label: t [s]
-    label_latex: $t \: [\mathrm{s}]$
-    help: time axis
-    initial: 0.0
-    step: 1e-05
-/y
-    name: x
-    unit: nm
-    label: x [nm]
-    label_latex: $x \: [\mathrm{nm}]$
-    help: cantilever amplitude
-    n_avg: 1"""        
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+Test_update_attrs_extended__contents_list = [
+u"date: 2014-07-31",
+u"time: 18:29:12",
+u"h5py_version: {h5py_version}".format(h5py_version=h5py.__version__),
+u"source: test_hdf5.py",
+u"help: This is a test file created during unit testing",
+r"/x",
+u"    name: t",
+u"    unit: s",
+u"    label: t [s]",
+r"    label_latex: $t \: [\mathrm{s}]$",
+u"    help: time axis",
+u"    initial: 0.0",
+u"    step: 1e-05",
+r"/y",
+u"    name: x",
+u"    unit: nm",
+u"    label: x [nm]",
+r"    label_latex: $x \: [\mathrm{nm}]$",
+r"    help: cantilever amplitude",
+u"    n_avg: 1"]
+
 if __name__ == '__main__':
-    
+
     unittest.main(verbosity=2)
