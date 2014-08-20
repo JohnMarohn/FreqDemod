@@ -40,7 +40,7 @@ Here is a sample of the HDF5 file format.
         attributes: {'name': 'Power Spectral Density of position fluctuations',
                      'unit': 'nm^2/Hz',
                      'label': 'PSD [nm^2 / Hz]',
-                     'label_latex': r'$\\mathrm{PSD} \: [\\mathrm{nm}^2 / \\mathrm{Hz}]',
+                     'label_latex': r'$P_{\\delta x} \: [\\mathrm{nm}^2 / \\mathrm{Hz}]',
                      'n_avg': 4,  # If n_avg is not equal to one, there should be a dataset y_std containing standard deviations
                      'help': 'Power spectral density of position fluctuations.'}
             [1, 2.1, 2.9, 4]
