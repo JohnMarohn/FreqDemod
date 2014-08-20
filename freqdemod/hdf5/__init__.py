@@ -12,34 +12,41 @@ Here is a sample of the HDF5 file format.
     /
     attributes: {'date': '2014-07-22',
                  'time': '13:00:00',
-                 'hdf5_version': 'v0.1',
+                 'hdf5_version': 'v0.1',  # Version of the format specification
                  'source': 'PSB-B19-AFM',
                  'help': 'What is this data?'
-                 'extra_dimensions': 'x2'}
+                 'extra_dimensions': 'x2'
+                 'comment': 'This is an example HDF5 file with multiple dimensions, and several averages for each data point.'}
         x
         attributes: {'name': 'Frequency',
+                     'unit': 'Hz',
+                     'label': 'f [Hz]'
+                     'label_latex': r'$f \\: [\\mathrm{Hz}]$',
                      'initial': 0.0,
                      'step': 0.5,
-                     'unit': 'Hz',
                      'help': 'Frequency array for PSD.'}
             [0, 0.5, 1.0, 1.5]
 
         x2
-        attributes: {'name': 'Laser Power'}
-                     'unit': 'mW'
+        attributes: {'name': 'Laser Power',
+                     'unit': 'mW',
+                     'label': 'P [mW]',
+                     'label_latex': r'$P \\: [\\mathrm{mW}]$',
                      'help': 'Interferometer Output Laser Power'
                     }
             [2.0]
 
         y/
-        attributes: {'name': 'PSD_{\delta x}'
-                     'n_avg': 4,
+        attributes: {'name': 'Power Spectral Density of position fluctuations',
                      'unit': 'nm^2/Hz',
+                     'label': 'PSD [nm^2 / Hz]',
+                     'label_latex': r'$\\mathrm{PSD} \: [\\mathrm{nm}^2 / \\mathrm{Hz}]',
+                     'n_avg': 4,  # If n_avg is not equal to one, there should be a dataset y_std containing standard deviations
                      'help': 'Power spectral density of position fluctuations.'}
-            mean
-                [1, 2.1, 2.9, 4]
-            stdev
-                [0.2, 0.3, 0.4, 0.5]
+            [1, 2.1, 2.9, 4]
+
+        y_std/
+            [0.2, 0.3, 0.4, 0.5]
 
 
         workup/
