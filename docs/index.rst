@@ -1,5 +1,5 @@
-welcome freqdemod's documentation!
-==================================
+welcome to freqdemod's documentation!
+=====================================
 
 Contents:
 

@@ -83,7 +83,7 @@ class Signal(object):
         """
         new_report = []
                 
-        if not(filename is None):
+        if filename is not None:
         
             self.f = h5py.File(filename, 'w', driver = 'core')
             
@@ -100,7 +100,7 @@ class Signal(object):
             update_attrs(self.f.attrs,attrs)
             new_report.append("HDF5 file {0} created in core memory".format(filename))
             
-        elif filename is None:
+        else:
             
             new_report.append("Container Signal object created")    
             
