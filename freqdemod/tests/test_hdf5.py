@@ -280,10 +280,9 @@ class Test_update_attrs_extended(unittest.TestCase):
                         
         self.assertEqual(report_string,Test_update_attrs_extended__contents)
 
-
 Test_update_attrs_extended__contents = r"""date: 2014-07-31
 time: 18:29:12
-h5py_version: 2.2.1
+h5py_version: 2.3.1
 source: test_hdf5.py
 help: This is a test file created during unit testing
 /x
@@ -300,7 +299,7 @@ help: This is a test file created during unit testing
     label: x [nm]
     label_latex: $x \: [\mathrm{nm}]$
     help: cantilever amplitude
-    n_avg: 1"""        
+    n_avg: 1"""
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 if __name__ == '__main__':
     
