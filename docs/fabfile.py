@@ -11,7 +11,7 @@
 This is a fabric file to help compile sphinx HTML documentation for the
 ``FreqDemod`` project.  The following commands are defined::
 
-    fab cleab
+    fab clean
     fab html
     fab html_full
     fab open

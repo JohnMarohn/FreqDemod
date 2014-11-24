@@ -1134,7 +1134,7 @@ class Signal(object):
         fig.subplots_adjust(bottom=0.15,left=0.12) 
         plt.show()
         plt.rcParams['text.usetex'] = old_param  
-
+        
     def __repr__(self):
 
         """
@@ -1143,13 +1143,62 @@ class Signal(object):
         """
 
         temp = []
-        temp.append("Signal Report")
+        temp.append("")
+        temp.append("Signal report")
         temp.append("=============")
         temp.append("\n\n".join(["* " + msg for msg in self.report]))
 
         return '\n'.join(temp)
+	
+    def list(self, offset='', indent ='     '):
+	
+        """
+	List all file/group/dataset elements in the hdf5 file by iterating
+	over the file contents.
+	
+	Source::
+		
+	   https://confluence.slac.stanford.edu/display/PSDM
+	   /How+to+access+HDF5+data+from+Python
+	   #HowtoaccessHDF5datafromPython-HDF5filestructure
 
+	"""
+	
+        print("")
+	print("Signal file summary")
+        print("===================")
+        print_hdf5_item_structure(self.f)
+	       
 
+def print_hdf5_item_structure(g, offset='    ') :
+
+    """
+    Prints the input file/group/dataset (g) name and begin
+    iterations on its content
+    """
+
+    import h5py
+    import sys
+
+    if   isinstance(g,h5py.File) :
+        print g.file, '(File)', g.name
+ 
+    elif isinstance(g,h5py.Dataset) :
+        print '(Dataset)', g.name, '    len =', g.shape #, g.dtype
+ 
+    elif isinstance(g,h5py.Group) :
+        print '(Group)', g.name
+ 
+    else :
+        print 'WORNING: UNKNOWN ITEM IN HDF5 FILE', g.name
+        sys.exit ( "EXECUTION IS TERMINATED" )
+ 
+    if isinstance(g, h5py.File) or isinstance(g, h5py.Group) :
+        for key,val in dict(g).iteritems() :
+            subg = val
+            print offset, key, #,"   ", subg.name #, val, subg.len(), type(subg),
+            print_hdf5_item_structure(subg, offset + '    ')
+						
 def testsignal_sine():
         
     fd = 50.0E3    # digitization frequency
@@ -1189,6 +1238,7 @@ def testsignal_sine():
     S.plot('workup/fit/y', LaTeX=latex)
                            
     print(S)
+    S.list()
     return S
 
 def testsignal_sine_fm():
