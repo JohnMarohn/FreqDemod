@@ -776,9 +776,9 @@ class Signal(object):
         dset = self.f.create_dataset('workup/time/p',data=p)
         attrs = OrderedDict([
             ('name','phase'),
-            ('unit','cyc/s'),
-            ('label','phase [cyc/s]'),
-            ('label_latex','$\phi \: [\mathrm{cyc/s}]$'),
+            ('unit','cyc'),
+            ('label','phase [cyc]'),
+            ('label_latex','$\phi \: [\mathrm{cyc}]$'),
             ('help','cantilever phase'),
             ('abscissa',abscissa)
             ])
@@ -933,9 +933,9 @@ class Signal(object):
         dset = self.f.create_dataset('workup/fit/y',data=slope)
         attrs = OrderedDict([
             ('name','f'),
-            ('unit','cyc'),
-            ('label','f [cyc]'),
-            ('label_latex','$f \: [\mathrm{cyc}]$'),
+            ('unit','cyc/s'),
+            ('label','f [cyc/s]'),
+            ('label_latex','$f \: [\mathrm{cyc/s}]$'),
             ('help','best-fit slope'),
             ('abscissa','workup/fit/x')
             ])
