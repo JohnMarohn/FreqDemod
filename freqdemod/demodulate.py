@@ -600,7 +600,7 @@ class Signal(object):
         new_report = []
         new_report.append("Create a bandpass filter with center frequency")
         new_report.append("= {0:.6f} kHz,".format(fc))
-        new_report.append("bandwidth = {0:.1f} kHz,".format(bw))
+        new_report.append("bandwidth = {0:.3f} kHz,".format(bw))
         new_report.append("and order = {0}.".format(order))
         new_report.append("Best estimate of the resonance")
         new_report.append("frequency = {0:.6f} kHz.".format(fc_improved))
