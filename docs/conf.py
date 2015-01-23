@@ -13,6 +13,24 @@
 
 import sys, os
 
+# Check if on READTHEDOCS. If so, we need to mock out C-dependent packages
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+# See http://goo.gl/GVB1Vu
+if on_rtd:
+    from mock import Mock as MagicMock
+
+    class Mock(MagicMock):
+        @classmethod
+        def __getattr__(cls, name):
+            return Mock()
+
+    # Add any other difficult to install modules here
+    MOCK_MODULES = ['numpy', 'scipy',
+                    'matplotlib', 'matplotlib.pyplot',
+                    'h5py', 'pyaudio']
+    sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
