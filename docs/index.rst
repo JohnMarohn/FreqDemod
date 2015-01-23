@@ -16,6 +16,7 @@ Contents:
    util.rst
    hdf5.rst
    tests.rst
+   history.rst
    develop.rst
    license.rst
    acknow.rst
