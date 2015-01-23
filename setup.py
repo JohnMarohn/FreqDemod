@@ -17,7 +17,7 @@ doclink = """
 Documentation
 -------------
 
-The full documentation is at http://FreqDemod.rtfd.org."""
+The full documentation is at https://freqdemod.rtfd.org."""
 
 history = io.open('HISTORY.rst', mode='r',
                   encoding='utf-8').read().replace('.. :changelog:', '')
