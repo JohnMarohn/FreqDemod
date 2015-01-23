@@ -47,3 +47,8 @@ The Cornell Center for Technology Enterprise and Commercialization (CCTEC) [`lin
 	
 	P: 607.254.4698 
 	F: 607.254.5454
+
+**Full License**
+
+ .. include:: ../LICENSE
+
