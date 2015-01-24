@@ -23,7 +23,7 @@ history = io.open('HISTORY.rst', mode='r',
                   encoding='utf-8').read().replace('.. :changelog:', '')
 
 setup(name='FreqDemod',
-      version='0.2',
+      version='0.2.1',
       description=description,
       long_description=readme + '\n\n' + doclink + '\n\n' + history,
       author='John Marohn',
