@@ -1190,7 +1190,7 @@ def print_hdf5_item_structure(g, offset='    ') :
         print '(Group)', g.name
  
     else :
-        print 'WORNING: UNKNOWN ITEM IN HDF5 FILE', g.name
+        print 'WARNING: UNKNOWN ITEM IN HDF5 FILE', g.name
         sys.exit ( "EXECUTION IS TERMINATED" )
  
     if isinstance(g, h5py.File) or isinstance(g, h5py.Group) :
