@@ -22,7 +22,7 @@ To install the package ::
 
 To test that the installation worked, run ::
 
-    python -c "from freqdemod.demodulate import Signal"
+    python -c "import freqdemod; freqdemod.test()"
 
 Documentation and source code is available at
     
