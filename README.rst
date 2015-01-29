@@ -22,7 +22,7 @@ To install the package ::
 
 To test that the installation worked, run ::
 
-    python -c "from freqdemod.demodulate import Signal"
+    python -c "import freqdemod; freqdemod.test()"
 
 Documentation and source code is available at
     
@@ -33,13 +33,11 @@ Documentation and source code is available at
 Install the development version
 -------------------------------
 
-To test the package, edit it, and compile the documentation, you will need 
+To edit the package and compile the documentation, you will need 
 
 * fabric 1.10.1
 
 * Sphinx 1.2.3
-
-* nose 1.3.4
 
 * ipython 2.3.1
 
@@ -50,17 +48,17 @@ To install the development version, first clone the package ::
     
 To confirm that everything is working, in the FreqDemod directory run ::
 
-    nosetests
-    
+    python -m unittest discover
+
 or ::
 
-    or nosetest -s -v
-    
+    python -m unittest discover -v
+
 or ::
 
     python setup.py test
     
-If you make modifications to the code, and want to try test drive your modifications, then run ::
+If you make modifications to the code, and want to test drive your modifications, run ::
 
     python setup.py develop
     
