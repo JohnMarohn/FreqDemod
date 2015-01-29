@@ -3,6 +3,15 @@ Introduction to the FreqDemod Package
 
 This package provides functions for analyzing and plotting the time-dependent frequency and amplitude of a sinusoidally oscillating signal.  Additional functions are provided for analyzing fluctuations in oscillator amplitude, phase, or frequency.  The provided functions should work equally well for any oscillating signal, although the included data-fitting and -plotting functions have been written with an oscillating atomic force microscope cantilever in mind.  The main frequency-demodulation algorithm's only assumption is that the oscillating signal contains a single frequency component (the carrier, in FM-radio terminology).
 
+Resources
+---------
+
+* Download the package via the Python Package Index: https://pypi.python.org/pypi/FreqDemod
+
+* Read the documentation at Read the Docs: http://FreqDemod.rtfd.org
+
+* Obtain the source code at GitHub: https://github.com/JohnMarohn/FreqDemod
+
 Install
 -------
 
@@ -23,12 +32,6 @@ To install the package ::
 To test that the installation worked, run ::
 
     python -c "import freqdemod; freqdemod.test()"
-
-Documentation and source code is available at
-    
-* Documentation: http://FreqDemod.rtfd.org
-
-* Source: https://github.com/JohnMarohn/FreqDemod
 
 Install the development version
 -------------------------------

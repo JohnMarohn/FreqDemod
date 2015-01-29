@@ -8,8 +8,7 @@ import io
 from setuptools import setup, find_packages
 
 
-description = """This package provides functions for analyzing and plotting the
-time-dependent frequency and amplitude of a sinusoidally oscillating signal."""
+description = """Extract the time-dependent frequency of a sinusoidally oscillating signal."""
 
 readme = io.open('README.rst', mode='r', encoding='utf-8').read()
 

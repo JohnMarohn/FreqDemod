@@ -51,4 +51,5 @@ The Cornell Center for Technology Enterprise and Commercialization (CCTEC) [`lin
 **Full License**
 
  .. include:: ../LICENSE
+    :literal:
 

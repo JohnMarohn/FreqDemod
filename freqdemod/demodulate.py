@@ -804,13 +804,13 @@ class Signal(object):
         
         """
          Fit the phase *vs* time data to a line.  The slope of the line is the
-        (instantaneous) frequency. The phase data is broken into "chunks", with  
+        (instantaneous) frequency. The phase data is broken into "chunks", with
         
         :param float dt_chunk_target: the target chunk duration [s]
         
         If the chosen duration is not an integer multiple of the digitization
-        time, then find the nearest chunk duration which is. 
-               
+        time, then find the nearest chunk duration which is.
+        
         Calculate the slope :math:`m` of the phase *vs* time line using
         the linear-least squares formula
         
@@ -829,12 +829,14 @@ class Signal(object):
         .. math::
             
             \\begin{equation}
-            S_x = \\sum_{k = 0}^{n-1} x_k = \\sum_{k = 0}^{n-1} k \\: \\Delta t
+            S_x = \\sum_{k = 0}^{n-1} x_k 
+            = \\sum_{k = 0}^{n-1} k \\: \\Delta t
              = \\frac{1}{2} \\Delta t \\: n (n-1)
             \\end{equation}
             
             \\begin{equation}
-            S_{xx} = \\sum_{k = 0}^{n-1} x_k^2 = \\sum_{k = 0}^{n-1} k^2 \\: {\\Delta t}^2
+            S_{xx} = \\sum_{k = 0}^{n-1} x_k^2 
+            = \\sum_{k = 0}^{n-1} k^2 \\: {\\Delta t}^2
              = \\frac{1}{6} \\Delta t \\: n (n-1) (2n -1)
             \\end{equation}
         
@@ -848,14 +850,15 @@ class Signal(object):
              \\end{equation} 
 
              \\begin{equation}
-             S_{xy} =  \\sum_{k = 0}^{n-1} x_k y_k = \\sum_{k = 0}^{n-1} (k \\Delta t) \\: \\phi_k
+             S_{xy} =  \\sum_{k = 0}^{n-1} x_k y_k 
+             = \\sum_{k = 0}^{n-1} (k \\Delta t) \\: \\phi_k
              \\end{equation}         
         
         To avoid problems with round-off error, a constant is subtracted from 
         the time and phase arrays in each chuck so that the time array
         and phase array passed to the least-square formula each start at
-        zero.  
-                
+        zero.
+        
         """                        
 
         # work out the chunking details
