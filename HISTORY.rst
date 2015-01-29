@@ -4,12 +4,14 @@ Development History
 2015/01/28
 ----------
 
-Tests can now be easily run on packages installed via pip, using ``freqdemod.test()``.
+* Typos fixed in documentation.
+
+* Tests can now be easily run on packages installed via pip, using ``freqdemod.test()``.
 
 2015/01/23
 ----------
 
-Release the package into the wild.
+* Release the package into the wild.
 
 2014/08/09 
 ----------
