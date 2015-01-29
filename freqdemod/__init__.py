@@ -1,1 +1,1 @@
-from freqdemod.tests import test
+from freqdemod.tests import main as test

@@ -36,7 +36,7 @@ setup(name='FreqDemod',
       tests_require=[],
       zip_safe=False,
       include_package_data=True,
-      test_suite='freqdemod.tests.testsuite',
+      test_suite='freqdemod.tests.discover',
       classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
