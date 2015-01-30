@@ -34,7 +34,7 @@ Substituting, we find
 
 .. math::
 
-    \hat{a}(f_k) = \Delta t \:  \underbrace{\sum_{n = 0}^{N-1} A_k 
+    \hat{a}(f_k) = \Delta t \:  \underbrace{\sum_{n = 0}^{N-1} a_n 
         \: e^{-2 \pi \imath \, n k / N}}_{A_k}
 
 We conclude that the continuous Fourier transform is obtained from the discrete Fourier transform using
