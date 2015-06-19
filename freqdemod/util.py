@@ -6,6 +6,7 @@
 # 2014/06/28
 
 import math
+import errno
 import os
 
 # Modified from http://code.activestate.com/recipes/578238-engineering-notation/
@@ -28,7 +29,7 @@ def eng(x):
     b = b - b%3
     return "%.4gE%s" %(a,b)
 
-def silentremove(filename):
+def silent_remove(filename):
     """If ``filename`` exists, delete it. Otherwise, return nothing.
        See http://stackoverflow.com/q/10840533/2823213."""
     try:
