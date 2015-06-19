@@ -34,10 +34,10 @@ and writing the data as needed.
 import unittest
 import h5py
 import numpy as np
+from numpy.testing import assert_array_equal
 import datetime
-from collections import OrderedDict
 
-from freqdemod.util import silentremove
+from freqdemod.util import silent_remove
 from freqdemod.hdf5 import (update_attrs)
 
 class Test_update_attrs(unittest.TestCase):
@@ -69,8 +69,8 @@ class Test_update_attrs(unittest.TestCase):
     def tearDown(self):
         """Close the h5 file, and remove the file for the next iteration."""
         self.f.close()
-        # silentremove(self.filename)
-        
+        silent_remove(self.filename)
+
 class Test_memory_data(unittest.TestCase):
     """Write to memory, read, close; Write to memory, read, close; etc""" 
     
@@ -92,7 +92,7 @@ class Test_memory_data(unittest.TestCase):
     def tearDown(self):
         """Close the h5 file, and remove the file for the next iteration."""
         self.f.close()
-        silentremove(self.filename)
+        silent_remove(self.filename)
 
 class Test_disk_data(unittest.TestCase):
     """Write to disk, open, read, close; Write to disk, open, read, close; etc"""     
@@ -119,7 +119,7 @@ class Test_disk_data(unittest.TestCase):
 
     def tearDown(self):
         """Remove the file for the next iteration."""
-        silentremove(self.filename)               
+        silent_remove(self.filename)               
 
 class Test_disk_data2(unittest.TestCase):
     """Write once to disk, open once from disk, read, write, read, close.
@@ -185,124 +185,83 @@ class Test_update_attrs_extended(unittest.TestCase):
 
     filename = '.Test_update_attrs_extended.h5'
 
-    def setUpClass(cls):
-        """"
-        Record the date and time for use by the functions below. 
+    def setUp(self):
+        """"Record the date and time for use by the functions below. 
         Delete the output file if it exists so we can make it anew.
         """
 
-        try:
-            silentremove(cls.filename)
-        except:
-            pass  
-            
-        today = datetime.datetime(2014, 7, 31, 18, 29, 12, 137998)    
-            
-        cls.date = today.strftime("%Y-%m-%d")
-        cls.time = today.strftime("%H:%M:%S")
+        silent_remove(self.filename)
 
-    setUpClass = classmethod(setUpClass)    
-            
-    def test_01_write(self):
+        today = datetime.datetime(2014, 7, 31, 18, 29, 12, 137998)
+
+        self.date = today.strftime("%Y-%m-%d")
+        self.time = today.strftime("%H:%M:%S")
+
+        self.dt = 10.0E-6
+        self.t = self.dt * np.arange(32*1024)
+
+        self.x_attrs = {'name': 't',
+                        'unit': 's',
+                        'label': 't [s]',
+                        'label_latex': '$t \\: [\\mathrm{s}]$',
+                        'help': 'time axis',
+                        'initial': self.t[0],
+                        'step': self.t[1] - self.t[0]}
+
+        self.y_attrs = {'name': 'x',
+                        'unit': 'nm',
+                        'label': 'x [nm]',
+                        'label_latex': '$x \: [\mathrm{nm}]$',
+                        'help': 'cantilever amplitude',
+                        'n_avg': 1}
+
+        self.f_attrs = {'date': self.date,
+                        'time': self.time,
+                        'h5py_version': h5py.version.version,
+                        'source': 'test_hdf5.py',
+                        'help': 'This is a test file created during unit testing'}
+
+        self.write_h5file()
+
+    def write_h5file(self):
         """Write the representative dataset to a file."""
-        
+
         f = h5py.File(self.filename, 'w')
-        
-        f.attrs['date'] = self.date
-        f.attrs['time'] = self.time
-        f.attrs['h5py_version'] = h5py.__version__
-        f.attrs['source'] = 'test_hdf5.py'
-        f.attrs['help'] = 'This is a test file created during unit testing'
-               
-        dt = 10.0E-6       
-        t = dt*np.arange(32*1024)       
-               
-        # set the attributes by brute force       
-        dset = f.create_dataset('x',data=t)
-        dset.attrs['name'] = 't'
-        dset.attrs['unit'] = 's'
-        dset.attrs['label'] = 't [s]'
-        dset.attrs['label_latex'] = '$t \: [\mathrm{s}]$'
-        dset.attrs['help'] = 'time axis'
-        dset.attrs['initial'] = t[0]
-        dset.attrs['step'] = t[1] - t[0]
-        
-        f0 = 0.013/(2*dt)
-        x = np.sin(2*np.pi*f0*t)
-        
-        # set the attributes more succinctly using an OrderedDict
-        # we need an OrderedDict here so that the keys will add in the
-        #  given order; neccessary so that the string comparison in 
-        #  the assertEqual test of test_02_read () will succeed
-        
-        dset = f.create_dataset('y',data=x)        
-        attrs = OrderedDict([ \
-            ('name','x'),
-            ('unit','nm'),
-            ('label','x [nm]'),
-            ('label_latex','$x \: [\mathrm{nm}]$'),
-            ('help', 'cantilever amplitude'),
-            ('n_avg', 1)
-            ])
-        update_attrs(dset.attrs,attrs)
-             
+
+        update_attrs(f.attrs, self.f_attrs)
+
+        f['x'] = self.t
+
+        update_attrs(f['x'].attrs, self.x_attrs)
+
+        f0 = 0.013/(2*self.dt)
+        self.y = np.sin(2*np.pi*f0*self.t)
+
+        f['y'] = self.y
+
+        update_attrs(f['y'].attrs, self.y_attrs)
+
         f.close()
 
-    def test_02_read(self):
+    def test_read(self):
         """
-        Read the representative dataset, print out the elements, and compare
-        the printout with the expected string.
+        Read the representative dataset from disk, and compare with the data / attributes written.
         """
-        
+
         f = h5py.File(self.filename, 'r')
-        
-        report = []
-        
-        for key, val in f.attrs.items():
-            report.append("{0}: {1}".format(key, val))
-        
-        for item in f:
-            
-            report.append("{}".format(f[item].name))
-            for key, val in f[item].attrs.items():
-                report.append("    {0}: {1}".format(key, val))
-        
-        report_string = "\n".join(report)
 
-        f.close()        
-                        
-        print "\nObjects in file {0}".format(self.filename)
-        print report_string               
-        print ""                                                
-        print "Try:"
-        print "{0}".format("h5ls -rv {}".format(self.filename))                
+        assert_array_equal(f['x'][:], self.t)
+        assert_array_equal(f['y'][:], self.y)
 
-        for report_line, test_line in zip(
-            report, Test_update_attrs_extended__contents_list):
-            self.assertEqual(report_line, test_line)
+        self.assertEqual(dict(f['x'].attrs), self.x_attrs)
+        self.assertEqual(dict(f['y'].attrs), self.y_attrs)
+        self.assertEqual(dict(f.attrs), self.f_attrs)
 
+        f.close()
 
-Test_update_attrs_extended__contents_list = [
-u"date: 2014-07-31",
-u"time: 18:29:12",
-u"h5py_version: {h5py_version}".format(h5py_version=h5py.__version__),
-u"source: test_hdf5.py",
-u"help: This is a test file created during unit testing",
-r"/x",
-u"    name: t",
-u"    unit: s",
-u"    label: t [s]",
-r"    label_latex: $t \: [\mathrm{s}]$",
-u"    help: time axis",
-u"    initial: 0.0",
-u"    step: 1e-05",
-r"/y",
-u"    name: x",
-u"    unit: nm",
-u"    label: x [nm]",
-r"    label_latex: $x \: [\mathrm{nm}]$",
-r"    help: cantilever amplitude",
-u"    n_avg: 1"]
+    def tearDown(self):
+        silent_remove(self.filename)
+
 
 if __name__ == '__main__':
 
