@@ -94,7 +94,7 @@ class Signal(object):
                 ('time',today.strftime("%H:%M:%S")),
                 ('h5py_version',h5py.__version__),
                 ('source','demodulate.py'),
-                ('help','Sinusoidally oscillating signal and workkup')
+                ('help','Sinusoidally oscillating signal and workup')
                 ])
             
             update_attrs(self.f.attrs,attrs)
