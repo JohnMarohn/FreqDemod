@@ -803,7 +803,7 @@ class Signal(object):
     def fit_phase(self, dt_chunk_target):
         
         """
-         Fit the phase *vs* time data to a line.  The slope of the line is the
+        Fit the phase *vs* time data to a line.  The slope of the line is the
         (instantaneous) frequency. The phase data is broken into "chunks", with
         
         :param float dt_chunk_target: the target chunk duration [s]
@@ -1168,7 +1168,7 @@ class Signal(object):
 	"""
 	
         print("")
-	print("Signal file summary")
+        print("Signal file summary")
         print("===================")
         print_hdf5_item_structure(self.f)
 	       
