@@ -73,3 +73,6 @@ freqdemod/docs/.ipynb_checkpoints/*
 
 # HDF5 files generated during unit testing
 *.h5
+
+# PyCharm 
+**.idea
