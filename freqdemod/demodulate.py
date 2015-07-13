@@ -1069,7 +1069,6 @@ class Signal(object):
             ('help','cantilever amplitude (residual)')
             ])
         update_attrs(dset.attrs,attrs)
-                    
 
     def plot_fit(self, fit_group, LaTeX=False):
         
@@ -1105,7 +1104,6 @@ class Signal(object):
             y_label_string = self.f[y_dset].attrs['label']
             y2_label_string = self.f[y_resid_dset].attrs['label']
             title_string = self.f[fit_group].attrs['title']
-
 
         y = np.array(self.f[y_dset][:])
         y_calc = np.array(self.f[y_calc_dset][:])
@@ -1156,16 +1154,16 @@ class Signal(object):
     def list(self, offset='', indent ='     '):
 	
         """
-	List all file/group/dataset elements in the hdf5 file by iterating
-	over the file contents.
-	
-	Source::
-		
-	   https://confluence.slac.stanford.edu/display/PSDM
-	   /How+to+access+HDF5+data+from+Python
-	   #HowtoaccessHDF5datafromPython-HDF5filestructure
+        List all file/group/dataset elements in the hdf5 file by iterating
+        over the file contents.
 
-	"""
+        Source::
+
+           https://confluence.slac.stanford.edu/display/PSDM
+           /How+to+access+HDF5+data+from+Python
+           #HowtoaccessHDF5datafromPython-HDF5filestructure
+
+        """
 	
         print("")
         print("Signal file summary")
