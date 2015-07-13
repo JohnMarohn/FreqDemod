@@ -540,20 +540,23 @@ class Signal(object):
         new_report.append("Create the complex Hilbert transform filter.")
         self.report.append(" ".join(new_report))
         
-    def freq_filter_bp(self, bw, order=50):
+    def freq_filter_bp(self, bw, order=50, style="brick wall"):
         
         """
         Create a bandpass filter with 
         
-        :param float bw: filter bandwidth. :math:`\\Delta f` [kHz]
+        :param float bw: filter bandwidth, :math:`\\Delta f` [kHz]
         :param int order: filter order, :math:`n` (defaults to 50)
+        :param string style: "brick wall" (default) or "cosine"
         
-        Note that the filter width should be speficied in kHz and 
-        not Hz.  Store the filter in::
+        Note that the filter width **bw** should be specified **in kHz and
+        not Hz**.  Store the filter in::
         
             workup/freq/filter/bp  
-            
-        The associated filtering function is:  
+
+        The center frequency, :math:`f_0`, is determined automatically from the positive-frequency
+        peak in the Fourier-transform of the cantilever signal.  The filtering function for the
+        brick wall filter is
                 
         .. math::
              
@@ -562,8 +565,24 @@ class Signal(object):
             = \\frac{1}{1 + (\\frac{|f - f_0|}{\\Delta f})^n}
             \\end{equation}
         
-        The absolute value makes the filter symmetric, even for odd values of 
-        :math:`n`.     
+        The absolute value makes the filter symmetric, even for odd values of :math:`n`.
+        With the **bw** parameter set to 1 kHz, the filter will pass a 2 kHz band of frequencies,
+        from 1 kHz below to 1 kHz above the center frequency.  The power spectrum will
+        show noise falling away starting 1 kHz away from the carrier.
+
+        The filtering function for the cosine filter is
+
+        .. math::
+
+            \\begin{equation}
+            \\mathrm{bp}(f)
+            = \\begin{cases}
+            0 & f < f_0 - \\Delta f \\\\
+            \\cos{\\left( \\frac{\\pi}{2} \\frac{f-f_0}{\\Delta f} \\right)}
+                & f_0 - \\Delta f < f < f_0 + \\Delta f \\\\
+            0 & f_0 + \\Delta f < f
+            \\end{cases}
+            \\end{equation}
                                 
         """
         
@@ -577,7 +596,23 @@ class Signal(object):
         # Compute the filter
                         
         freq_scaled = (freq - fc)/bw
-        bp = 1.0/(1.0+np.power(abs(freq_scaled),order))
+
+        if style == "brick wall":
+
+            bp = 1.0/(1.0+np.power(abs(freq_scaled),order))
+
+        elif style == "cosine":
+
+            # here we use a trick
+
+            bp = np.zeros(freq.shape)
+            sub_index = (freq >= -1.0*bw + fc) & (freq <= bw + fc)
+            sub_indices = np.arange(freq.size)[sub_index]
+            bp[sub_indices] = np.sin(np.linspace(0,np.pi,sub_indices.size))
+
+        else:
+
+            print "**ERROR**: Unrecognized filter function"
 
         dset = self.f.create_dataset('workup/freq/filter/bp',data=bp)            
         attrs = OrderedDict([
@@ -1221,14 +1256,15 @@ def testsignal_sine():
     S.time_window_cyclicize(3E-3)
     S.fft()
     S.freq_filter_Hilbert_complex()
-    S.freq_filter_bp(1.00)
+    #S.freq_filter_bp(1.00)
+    S.freq_filter_bp(bw=1.00, style="cosine")
     S.time_mask_rippleless(15E-3)
     S.ifft()
     S.fit_phase(221.34E-6)
         
     S.plot('y', LaTeX=latex)
     S.plot('workup/time/mask/binarate', LaTeX=latex)
-    S.plot('workup/time/window/cyclicize', LaTeX=latex) 
+    S.plot('workup/time/window/cyclicize', LaTeX=latex)
     S.plot('workup/freq/FT', LaTeX=latex, component='abs')
     S.plot('workup/freq/filter/Hc', LaTeX=latex)
     S.plot('workup/freq/filter/bp', LaTeX=latex)

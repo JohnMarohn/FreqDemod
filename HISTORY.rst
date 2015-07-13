@@ -1,6 +1,24 @@
 Development History
 ===================
 
+2015/07/12
+----------
+
+* Consider, then decide against, changing the bandpass filter-width definition.  As defined, 1 kHz-wide filter
+  will pass a 2 kHz band of frequencies, from 1 kHz below to 1 kHz above.  The power spectrum will show
+  noise falling away starting 1 kHz away from the carrier.
+
+* The only bandpass filter available so far has been a brick-wall filter (default order = 50).
+  This filter was introduced to avoid aliasing of high-frequency noise into the low frequency
+  region of a cantilever frequency-noise power spectrum.  The brick wall filter, because of its sharp cutoff
+  in the frequency domain, induces sinc-type oscillations in the time domain.  To avoid these sinc-type
+  oscillations, we have introduced a cosine filter.
+
+  A call like ``S.freq_filter_bp(1.00)`` will create a brick wall filter of bandwidth 1 kHz and order
+  50 (default); this call is unchanged.  To create a cosine filter instead,
+  ``S.freq_filter_bp(bw=1.00, style="cosine")``.
+
+
 2015/01/28
 ----------
 
