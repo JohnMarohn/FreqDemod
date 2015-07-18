@@ -17,8 +17,10 @@ Tests for the demodulate module.
 #
 
 from freqdemod.demodulate import Signal
+from freqdemod.util import silent_remove
 import unittest
 import numpy as np
+from numpy.testing import assert_allclose
 # import h5py
 
 class InitLoadSaveTests(unittest.TestCase):
@@ -190,7 +192,29 @@ class FFTTests(unittest.TestCase):
             self.s.f.close()
         except:
             pass                
-            
+
+
+class FFTOddPoints(unittest.TestCase):
+    filename = '.FFTOddPoints.h5'
+    def setUp(self):
+        self.x = np.array([0, 1, 0, -1, 0, 1, 0, -1, 0])
+        self.s = Signal(self.filename)
+        self.s.load_nparray(self.x, 'x', 'nm', 1)
+
+    def test_ifft_odd_pts(self):
+        self.s.fft()
+        self.s.ifft()
+        x_ifft_fft = self.s.f['workup/time/z'][:]
+        x = self.x
+        # Should give x back to within numerical rounding errors
+        assert_allclose(x.real, x_ifft_fft.real, atol=1e-15)
+        assert_allclose(x.imag, x_ifft_fft.imag, atol=1e-15)
+
+    def tearDown(self):
+        self.s.close()
+        silent_remove(self.filename)
+
+
 class MiscTests(unittest.TestCase):
     
     def test_array_middle_1(self):
@@ -207,5 +231,3 @@ class MiscTests(unittest.TestCase):
         n = 6
         t = np.arange(n) # [0,1,2,3,4,5] => mean 2.5 => (t[2]+t[3])/2.0
         self.assertEqual(np.mean(t,axis=0),2.5)
-        
-        

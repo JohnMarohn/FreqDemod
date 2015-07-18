@@ -774,7 +774,7 @@ class Signal(object):
             
         # Compute the IFT    
             
-        sIFT = np.fft.ifft(np.fft.fftshift(s))
+        sIFT = np.fft.ifft(np.fft.ifftshift(s))
         
         # Trim if a rippleless masking array is defined
         # Carefullly define what we should plot the complex
