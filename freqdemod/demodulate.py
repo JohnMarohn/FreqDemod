@@ -62,23 +62,18 @@ import matplotlib.pyplot as plt
 
 class Signal(object):
 
+    # Goal: get the signal to a state with data, appropriate labels, time_constants
+    #       information about how to save the workup
+
+    # Source: numpy or hdf5
+
+    # Signal.load_nparray(self, s, s_name, s_unit, dt)
+
+    # Signal._load_hdf5(self, filename)
+
+    # Destination: hdf5 file, or delete when exit memory
+
     def __init__(self, filename=None, backing_store=False):
-        # What should init do?
-        # - Not overwrite an existing file by default
-        # - Work in-memory by default
-        # Current use cases appear to be:
-        # 1. Data from a numpy array, in-memory only hdf5
-        #      (no file on disk; backing_store=False, filename irrelevant,
-        #       data, data_name, data_unit, dt required)
-        # 2. Data from a numpy array, result stored to disk
-        #     (backing_store=True, filename required (overwrite overwrite y/n?),
-        #       data, data_name, data_unit, dt required)
-        # 3. Read data from an hdf5 file: currently *do* save any changes,
-        #    back to the same file.
-        # Potential other use cases:
-        # 4. Read data from an hdf5 file, do workup entirely in memory
-        # 5. Read data from an hdf5 file, save data + workup to another hdf5 file
-        
         """
         Initialize the *Signal* object. Inputs:
         
