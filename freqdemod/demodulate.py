@@ -62,12 +62,28 @@ import matplotlib.pyplot as plt
 
 class Signal(object):
 
-    def __init__(self, filename=None):
+    def __init__(self, filename=None, backing_store=False):
+        # What should init do?
+        # - Not overwrite an existing file by default
+        # - Work in-memory by default
+        # Current use cases appear to be:
+        # 1. Data from a numpy array, in-memory only hdf5
+        #      (no file on disk; backing_store=False, filename irrelevant,
+        #       data, data_name, data_unit, dt required)
+        # 2. Data from a numpy array, result stored to disk
+        #     (backing_store=True, filename required (overwrite overwrite y/n?),
+        #       data, data_name, data_unit, dt required)
+        # 3. Read data from an hdf5 file: currently *do* save any changes,
+        #    back to the same file.
+        # Potential other use cases:
+        # 4. Read data from an hdf5 file, do workup entirely in memory
+        # 5. Read data from an hdf5 file, save data + workup to another hdf5 file
         
         """
         Initialize the *Signal* object. Inputs:
         
-        :param str filename: the signal's (future) filename 
+        :param str filename: the signal's (future) filename
+        :param bool backing_store: If False, do not save the file to disk
         
         Add the following objects to the *Signal* object
         
@@ -84,8 +100,18 @@ class Signal(object):
         new_report = []
                 
         if filename is not None:
-        
-            self.f = h5py.File(filename, 'w', driver = 'core')
+            try:
+                self.f = h5py.File(filename, mode='w-', driver='core',
+                                   backing_store=backing_store)
+            except IOError as e:
+                print("IOError: {}".format(e.message))
+                if 'file exists' in e.message:
+                    to_print = ["{} already exists. Fix this error by either:".format(filename),
+                    "1. Change the filename to a filename that doesn't exist.",
+                    "2. Remove the file: os.remove('{}')".format(filename)]
+                    raise IOERROR(to_print.join('\n'))
+                else:
+                    raise
             
             today = datetime.datetime.today()
             

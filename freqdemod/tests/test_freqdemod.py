@@ -27,13 +27,13 @@ class InitLoadSaveTests(unittest.TestCase):
     """
     Make sure the *Signal* object is set up correctly.
     """
-
+    filename = '.InitLoadSaveTests_1.h5'
     def setUp(self):
         """
         Create an trial *Signal* object
         """
         
-        self.s = Signal('.InitLoadSaveTests_1.h5')
+        self.s = Signal(self.filename)
         self.s.load_nparray(np.arange(3),"x","nm",10E-6)
 
     def test_report(self):
@@ -50,13 +50,27 @@ class InitLoadSaveTests(unittest.TestCase):
         """Check y-array data."""
         
         self.assertTrue(np.allclose(self.s.f['y'],np.array([0, 1, 2]), rtol=1e-05, atol=1e-08))
-    
+
+    def tearDown(self):
+        """Close the h5 files before the next iteration."""
+        self.s.f.close()
+
+
+class TestClose(unittest.TestCase):
+    filename = '.TestClose.h5'
+    def setUp(self):
+        self.s = Signal(self.filename, backing_store=True)
+        self.s.load_nparray(np.arange(3),"x","nm",10E-6)
+        self.s.close()
+
+    def tearDown(self):
+        silent_remove(self.filename)
+
     def test_close(self):
         """Verify closed object by testing one of the attributes"""
         
-        self.s.close()
         self.snew = Signal()
-        self.snew.open('.InitLoadSaveTests_1.h5')
+        self.snew.open(self.filename)
         
         # print out the contents of the file nicely        
                                 
@@ -79,17 +93,7 @@ class InitLoadSaveTests(unittest.TestCase):
         # test one of the attributes
 
         self.assertTrue(self.snew.f.attrs['source'],'demodulate.py')
-    
-    def tearDown(self):
-        """Close the h5 files before the next iteration."""
-        try:
-            self.s.f.close()
-        except:
-            pass
-        try:
-            self.snew.f.close()
-        except:
-            pass        
+
         
 class MaskTests(unittest.TestCase):
     
