@@ -55,7 +55,9 @@ import scipy as sp
 import math
 import time
 import datetime
-from freqdemod.hdf5 import (update_attrs)
+from freqdemod.hdf5 import (update_attrs, check_minimum_attrs,
+                            infer_missing_labels)
+from freqdemod.util import (timestamp_temp_filename, infer_timestep)
 from collections import OrderedDict
 
 import matplotlib.pyplot as plt 
@@ -73,7 +75,7 @@ class Signal(object):
 
     # Destination: hdf5 file, or delete when exit memory
 
-    def __init__(self, filename=None, backing_store=False):
+    def __init__(self, filename=None, mode='w-', driver='core', backing_store=False):
         """
         Initialize the *Signal* object. Inputs:
         
@@ -96,41 +98,47 @@ class Signal(object):
                 
         if filename is not None:
             try:
-                self.f = h5py.File(filename, mode='w-', driver='core',
+                self.f = h5py.File(filename, mode=mode, driver=driver,
                                    backing_store=backing_store)
             except IOError as e:
                 print("IOError: {}".format(e.message))
-                if 'file exists' in e.message:
-                    to_print = ["{} already exists. Fix this error by either:".format(filename),
-                    "1. Change the filename to a filename that doesn't exist.",
-                    "2. Remove the file: os.remove('{}')".format(filename)]
-                    raise IOERROR(to_print.join('\n'))
+                if 'file exists' in e.message or 'Unable to open file' in e.message:
+                    error_msg = """\
+{0} already exists. Fix this error by either:\n
+1. Change the filename to a filename that doesn't exist.
+2. Remove the file: os.remove('{0}')".format(filename)
+3. Explicitly overwrite the file with mode='w'. Run:
+    Signal('{0}', mode='w', driver={1}, backing_store={2})""".format(filename, driver, backing_store)
+                    raise IOError(error_msg)
                 else:
                     raise
             
-            today = datetime.datetime.today()
-            
-            attrs = OrderedDict([ \
-                ('date',today.strftime("%Y-%m-%d")),
-                ('time',today.strftime("%H:%M:%S")),
-                ('h5py_version',h5py.__version__),
-                ('source','demodulate.py'),
-                ('help','Sinusoidally oscillating signal and workup')
-                ])
-            
-            update_attrs(self.f.attrs,attrs)
-            new_report.append("HDF5 file {0} created in core memory".format(filename))
             
         else:
-            
-            new_report.append("Container Signal object created")    
+            filename = timestamp_temp_filename('.h5')
+            self.f = h5py.File(filename, driver='core',
+                               backing_store=False)
+
+
+        today = datetime.datetime.today()
+        
+        attrs = OrderedDict([ \
+            ('date',today.strftime("%Y-%m-%d")),
+            ('time',today.strftime("%H:%M:%S")),
+            ('h5py_version',h5py.__version__),
+            ('source','demodulate.py'),
+            ('help','Sinusoidally oscillating signal and workup')
+            ])
+        
+        update_attrs(self.f.attrs,attrs)
+        new_report.append("HDF5 file {0} created in core memory".format(filename))  
             
         self.report = []
         self.report.append(" ".join(new_report))
 
-    def load_nparray(self, s, s_name, s_unit, dt):
+    def load_nparray(self, s, s_name, s_unit, dt, s_help='cantilever displacement'):
 
-        """ 
+        """
         Create a *Signal* object from the following inputs.
         
         :param s: the signal *vs* time 
@@ -146,8 +154,8 @@ class Signal(object):
             been done to the signal 
         
         """
-
-        dset = self.f.create_dataset('x',data=dt*np.arange(0,len(np.array(s))))
+        s = np.atleast_1d(s)
+        self.f['x'] = dt * np.arange(s.size)
         attrs = OrderedDict([
             ('name','t'),
             ('unit','s'),
@@ -156,10 +164,10 @@ class Signal(object):
             ('help','time'),
             ('initial',0.0),
             ('step',dt)
-            ])          
-        update_attrs(dset.attrs,attrs)        
+            ])
+        update_attrs(self.f['x'].attrs, attrs)        
 
-        dset = self.f.create_dataset('y',data=s)
+        self.f['y'] = s
         attrs = OrderedDict([
             ('name',s_name),
             ('unit',s_unit),
@@ -169,7 +177,7 @@ class Signal(object):
             ('abscissa','x'),
             ('n_avg',1)
             ])
-        update_attrs(dset.attrs,attrs)    
+        update_attrs(self.f['y'].attrs, attrs)   
         
         new_report = []
         new_report.append("Add a signal {0}[{1}]".format(s_name,s_unit))
@@ -178,6 +186,71 @@ class Signal(object):
         new_report.append("and duration {0:.3f} s".format(np.array(s).size*dt))
         
         self.report.append(" ".join(new_report))
+
+    def load_hdf5(self, filename, x_dataset='x', y_dataset='y', h5object=None):
+        # Load hdf5 use cases:
+        # 1. Load from a file created directly by freqdemod (just copy the datasets, verify, and be done)
+        # 2. Load x and y from a file 'inspired by' freqdemod (Labview code; some attributes may be incomplete / missing, infer_dt, or dt specified?)
+        # 3. Load y from a file 'inspired by' freqdemod, specify dt separately
+        # 4. Load from a completely different hdf5 file; specify data, x, differently.
+        pass
+
+    def load_hdf5_default(self, h5object, x_dataset='x', y_dataset='y',
+                                 infer_dt=True, infer_missing_attrs=True):
+        """Load an hdf5 file saved with default freqdemod attributes."""
+        h5object.copy(x_dataset, self.f, name='x')
+        h5object.copy(y_dataset, self.f, name='y')
+
+        x_attrs = self.f['x'].attrs
+        y_attrs = self.f['y'].attrs
+
+        if infer_dt:
+            check_minimum_attrs(x_attrs, 'very_permissive')
+            x_attrs['step'] = infer_timestep(h5object[x_dataset])
+        else:
+            check_minimum_attrs(x_attrs, 'very_permissive_x')
+
+        if infer_missing_attrs:
+            infer_missing_labels(x_attrs, dataset_type='x')
+            check_minimum_attrs(y_attrs, 'very_permissive')
+            infer_missing_labels(y_attrs, dataset_type='y', abscissa='x')
+
+    # These handle most of the use cases, I think.
+    def load_hdf5_general(self, h5object, y_dataset='y', x_dataset=None,
+                           dt=None, name=None, unit=None,
+                           help_='cantilever displacement'):
+        h5object.copy(y_dataset, self.f, name='y', without_attrs=True)
+        y_attrs = OrderedDict([
+            ('name', name),
+            ('unit', unit),
+            ('label','{0} [{1}]'.format(name, unit)),
+            ('label_latex','${0} \: [\mathrm{{{1}}}]$'.format(name, unit)),
+            ('help', help_),
+            ('abscissa', 'x'),
+            ('n_avg', 1)
+            ])
+        update_attrs(self.f['y'].attrs, y_attrs)
+
+        if x_dataset is not None:
+            h5object.copy(x_dataset, self.f, name='x', without_attrs=True)
+            dt_ = infer_timestep(h5object[x_dataset])
+        elif dt is not None:
+            self.f['x'] = dt * np.arange(self.f['y'][:].size)
+            dt_ = dt
+        else:
+            raise ValueError("Must specify one of 'x_dataset' or 'dt'")
+
+
+        x_attrs = {'name': 't',
+                     'unit': 's',
+                     'label': 't [s]',
+                     'label_latex':'$t \: [\mathrm{s}]$',
+                     'help': 'time',
+                     'initial': 0.0,
+                     'step': dt_}
+
+        update_attrs(self.f['x'].attrs, x_attrs)
+
 
     def close(self):
         """Update report; write the file to disk; close the file."""

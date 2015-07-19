@@ -88,3 +88,68 @@ def update_attrs(h5_attrs, attrs):
     
     for key, val in attrs.items():
         h5_attrs[key] = val
+
+def attr_dict_options(setting):
+    """Shorthand for describing possible combinations of required attributes
+    for an hdf5 dataset.
+
+    Possible values for setting:
+
+    very_permissive
+        Only require name, unit; other attributes can be inferred / ignored."""
+    attr_dict_settings = {
+     'very_permissive' :   {u'name', u'unit'},
+     'permissive' :        {u'name', u'unit', u'label'},
+     'latex' :             {u'name', u'unit', u'label', u'label_latex'},
+     'freq_demod_y' :      {u'name', u'unit', u'label', u'label_latex', u'abscissa'},
+     'pedantic_y' :        {u'name', u'unit', u'label', u'label_latex', u'abscissa', u'help', u'n_avg'},
+     'very_permissive_x' : {u'name', u'unit', u'step'},
+     'permissive_x'      : {u'name', u'unit', u'step', u'label'},
+     'latex_x'           : {u'name', u'unit', u'step', u'label', u'label_latex'},
+     'freq_demod_x'      : {u'name', u'unit', u'step', u'label', u'label_latex', u'initial'},
+     'pedantic_x'        : {u'name', u'unit', u'step', u'label', u'label_latex', u'initial', u'help'},}
+    return attr_dict_settings[setting]
+
+
+def check_minimum_attrs(attrs, setting='very_permissive'):
+    required_attrs = attr_dict_options(setting)
+    if set(attrs) < required_attrs:
+        raise ValueError("""\
+dataset must have attributes.""")
+
+
+def infer_labels(attrs):
+    name = attrs['name']
+    unit = attrs['unit']
+
+    attr_dict = dict(attrs.items())
+
+
+    label_dict = {'label': '{} [{}]'.format(name, unit),
+    'label_latex': '${0} \: [\mathrm{{{1}}}]$'.format(name, unit)}
+    label_dict.update(attr_dict)
+    update_attrs(attrs, label_dict)
+
+
+
+def add_attrs_if_missing(h5_attrs, **kwargs):
+    h5_attrs_dict = dict(h5_attrs.items())
+    kwargs.update(h5_attrs_dict)
+    update_attrs(h5_attrs, kwargs)
+
+def infer_missing_labels(attrs, dataset_type=None, abscissa=None, n_avg=1):
+    infer_labels(attrs)
+    if dataset_type == 'x':
+        add_attrs_if_missing(attrs, initial=0)
+    elif dataset_type == 'y':
+        if abscissa is not None:
+            add_attrs_if_missing(attrs, abscissa=abscissa, n_avg=n_avg)
+        else:
+            raise ValueError('absicca must be specified')
+
+
+
+
+
+
+
