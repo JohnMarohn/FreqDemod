@@ -195,9 +195,18 @@ class Signal(object):
         # 4. Load from a completely different hdf5 file; specify data, x, differently.
         pass
 
-    def load_hdf5_default(self, h5object, x_dataset='x', y_dataset='y',
+    def load_hdf5_default(self, h5object, y_dataset='y', x_dataset='x',
                                  infer_dt=True, infer_missing_attrs=True):
-        """Load an hdf5 file saved with default freqdemod attributes."""
+        """Load an hdf5 file saved with default freqdemod attributes.
+
+        :param h5object: An h5py File or group object, which contains x_dataset
+            and y_dataset
+        :param str x_dataset: x_dataset name (relative to h5object)
+        :param str y_dataset: x_dataset name (relative to h5object)
+        :param bool infer_dt: If True, infer the time step dt from the contents
+            of the x_dataset
+        :param bool infer_missing_attrs: If True, fill in any missing attributes
+            used by freqdemod."""
         h5object.copy(x_dataset, self.f, name='x')
         h5object.copy(y_dataset, self.f, name='y')
 
@@ -205,15 +214,17 @@ class Signal(object):
         y_attrs = self.f['y'].attrs
 
         if infer_dt:
-            check_minimum_attrs(x_attrs, 'very_permissive')
+            check_minimum_attrs(x_attrs, 'permissive')
             x_attrs['step'] = infer_timestep(h5object[x_dataset])
-        else:
-            check_minimum_attrs(x_attrs, 'very_permissive_x')
 
         if infer_missing_attrs:
+            check_minimum_attrs(x_attrs, 'permissive_x')
             infer_missing_labels(x_attrs, dataset_type='x')
-            check_minimum_attrs(y_attrs, 'very_permissive')
+            check_minimum_attrs(y_attrs, 'permissive')
             infer_missing_labels(y_attrs, dataset_type='y', abscissa='x')
+
+        check_minimum_attrs(x_attrs, 'freqdemod_x')
+        check_minimum_attrs(y_attrs, 'freqdemod_y')
 
     # These handle most of the use cases, I think.
     def load_hdf5_general(self, h5object, y_dataset='y', x_dataset=None,

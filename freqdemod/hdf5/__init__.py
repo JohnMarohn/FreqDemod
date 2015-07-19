@@ -98,24 +98,25 @@ def attr_dict_options(setting):
     very_permissive
         Only require name, unit; other attributes can be inferred / ignored."""
     attr_dict_settings = {
-     'very_permissive' :   {u'name', u'unit'},
-     'permissive' :        {u'name', u'unit', u'label'},
-     'latex' :             {u'name', u'unit', u'label', u'label_latex'},
-     'freq_demod_y' :      {u'name', u'unit', u'label', u'label_latex', u'abscissa'},
-     'pedantic_y' :        {u'name', u'unit', u'label', u'label_latex', u'abscissa', u'help', u'n_avg'},
-     'very_permissive_x' : {u'name', u'unit', u'step'},
-     'permissive_x'      : {u'name', u'unit', u'step', u'label'},
-     'latex_x'           : {u'name', u'unit', u'step', u'label', u'label_latex'},
-     'freq_demod_x'      : {u'name', u'unit', u'step', u'label', u'label_latex', u'initial'},
-     'pedantic_x'        : {u'name', u'unit', u'step', u'label', u'label_latex', u'initial', u'help'},}
+     'permissive' :   {u'name', u'unit'},
+     'label' :        {u'name', u'unit', u'label'},
+     'latex' :        {u'name', u'unit', u'label', u'label_latex'},
+     'freqdemod_y' :  {u'name', u'unit', u'label', u'label_latex', u'abscissa'},
+     'pedantic_y' :   {u'name', u'unit', u'label', u'label_latex', u'abscissa', u'help', u'n_avg'},
+     'permissive_x' : {u'name', u'unit', u'step'},
+     'label_x'      : {u'name', u'unit', u'step', u'label'},
+     'latex_x'      : {u'name', u'unit', u'step', u'label', u'label_latex'},
+     'freqdemod_x'  : {u'name', u'unit', u'step', u'label', u'label_latex', u'initial'},
+     'pedantic_x'   : {u'name', u'unit', u'step', u'label', u'label_latex', u'initial', u'help'},}
     return attr_dict_settings[setting]
 
 
-def check_minimum_attrs(attrs, setting='very_permissive'):
+def check_minimum_attrs(attrs, setting='permissive'):
     required_attrs = attr_dict_options(setting)
-    if set(attrs) < required_attrs:
+    attrs_set = set(attrs)
+    if attrs_set < required_attrs:
         raise ValueError("""\
-dataset must have attributes.""")
+dataset missing required attributes: {}""".format(", ".join(required_attrs - attrs_set)))
 
 
 def infer_labels(attrs):
