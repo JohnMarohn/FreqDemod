@@ -231,7 +231,7 @@ class HDF5LoadGeneral(unittest.TestCase):
 
 
     def test_load_general_format_h5_x_y(self):
-        self.s.load_hdf5_general(self.f, s_dataset='position',
+        self.s._load_hdf5_general(self.f, s_dataset='position',
                                  t_dataset='time', s_name='x', s_unit='nm')
 
         assert_allclose(self.s.f['x'][:], self.x)
@@ -242,7 +242,7 @@ class HDF5LoadGeneral(unittest.TestCase):
         self.assertEqual(self.s.f['y'].attrs['label'], 'x [nm]')
 
     def test_load_general_format_h5_y_dt(self):
-        self.s.load_hdf5_general(self.f, s_dataset='position',
+        self.s._load_hdf5_general(self.f, s_dataset='position',
                                  dt=1, s_name='x', s_unit='nm')
 
         assert_array_equal(self.s.f['x'][:], self.x)
@@ -254,7 +254,7 @@ class HDF5LoadGeneral(unittest.TestCase):
 
     def test_load_general_no_x_or_dt_specified(self):
         with self.assertRaises(ValueError):
-            self.s.load_hdf5_general(self.f, s_dataset='position', s_name='x',
+            self.s._load_hdf5_general(self.f, s_dataset='position', s_name='x',
                                      s_unit='nm')
 
     def tearDown(self):
@@ -297,7 +297,7 @@ class HDF5LoadDefault(unittest.TestCase):
         self.s = Signal()
 
     def test_hdf5_general_all_attrs_specified(self):
-        self.s.load_hdf5_default(self.f, infer_dt=False,
+        self.s._load_hdf5_default(self.f, infer_dt=False,
                                  infer_attrs=False)
 
         assert_array_equal(self.s.f['x'][:], self.x)
@@ -308,7 +308,7 @@ class HDF5LoadDefault(unittest.TestCase):
     def test_hdf5_general_infer_dt(self):
         del self.f['x'].attrs['step']
 
-        self.s.load_hdf5_default(self.f, infer_dt=True,
+        self.s._load_hdf5_default(self.f, infer_dt=True,
                                  infer_attrs=False)
 
         assert_array_equal(self.s.f['x'][:], self.x)
@@ -320,7 +320,7 @@ class HDF5LoadDefault(unittest.TestCase):
     def test_hdf5_general_infer_missing_label(self):
         del self.f['x'].attrs['label']
 
-        self.s.load_hdf5_default(self.f, infer_dt=False,
+        self.s._load_hdf5_default(self.f, infer_dt=False,
                                  infer_attrs=True)
 
         assert_array_equal(self.s.f['x'][:], self.x)
@@ -331,7 +331,7 @@ class HDF5LoadDefault(unittest.TestCase):
     def test_hdf5_general_infer_missing_abscissa(self):
         del self.f['y'].attrs['abscissa']
 
-        self.s.load_hdf5_default(self.f, infer_dt=False,
+        self.s._load_hdf5_default(self.f, infer_dt=False,
                                  infer_attrs=True)
 
         assert_array_equal(self.s.f['x'][:], self.x)
@@ -344,7 +344,7 @@ class HDF5LoadDefault(unittest.TestCase):
         del self.f['y'].attrs['label']
         del self.f['y'].attrs['label_latex']
 
-        self.s.load_hdf5_default(self.f, infer_dt=False,
+        self.s._load_hdf5_default(self.f, infer_dt=False,
                                  infer_attrs=True)
 
         assert_array_equal(self.s.f['x'][:], self.x)

@@ -59,7 +59,7 @@ from freqdemod.hdf5 import (update_attrs, check_minimum_attrs,
                             infer_missing_attrs, infer_labels)
 from freqdemod.util import (timestamp_temp_filename, infer_timestep)
 from collections import OrderedDict
-
+import six
 import matplotlib.pyplot as plt 
 
 class Signal(object):
@@ -184,53 +184,35 @@ class Signal(object):
         
         self.report.append(" ".join(new_report))
 
-    def load_hdf5(self, filename, t_dataset='x', s_dataset='y', h5object=None):
-        # Load hdf5 use cases:
-        # 1. Load from a file created directly by freqdemod (just copy the datasets, verify, and be done)
-        # 2. Load x and y from a file 'inspired by' freqdemod (Labview code; some attributes may be incomplete / missing, infer_dt, or dt specified?)
-        # 3. Load y from a file 'inspired by' freqdemod, specify dt separately
-        # 4. Load from a completely different hdf5 file; specify data, x, differently.
-        pass
-
-    def load_hdf5_default(self, h5object, s_dataset='y', t_dataset='x',
-                                 infer_dt=True, infer_attrs=True):
+    def load_hdf5(self, f, s_dataset='y', t_dataset='x', infer_dt=True,
+                  infer_attrs=True,):
         """Load an hdf5 file saved with default freqdemod attributes.
 
-        :param h5object: An h5py File or group object, which contains t_dataset
-            and s_dataset
+        :param f: A filename, or h5py file or group object,
+            which contains t_dataset and s_dataset
         :param str s_dataset: signal dataset name (relative to h5object)
         :param str t_dataset: time dataset name (relative to h5object)
         :param bool infer_dt: If True, infer the time step dt from the contents
             of the t_dataset
         :param bool infer_attrs: If True, fill in any missing attributes
             used by freqdemod."""
-        h5object.copy(t_dataset, self.f, name='x')
-        h5object.copy(s_dataset, self.f, name='y')
+        if isinstance(f, six.string_types):
+            with h5py.File(f, 'r') as fh:
+                self._load_hdf5_default(fh, s_dataset=s_dataset,
+                    t_dataset=t_dataset, infer_dt=infer_dt,
+                    infer_attrs=infer_attrs)
+        else:
+            self._load_hdf5_default(f, s_dataset=s_dataset,
+                    t_dataset=t_dataset, infer_dt=infer_dt,
+                    infer_attrs=infer_attrs)
 
-        x_attrs = self.f['x'].attrs
-        y_attrs = self.f['y'].attrs
-
-        if infer_dt:
-            check_minimum_attrs(x_attrs, 'permissive')
-            x_attrs['step'] = infer_timestep(h5object[t_dataset])
-
-        if infer_attrs:
-            check_minimum_attrs(x_attrs, 'permissive_x')
-            infer_missing_attrs(x_attrs, dataset_type='x')
-
-            check_minimum_attrs(y_attrs, 'permissive')
-            infer_missing_attrs(y_attrs, dataset_type='y', abscissa='x')
-
-        check_minimum_attrs(x_attrs, 'freqdemod_x')
-        check_minimum_attrs(y_attrs, 'freqdemod_y')
-
-    # These handle most of the use cases, I think.
-    def load_hdf5_general(self, h5object, s_dataset='y', t_dataset=None,
+    def load_hdf5_general(self, f, s_dataset='y', t_dataset=None,
                            dt=None, s_name=None, s_unit=None,
                            s_help='cantilever displacement'):
         """Load data from an arbitrarily formatted hdf5 file.
 
-        :param h5object: An h5py File or group object, which contains s_dataset
+        :param f: A filename, or h5py file or group object,
+            which contains s_dataset
         :param str s_dataset: signal dataset name (relative to h5object)
         :param str t_dataset: time dataset name (optional; or specify dt)
         :param float dt: the time per point [s]
@@ -238,35 +220,15 @@ class Signal(object):
         :param str s_name: the signal's units
         :param str s_help: the signal's help string
         """
-        h5object.copy(s_dataset, self.f, name='y', without_attrs=True)
-        y_attrs = {'name': s_name,
-                   'unit': s_unit,
-                   'help': s_help,
-                   'abscissa': 'x',
-                   'n_avg': 1}
-        update_attrs(self.f['y'].attrs, y_attrs)
-        infer_labels(self.f['y'].attrs)
-
-
-        if t_dataset is not None:
-            h5object.copy(t_dataset, self.f, name='x', without_attrs=True)
-            dt_ = infer_timestep(h5object[t_dataset])
-        elif dt is not None:
-            self.f['x'] = dt * np.arange(self.f['y'][:].size)
-            dt_ = dt
+        if isinstance(f, six.string_types):
+            with h5py.File(f, 'r') as fh:
+                self._load_hdf5_general(fh, s_dataset=s_dataset,
+                    t_dataset=t_dataset, dt=dt, s_name=s_name, s_unit=s_unit,
+                    s_help=s_help)
         else:
-            raise ValueError("Must specify one of 't_dataset' or 'dt'")
-
-
-        x_attrs = {'name': 't',
-                     'unit': 's',
-                     'label': 't [s]',
-                     'label_latex':'$t \: [\mathrm{s}]$',
-                     'help': 'time',
-                     'initial': 0.0,
-                     'step': dt_}
-
-        update_attrs(self.f['x'].attrs, x_attrs)
+            self._load_hdf5_general(f, s_dataset=s_dataset,
+                t_dataset=t_dataset, dt=dt, s_name=s_name, s_unit=s_unit,
+                s_help=s_help)
 
 
     def close(self):
@@ -1315,6 +1277,81 @@ class Signal(object):
         print("Signal file summary")
         print("===================")
         print_hdf5_item_structure(self.f)
+
+    def _load_hdf5_default(self, h5object, s_dataset='y', t_dataset='x',
+                             infer_dt=True, infer_attrs=True):
+        """Load an hdf5 file saved with default freqdemod attributes.
+
+        :param h5object: An h5py File or group object, which contains t_dataset
+            and s_dataset
+        :param str s_dataset: signal dataset name (relative to h5object)
+        :param str t_dataset: time dataset name (relative to h5object)
+        :param bool infer_dt: If True, infer the time step dt from the contents
+            of the t_dataset
+        :param bool infer_attrs: If True, fill in any missing attributes
+            used by freqdemod."""
+        h5object.copy(t_dataset, self.f, name='x')
+        h5object.copy(s_dataset, self.f, name='y')
+
+        x_attrs = self.f['x'].attrs
+        y_attrs = self.f['y'].attrs
+
+        if infer_dt:
+            check_minimum_attrs(x_attrs, 'permissive')
+            x_attrs['step'] = infer_timestep(h5object[t_dataset])
+
+        if infer_attrs:
+            check_minimum_attrs(x_attrs, 'permissive_x')
+            infer_missing_attrs(x_attrs, dataset_type='x')
+
+            check_minimum_attrs(y_attrs, 'permissive')
+            infer_missing_attrs(y_attrs, dataset_type='y', abscissa='x')
+
+        check_minimum_attrs(x_attrs, 'freqdemod_x')
+        check_minimum_attrs(y_attrs, 'freqdemod_y')
+
+    def _load_hdf5_general(self, h5object, s_dataset='y', t_dataset=None,
+                           dt=None, s_name=None, s_unit=None,
+                           s_help='cantilever displacement'):
+        """Load data from an arbitrarily formatted hdf5 file.
+
+        :param h5object: An h5py File or group object, which contains s_dataset
+        :param str s_dataset: signal dataset name (relative to h5object)
+        :param str t_dataset: time dataset name (optional; or specify dt)
+        :param float dt: the time per point [s]
+        :param str s_name: the signal's name
+        :param str s_name: the signal's units
+        :param str s_help: the signal's help string
+        """
+        h5object.copy(s_dataset, self.f, name='y', without_attrs=True)
+        y_attrs = {'name': s_name,
+                   'unit': s_unit,
+                   'help': s_help,
+                   'abscissa': 'x',
+                   'n_avg': 1}
+        update_attrs(self.f['y'].attrs, y_attrs)
+        infer_labels(self.f['y'].attrs)
+
+
+        if t_dataset is not None:
+            h5object.copy(t_dataset, self.f, name='x', without_attrs=True)
+            dt_ = infer_timestep(h5object[t_dataset])
+        elif dt is not None:
+            self.f['x'] = dt * np.arange(self.f['y'][:].size)
+            dt_ = dt
+        else:
+            raise ValueError("Must specify one of 't_dataset' or 'dt'")
+
+
+        x_attrs = {'name': 't',
+                     'unit': 's',
+                     'label': 't [s]',
+                     'label_latex':'$t \: [\mathrm{s}]$',
+                     'help': 'time',
+                     'initial': 0.0,
+                     'step': dt_}
+
+        update_attrs(self.f['x'].attrs, x_attrs)
 	       
 
 def print_hdf5_item_structure(g, offset='    ') :
