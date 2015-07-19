@@ -64,35 +64,31 @@ import matplotlib.pyplot as plt
 
 class Signal(object):
 
-    # Goal: get the signal to a state with data, appropriate labels, time_constants
-    #       information about how to save the workup
-
-    # Source: numpy or hdf5
-
-    # Signal.load_nparray(self, s, s_name, s_unit, dt)
-
-    # Signal._load_hdf5(self, filename)
-
-    # Destination: hdf5 file, or delete when exit memory
-
     def __init__(self, filename=None, mode='w-', driver='core', backing_store=False):
         """
-        Initialize the *Signal* object. Inputs:
-        
-        :param str filename: the signal's (future) filename
-        :param bool backing_store: If False, do not save the file to disk
+        Initialize the *Signal's* hdf5 data structure. Calling with no arguments
+        results in an in-memory only object. To save the data to disk, provide
+        *both* a filename and ``backing_store=True``.
+
+
+        :param str filename: the signal's filename.
+        :param str mode: file open mode (see h5py.File)
+        :param str driver: hdf5 driver (see h5py.File)
+        :param bool backing_store: If True, save the file to disk.
         
         Add the following objects to the *Signal* object
         
         :param h5py.File f: an h5py object stored in core memory 
         :param str report: a string summarizing in words what has
             been done to the signal (e.g., "Empty signal object created")
-            
-        If no filename is given, then create an object containing just a 
-        report.  Note that you can't *do* anything with this empty object
-        except to call the *open* function.  If you intend to use the object
-        but not save it to disk, then you should create it with a dummy filename.
-            
+
+
+        Examples
+        --------
+
+        s = Signal()                                      # In-memory only
+        s = Signal('not-saved.h5')                        # Still in-memory only
+        s = Signal('save-to-disk.h5', backing_store=True) # Save to disk
         """
         new_report = []
                 
@@ -146,6 +142,7 @@ class Signal(object):
         :param str s_name: the signal's name
         :param str s_name: the signal's units
         :param float dt: the time per point [s]
+        :param str s_help: the signal's help string
         
         Add the following objects to the *Signal* object
         
@@ -173,7 +170,7 @@ class Signal(object):
             ('unit',s_unit),
             ('label','{0} [{1}]'.format(s_name,s_unit)),
             ('label_latex','${0} \: [\mathrm{{{1}}}]$'.format(s_name,s_unit)),
-            ('help','cantilever displacement'),
+            ('help', s_help),
             ('abscissa','x'),
             ('n_avg',1)
             ])
@@ -230,7 +227,7 @@ class Signal(object):
     # These handle most of the use cases, I think.
     def load_hdf5_general(self, h5object, s_dataset='y', t_dataset=None,
                            dt=None, s_name=None, s_unit=None,
-                           help_='cantilever displacement'):
+                           s_help='cantilever displacement'):
         """Load data from an arbitrarily formatted hdf5 file.
 
         :param h5object: An h5py File or group object, which contains s_dataset
@@ -239,12 +236,12 @@ class Signal(object):
         :param float dt: the time per point [s]
         :param str s_name: the signal's name
         :param str s_name: the signal's units
-        :param str help_: the signal's help string
+        :param str s_help: the signal's help string
         """
         h5object.copy(s_dataset, self.f, name='y', without_attrs=True)
         y_attrs = {'name': s_name,
                    'unit': s_unit,
-                   'help': help_,
+                   'help': s_help,
                    'abscissa': 'x',
                    'n_avg': 1}
         update_attrs(self.f['y'].attrs, y_attrs)
