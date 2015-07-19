@@ -138,7 +138,7 @@ def add_attrs_if_missing(h5_attrs, **kwargs):
     kwargs.update(h5_attrs_dict)
     update_attrs(h5_attrs, kwargs)
 
-def infer_missing_labels(attrs, dataset_type=None, abscissa=None, n_avg=1):
+def infer_missing_attrs(attrs, dataset_type=None, abscissa=None, n_avg=1):
     infer_labels(attrs)
     if dataset_type == 'x':
         add_attrs_if_missing(attrs, initial=0)
