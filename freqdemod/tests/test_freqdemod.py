@@ -17,23 +17,24 @@ Tests for the demodulate module.
 #
 
 from freqdemod.demodulate import Signal
+from freqdemod.hdf5 import update_attrs
 from freqdemod.util import silent_remove
 import unittest
 import numpy as np
-from numpy.testing import assert_allclose
-# import h5py
+from numpy.testing import assert_allclose, assert_array_equal
+import h5py
 
 class InitLoadSaveTests(unittest.TestCase):
     """
     Make sure the *Signal* object is set up correctly.
     """
-
+    filename = '.InitLoadSaveTests_1.h5'
     def setUp(self):
         """
         Create an trial *Signal* object
         """
         
-        self.s = Signal('.InitLoadSaveTests_1.h5')
+        self.s = Signal(self.filename)
         self.s.load_nparray(np.arange(3),"x","nm",10E-6)
 
     def test_report(self):
@@ -50,13 +51,27 @@ class InitLoadSaveTests(unittest.TestCase):
         """Check y-array data."""
         
         self.assertTrue(np.allclose(self.s.f['y'],np.array([0, 1, 2]), rtol=1e-05, atol=1e-08))
-    
+
+    def tearDown(self):
+        """Close the h5 files before the next iteration."""
+        self.s.f.close()
+
+
+class TestClose(unittest.TestCase):
+    filename = '.TestClose.h5'
+    def setUp(self):
+        self.s = Signal(self.filename, backing_store=True)
+        self.s.load_nparray(np.arange(3),"x","nm",10E-6)
+        self.s.close()
+
+    def tearDown(self):
+        silent_remove(self.filename)
+
     def test_close(self):
         """Verify closed object by testing one of the attributes"""
         
-        self.s.close()
         self.snew = Signal()
-        self.snew.open('.InitLoadSaveTests_1.h5')
+        self.snew.open(self.filename)
         
         # print out the contents of the file nicely        
                                 
@@ -79,17 +94,7 @@ class InitLoadSaveTests(unittest.TestCase):
         # test one of the attributes
 
         self.assertTrue(self.snew.f.attrs['source'],'demodulate.py')
-    
-    def tearDown(self):
-        """Close the h5 files before the next iteration."""
-        try:
-            self.s.f.close()
-        except:
-            pass
-        try:
-            self.snew.f.close()
-        except:
-            pass        
+
         
 class MaskTests(unittest.TestCase):
     
@@ -195,10 +200,9 @@ class FFTTests(unittest.TestCase):
 
 
 class FFTOddPoints(unittest.TestCase):
-    filename = '.FFTOddPoints.h5'
     def setUp(self):
         self.x = np.array([0, 1, 0, -1, 0, 1, 0, -1, 0])
-        self.s = Signal(self.filename)
+        self.s = Signal()
         self.s.load_nparray(self.x, 'x', 'nm', 1)
 
     def test_ifft_odd_pts(self):
@@ -212,7 +216,146 @@ class FFTOddPoints(unittest.TestCase):
 
     def tearDown(self):
         self.s.close()
-        silent_remove(self.filename)
+
+
+class HDF5LoadGeneral(unittest.TestCase):
+    filename = '.general_format_h5_file.h5'
+
+    def setUp(self):
+        self.x = np.array([0, 1, 2])
+        self.y = np.array([0, 2, 4])
+        self.s = Signal()
+        self.f = h5py.File(self.filename, driver='core',
+                           backing_store=False)
+        self.f['time'] = self.x
+        self.f['position'] = self.y
+
+    def test_load_general_format_h5_x_y(self):
+        self.s._load_hdf5_general(self.f, s_dataset='position',
+                                  t_dataset='time', s_name='x', s_unit='nm')
+
+        assert_allclose(self.s.f['x'][:], self.x)
+        assert_allclose(self.s.f['y'][:], self.y)
+
+        self.assertEqual(self.s.f['x'].attrs['step'], 1)
+        self.assertEqual(self.s.f['y'].attrs['name'], 'x')
+        self.assertEqual(self.s.f['y'].attrs['label'], 'x [nm]')
+
+    def test_load_general_format_h5_y_dt(self):
+        self.s._load_hdf5_general(self.f, s_dataset='position',
+                                  dt=1, s_name='x', s_unit='nm')
+
+        assert_array_equal(self.s.f['x'][:], self.x)
+        assert_array_equal(self.s.f['y'][:], self.y)
+
+        self.assertEqual(self.s.f['x'].attrs['step'], 1)
+        self.assertEqual(self.s.f['y'].attrs['name'], 'x')
+        self.assertEqual(self.s.f['y'].attrs['label'], 'x [nm]')
+
+    def test_load_general_no_x_or_dt_specified(self):
+        with self.assertRaises(ValueError):
+            self.s._load_hdf5_general(self.f, s_dataset='position', s_name='x',
+                                      s_unit='nm')
+
+    def tearDown(self):
+        self.f.close()
+        self.s.close()
+
+
+class HDF5LoadDefault(unittest.TestCase):
+    filename = '.default_format_h5_file.h5'
+
+    def setUp(self):
+        self.f = h5py.File(self.filename, driver='core',
+                           backing_store=False)
+        self.x = np.array([0, 1, 2])
+        self.y = np.array([0, 2, 4])
+
+        self.x_attrs = {'name': 't',
+                        'unit': 's',
+                        'label': 't [s]',
+                        'label_latex': '$t \\: [\\mathrm{s}]$',
+                        'help': 'time axis',
+                        'initial': 0,
+                        'step': 1}
+
+        self.y_attrs = {'name': 'x',
+                        'unit': 'nm',
+                        'label': 'x [nm]',
+                        'label_latex': '$x \: [\mathrm{nm}]$',
+                        'help': 'cantilever amplitude',
+                        'abscissa': 'x',
+                        'n_avg': 1}
+
+        self.f['x'] = self.x
+        self.f['y'] = self.y
+
+        update_attrs(self.f['x'].attrs, self.x_attrs)
+        update_attrs(self.f['y'].attrs, self.y_attrs)
+
+        self.s = Signal()
+
+    def test_hdf5_general_all_attrs_specified(self):
+        self.s._load_hdf5_default(self.f, infer_dt=False,
+                                  infer_attrs=False)
+
+        assert_array_equal(self.s.f['x'][:], self.x)
+        assert_array_equal(self.f['y'][:], self.y)
+        self.assertEqual(dict(self.s.f['x'].attrs), self.x_attrs)
+        self.assertEqual(dict(self.s.f['y'].attrs), self.y_attrs)
+
+    def test_hdf5_general_infer_dt(self):
+        del self.f['x'].attrs['step']
+
+        self.s._load_hdf5_default(self.f, infer_dt=True,
+                                  infer_attrs=False)
+
+        assert_array_equal(self.s.f['x'][:], self.x)
+        assert_array_equal(self.f['y'][:], self.y)
+        self.assertEqual(dict(self.s.f['x'].attrs), self.x_attrs)
+        self.assertEqual(dict(self.s.f['y'].attrs), self.y_attrs)
+
+    def test_hdf5_general_infer_missing_label(self):
+        del self.f['x'].attrs['label']
+
+        self.s._load_hdf5_default(self.f, infer_dt=False,
+                                  infer_attrs=True)
+
+        assert_array_equal(self.s.f['x'][:], self.x)
+        assert_array_equal(self.f['y'][:], self.y)
+        self.assertEqual(dict(self.s.f['x'].attrs), self.x_attrs)
+        self.assertEqual(dict(self.s.f['y'].attrs), self.y_attrs)
+
+    def test_hdf5_general_infer_missing_abscissa(self):
+        del self.f['y'].attrs['abscissa']
+
+        self.s._load_hdf5_default(self.f, infer_dt=False,
+                                  infer_attrs=True)
+
+        assert_array_equal(self.s.f['x'][:], self.x)
+        assert_array_equal(self.f['y'][:], self.y)
+        self.assertEqual(dict(self.s.f['x'].attrs), self.x_attrs)
+        self.assertEqual(dict(self.s.f['y'].attrs), self.y_attrs)
+
+
+    def test_hdf5_general_infer_missing_y_labels(self):
+        del self.f['y'].attrs['label']
+        del self.f['y'].attrs['label_latex']
+
+        self.s._load_hdf5_default(self.f, infer_dt=False,
+                                 infer_attrs=True)
+
+        assert_array_equal(self.s.f['x'][:], self.x)
+        assert_array_equal(self.f['y'][:], self.y)
+        self.assertEqual(dict(self.s.f['x'].attrs), self.x_attrs)
+        self.assertEqual(dict(self.s.f['y'].attrs), self.y_attrs)
+
+    def tearDown(self):
+        self.f.close()
+        self.s.close()
+
+
+
 
 
 class MiscTests(unittest.TestCase):

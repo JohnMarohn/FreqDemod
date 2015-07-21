@@ -167,7 +167,7 @@ class Test_disk_data2(unittest.TestCase):
 
 class Test_update_attrs_extended(unittest.TestCase):
     """
-    Read and write an x and y dataset representing a cantielver oscillation.
+    Read and write an x and y dataset representing a cantilever oscillation.
     Use an HDF5 file format that Dwyer, Marohn, and Harrell have agreed upon (with
     minor modifications).  This class's unit tests create a hidden HDF5 whose 
     contents can be examined using the command-line call:: 
@@ -213,6 +213,7 @@ class Test_update_attrs_extended(unittest.TestCase):
                         'label': 'x [nm]',
                         'label_latex': '$x \: [\mathrm{nm}]$',
                         'help': 'cantilever amplitude',
+                        'abscissa': 'x',
                         'n_avg': 1}
 
         self.f_attrs = {'date': self.date,

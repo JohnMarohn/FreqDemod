@@ -6,6 +6,9 @@
 # 2014/06/28
 
 import math
+import datetime
+import uuid
+import numpy as np
 import errno
 import os
 
@@ -37,3 +40,21 @@ def silent_remove(filename):
     except OSError as e:  # this would be "except OSError, e:" before Python 2.6
         if e.errno != errno.ENOENT:  # errno.ENOENT = no such file or directory
             raise  # re-raise exception if a different error occured
+
+
+def timestamp_temp_filename(suffix, random_length=6):
+    """Intented as a random, temporary filename"""
+    time_prefix = datetime.datetime.now().strftime("%H%M%S")
+    random_sequence = str(uuid.uuid4())[:random_length]
+    return time_prefix + '-' +  random_sequence + suffix
+
+
+def infer_timestep(x):
+    dt_array = np.diff(x)
+    dt_range = dt_array.max() / dt_array.min()
+    if dt_range > 1.01 or dt_range < 0:
+        raise ValueError("Time data points must be evenly spaced.")
+    else:
+        return dt_array.mean()
+
+
