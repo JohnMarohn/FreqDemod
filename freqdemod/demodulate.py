@@ -199,37 +199,39 @@ class Signal(object):
         if isinstance(f, six.string_types):
             with h5py.File(f, 'r') as fh:
                 self._load_hdf5_default(fh, s_dataset=s_dataset,
-                    t_dataset=t_dataset, infer_dt=infer_dt,
-                    infer_attrs=infer_attrs)
+                                        t_dataset=t_dataset, infer_dt=infer_dt,
+                                        infer_attrs=infer_attrs)
         else:
             self._load_hdf5_default(f, s_dataset=s_dataset,
-                    t_dataset=t_dataset, infer_dt=infer_dt,
-                    infer_attrs=infer_attrs)
+                                    t_dataset=t_dataset,
+                                    infer_dt=infer_dt,
+                                    infer_attrs=infer_attrs)
 
-    def load_hdf5_general(self, f, s_dataset='y', t_dataset=None,
-                           dt=None, s_name=None, s_unit=None,
-                           s_help='cantilever displacement'):
+    def load_hdf5_general(self, f, s_dataset, s_name, s_unit,
+                          t_dataset=None, dt=None,
+                          s_help='cantilever displacement'):
         """Load data from an arbitrarily formatted hdf5 file.
 
         :param f: A filename, or h5py file or group object,
             which contains s_dataset
         :param str s_dataset: signal dataset name (relative to h5object)
-        :param str t_dataset: time dataset name (optional; or specify dt)
-        :param float dt: the time per point [s]
         :param str s_name: the signal's name
         :param str s_name: the signal's units
+        :param str t_dataset: time dataset name (optional; or specify dt)
+        :param float dt: the time per point [s]
         :param str s_help: the signal's help string
         """
         if isinstance(f, six.string_types):
             with h5py.File(f, 'r') as fh:
                 self._load_hdf5_general(fh, s_dataset=s_dataset,
-                    t_dataset=t_dataset, dt=dt, s_name=s_name, s_unit=s_unit,
-                    s_help=s_help)
+                                        s_name=s_name, s_unit=s_unit,
+                                        t_dataset=t_dataset, dt=dt,
+                                        s_help=s_help)
         else:
             self._load_hdf5_general(f, s_dataset=s_dataset,
-                t_dataset=t_dataset, dt=dt, s_name=s_name, s_unit=s_unit,
-                s_help=s_help)
-
+                                    s_name=s_name, s_unit=s_unit,
+                                    t_dataset=t_dataset, dt=dt,
+                                    s_help=s_help)
 
     def close(self):
         """Update report; write the file to disk; close the file."""
@@ -1279,7 +1281,7 @@ class Signal(object):
         print_hdf5_item_structure(self.f)
 
     def _load_hdf5_default(self, h5object, s_dataset='y', t_dataset='x',
-                             infer_dt=True, infer_attrs=True):
+                           infer_dt=True, infer_attrs=True):
         """Load an hdf5 file saved with default freqdemod attributes.
 
         :param h5object: An h5py File or group object, which contains t_dataset
@@ -1310,17 +1312,17 @@ class Signal(object):
         check_minimum_attrs(x_attrs, 'freqdemod_x')
         check_minimum_attrs(y_attrs, 'freqdemod_y')
 
-    def _load_hdf5_general(self, h5object, s_dataset='y', t_dataset=None,
-                           dt=None, s_name=None, s_unit=None,
+    def _load_hdf5_general(self, h5object, s_dataset, s_name, s_unit,
+                           t_dataset=None, dt=None,
                            s_help='cantilever displacement'):
         """Load data from an arbitrarily formatted hdf5 file.
 
         :param h5object: An h5py File or group object, which contains s_dataset
         :param str s_dataset: signal dataset name (relative to h5object)
-        :param str t_dataset: time dataset name (optional; or specify dt)
-        :param float dt: the time per point [s]
         :param str s_name: the signal's name
         :param str s_name: the signal's units
+        :param str t_dataset: time dataset name (optional; or specify dt)
+        :param float dt: the time per point [s]
         :param str s_help: the signal's help string
         """
         h5object.copy(s_dataset, self.f, name='y', without_attrs=True)
@@ -1332,7 +1334,6 @@ class Signal(object):
         update_attrs(self.f['y'].attrs, y_attrs)
         infer_labels(self.f['y'].attrs)
 
-
         if t_dataset is not None:
             h5object.copy(t_dataset, self.f, name='x', without_attrs=True)
             dt_ = infer_timestep(h5object[t_dataset])
@@ -1342,17 +1343,16 @@ class Signal(object):
         else:
             raise ValueError("Must specify one of 't_dataset' or 'dt'")
 
-
         x_attrs = {'name': 't',
-                     'unit': 's',
-                     'label': 't [s]',
-                     'label_latex':'$t \: [\mathrm{s}]$',
-                     'help': 'time',
-                     'initial': 0.0,
-                     'step': dt_}
+                   'unit': 's',
+                   'label': 't [s]',
+                   'label_latex': '$t \: [\mathrm{s}]$',
+                   'help': 'time',
+                   'initial': 0.0,
+                   'step': dt_}
 
         update_attrs(self.f['x'].attrs, x_attrs)
-	       
+
 
 def print_hdf5_item_structure(g, offset='    ') :
 
