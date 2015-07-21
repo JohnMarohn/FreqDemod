@@ -1,6 +1,12 @@
 Development History
 ===================
 
+2015/07/21
+----------
+
+* Changed ``Signal`` object so no hdf5 files are created by default. Previously, ``Signal`` objects always created hdf5 files when they were closed; they would also overwrite any previously existing filename by default. In most cases, this eliminates the need delete temporary files. To save the Signal data file to disk, use ``Signal('filename.h5', backing_store=True)``.
+* Added ``load_hdf5`` and ``load_hdf5_general`` methods to ``Signal`` to allow importing signal data directly from hdf5 files.
+
 2015/07/12
 ----------
 
@@ -14,9 +20,9 @@ Development History
   in the frequency domain, induces sinc-type oscillations in the time domain.  To avoid these sinc-type
   oscillations, we have introduced a cosine filter.
 
-  A call like ``S.freq_filter_bp(1.00)`` will create a brick wall filter of bandwidth 1 kHz and order
+  A call like ``s.freq_filter_bp(1.00)`` will create a brick wall filter of bandwidth 1 kHz and order
   50 (default); this call is unchanged.  To create a cosine filter instead,
-  ``S.freq_filter_bp(bw=1.00, style="cosine")``.
+  ``s.freq_filter_bp(bw=1.00, style="cosine")``.
 
 
 2015/01/28
