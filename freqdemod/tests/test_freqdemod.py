@@ -368,7 +368,7 @@ class SaveTests(unittest.TestCase):
 
     def test_save_pass_list_datasets(self):
         self.s.save(self.f_dst, ['x', 'y'])
-        assert_array_equal(self.f_dst['x'][:], self.x[:])
+        assert_array_equal(self.f_dst['x'][:], self.x)
         assert_array_equal(self.f_dst['y'][:], self.y)
         self.assertEqual(self.f_dst.attrs['two'], 2)
 
