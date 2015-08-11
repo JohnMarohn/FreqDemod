@@ -95,7 +95,7 @@ class TestClose(unittest.TestCase):
 
         self.assertTrue(self.snew.f.attrs['source'],'demodulate.py')
 
-        
+
 class MaskTests(unittest.TestCase):
     
     def setUp(self):
@@ -337,13 +337,12 @@ class HDF5LoadDefault(unittest.TestCase):
         self.assertEqual(dict(self.s.f['x'].attrs), self.x_attrs)
         self.assertEqual(dict(self.s.f['y'].attrs), self.y_attrs)
 
-
     def test_hdf5_general_infer_missing_y_labels(self):
         del self.f['y'].attrs['label']
         del self.f['y'].attrs['label_latex']
 
         self.s._load_hdf5_default(self.f, infer_dt=False,
-                                 infer_attrs=True)
+                                  infer_attrs=True)
 
         assert_array_equal(self.s.f['x'][:], self.x)
         assert_array_equal(self.f['y'][:], self.y)
@@ -355,8 +354,33 @@ class HDF5LoadDefault(unittest.TestCase):
         self.s.close()
 
 
+class SaveTests(unittest.TestCase):
+    def setUp(self):
+        self.s = Signal()
+        self.x = np.array([0, 1, 2, 3])
+        self.y = np.array([0, 1, 0, -1])
+        self.s.load_nparray([0, 1, 0, -1], 'signal', 'm', 1)
+        self.s.fft()
+        self.s.freq_filter_Hilbert_complex()
+        self.s.ifft()
+        self.s.f.attrs['two'] = 2  # test attribute to verify attrs copied
+        self.f_dst = h5py.File('.test2.h5', backing_store=False, driver='core')
 
+    def test_save_pass_list_datasets(self):
+        self.s.save(self.f_dst, ['x', 'y'])
+        assert_array_equal(self.f_dst['x'][:], self.x[:])
+        assert_array_equal(self.f_dst['y'][:], self.y)
+        self.assertEqual(self.f_dst.attrs['two'], 2)
 
+    def test_save_pass_string(self):
+        self.s.save(self.f_dst, 'input')
+        assert_array_equal(self.f_dst['x'][:], self.x[:])
+        assert_array_equal(self.f_dst['y'][:], self.y)
+        self.assertEqual(self.f_dst.attrs['two'], 2)
+
+    def tearDown(self):
+        self.f_dst.close()
+        self.s.close()
 
 class MiscTests(unittest.TestCase):
     

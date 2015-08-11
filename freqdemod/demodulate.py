@@ -57,6 +57,7 @@ import time
 import datetime
 from freqdemod.hdf5 import (update_attrs, check_minimum_attrs,
                             infer_missing_attrs, infer_labels)
+from freqdemod.hdf5.hdf5_util import save_hdf5
 from freqdemod.util import (timestamp_temp_filename, infer_timestep)
 from collections import OrderedDict
 import six
@@ -234,18 +235,68 @@ class Signal(object):
                                     s_help=s_help)
 
     def close(self):
-        """Update report; write the file to disk; close the file."""
-        
-        attrs = OrderedDict([('report',self.report)])            
-        update_attrs(self.f.attrs,attrs)
-        
+        """Update report, close the file. This will write the file to disk
+        if backing_store=True was used to create the file."""
+
+        self.f.attrs['report'] = self.report
         self.f.close()
-        
+
+    def save(self, dest, save='time_workup', overwrite=False):
+        """Save the current signal object to a new hdf5 file, with control over
+        what datasets to save.
+
+        :param dest: Copy destination. A filename, or h5py file or group object.
+        :param save: A string describing the datasets to be saved, or a list
+            of groups / datasets to save.
+            all: All datasets and groups
+            input: x, y
+            input_no_t: y
+            time_workup: x, y, workup/time
+            time_workup_no_t: y, workup/time
+            time_workup_no_s: workup/time
+            fit_phase: x, y, workup/fit
+            fit_phase_no_t: y, workup/fit
+            fit_phase_no_s: workup/fit
+        :param overwrite: If true, overwrite an existing destination file.
+        """
+        self.f.attrs['report'] = self.report
+
+        save_options = {'all': self.f.keys(),
+                        'input': ['x', 'y'],
+                        'input_no_t': ['y'],
+                        'time_workup': ['x', 'y', 'workup/time'],
+                        'time_workup_no_t': ['y', 'workup/time'],
+                        'time_workup_no_s': ['workup/time'],
+                        'fit_phase':  ['x', 'y', 'workup/fit'],
+                        'fit_phase_no_t': ['y', 'workup/fit'],
+                        'fit_phase_no_s': ['workup/fit'],
+                        }
+
+        if isinstance(save, six.string_types):
+            datasets = save_options[save]
+        else:
+            datasets = save
+
+        if isinstance(dest, six.string_types):
+            mode = 'w' if overwrite else 'w-'
+            f_dst = h5py.File(dest, mode=mode)
+        else:
+            f_dst = dest
+
+        save_hdf5(self.f, f_dst, datasets)
+        # Copy top level attributes over by hand
+        update_attrs(f_dst.attrs, self.f.attrs)
+
+        if isinstance(dest, six.string_types):
+            f_dst.close()
+
+
+
     def open(self, filename):
         """Open the file for reading and writing.  The report comes back
         as a np.ndarray.  Need to convert back to a 1D array by 
         flattening, then convert to a list so we can continue appending."""
-        
+
         self.f = h5py.File(filename, 'r+')
         self.report = list(self.f.attrs['report'].flatten())
 
