@@ -60,7 +60,7 @@ class InitLoadSaveTests(unittest.TestCase):
 class TestClose(unittest.TestCase):
     filename = '.TestClose.h5'
     def setUp(self):
-        self.s = Signal(self.filename, backing_store=True)
+        self.s = Signal(self.filename,  mode='w', backing_store=True)
         self.s.load_nparray(np.arange(3),"x","nm",10E-6)
         self.s.close()
 
@@ -94,6 +94,8 @@ class TestClose(unittest.TestCase):
         # test one of the attributes
 
         self.assertTrue(self.snew.f.attrs['source'],'demodulate.py')
+
+        self.snew.close()
 
         
 class MaskTests(unittest.TestCase):
