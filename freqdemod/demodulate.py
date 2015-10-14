@@ -84,7 +84,6 @@ class Signal(object):
 
 
         Examples
-        --------
 
         s = Signal()                                      # In-memory only
         s = Signal('not-saved.h5')                        # Still in-memory only
