@@ -78,7 +78,7 @@ class Signal(object):
         
         Add the following objects to the *Signal* object
         
-        :param h5py.File f: an h5py object stored in core memory 
+        :param f: an h5py object stored in core memory 
         :param str report: a string summarizing in words what has
             been done to the signal (e.g., "Empty signal object created")
 
