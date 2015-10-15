@@ -83,11 +83,11 @@ class Signal(object):
             been done to the signal (e.g., "Empty signal object created")
 
 
-        Examples
+        Examples::
 
-        s = Signal()                                      # In-memory only
-        s = Signal('not-saved.h5')                        # Still in-memory only
-        s = Signal('save-to-disk.h5', backing_store=True) # Save to disk
+            s = Signal()                                      # In-memory only
+            s = Signal('not-saved.h5')                        # Still in-memory only
+            s = Signal('save-to-disk.h5', backing_store=True) # Save to disk
         """
         new_report = []
                 
