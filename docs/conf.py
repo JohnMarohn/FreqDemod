@@ -38,8 +38,6 @@ if on_rtd:
 # Modified 2014/08/05 by jam99@cornell.edu:
 
 sys.path.insert(0, os.path.abspath('../freqdemod'))
-sys.path.insert(0, os.path.abspath('../freqdemod/tests'))
-sys.path.insert(0, os.path.abspath('../freqdemod/hdf5'))
 
 # Modified 2014/04/03 by jam99@cornell.edu, following advice at http://stackoverflow.com/questions/5599254/how-to-use-sphinxs-autodoc-to-document-a-classs-init-self-method
 
