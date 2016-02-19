@@ -88,8 +88,8 @@ class TestClose(unittest.TestCase):
         
         report_string = "\n".join(report)
         
-        print "\nObjects in file .InitLoadSaveTests_1.h5"
-        print report_string
+        print("\nObjects in file .InitLoadSaveTests_1.h5")
+        print(report_string)
 
         # test one of the attributes
 
