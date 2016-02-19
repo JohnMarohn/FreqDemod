@@ -49,6 +49,7 @@ We demodulate the signal in the following steps:
 
 """
 
+from __future__ import division, print_function, absolute_import
 import h5py
 import numpy as np 
 import scipy as sp 
@@ -235,7 +236,7 @@ class Signal(object):
     def close(self):
         """Update report; write the file to disk; close the file."""
         
-        attrs = OrderedDict([('report',self.report)])            
+        attrs = OrderedDict([('report', "\n".join(self.report))])      
         update_attrs(self.f.attrs,attrs)
         
         self.f.close()
@@ -246,7 +247,7 @@ class Signal(object):
         flattening, then convert to a list so we can continue appending."""
         
         self.f = h5py.File(filename, 'r+')
-        self.report = list(self.f.attrs['report'].flatten())
+        self.report = self.f.attrs['report'].split("\n")
 
     def plot(self, ordinate, LaTeX=False, component='abs'):
         

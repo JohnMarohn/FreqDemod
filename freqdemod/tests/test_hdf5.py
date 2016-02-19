@@ -31,6 +31,7 @@ and writing the data as needed.
 * h5ls command line tool [`link <http://www.hdfgroup.org/HDF5/doc/RM/Tools.html#Tools-Ls>`__]
 
 """
+from __future__ import division, print_function, absolute_import
 import unittest
 import h5py
 import numpy as np
