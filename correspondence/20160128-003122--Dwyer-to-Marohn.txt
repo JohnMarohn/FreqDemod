@@ -1,0 +1,38 @@
+========================================================================
+   From: Ryan Dwyer <rpd78@cornell.edu>
+     To: John A. Marohn <john.marohn@cornell.edu>
+     CC: 
+   Date: Thursday, January 28, 2016 at 12:31:22 AM
+Subject: Re: Favor: Freqdemod docs broken
+------------------------------------------------------------------------
+Spent a while looking at this around the NSF grant. The current master should compile on readthedocs with the following settings:
+
+- Install project inside a virtualenv using setup.py install
+- Requirements file: requirements.txt
+
+￼
+
+I set up a mirror of the docs showing that they compile at http://freqdemodrpd.readthedocs.org. Unfortunately, this breaks the "stable" version of the docs. Easiest would be for you to change the setting, and then if that works, I could bump the stable version number to 0.3.
+
+-Ryan
+
+On Wed, Jan 27, 2016 at 11:52 PM, John A. Marohn <john.marohn@cornell.edu> wrote:
+Hi Ryan.
+
+The FreqDemod documentation is broken — could you give it a look.  There is a finite chance the folks reviewing the NSF grant will glance at it.  The page that’s broken is:
+
+http://freqdemod.readthedocs.org/en/latest/demodulate.html
+
+Thanks,
+JM
+
+
+
+-- 
+Ryan P. Dwyer
+Marohn Group, Cornell University
+150 Baker Lab
+Ithaca, NY 14853
+
+
+========================================================================
