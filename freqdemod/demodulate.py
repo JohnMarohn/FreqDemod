@@ -49,6 +49,7 @@ We demodulate the signal in the following steps:
 
 """
 
+from __future__ import division, print_function, absolute_import
 import h5py
 import numpy as np 
 import scipy as sp 
@@ -79,17 +80,16 @@ class Signal(object):
         
         Add the following objects to the *Signal* object
         
-        :param h5py.File f: an h5py object stored in core memory 
+        :param f: an h5py object stored in core memory 
         :param str report: a string summarizing in words what has
             been done to the signal (e.g., "Empty signal object created")
 
 
-        Examples
-        --------
+        Examples::
 
-        s = Signal()                                      # In-memory only
-        s = Signal('not-saved.h5')                        # Still in-memory only
-        s = Signal('save-to-disk.h5', backing_store=True) # Save to disk
+            s = Signal()                                      # In-memory only
+            s = Signal('not-saved.h5')                        # Still in-memory only
+            s = Signal('save-to-disk.h5', backing_store=True) # Save to disk
         """
         new_report = []
                 
@@ -238,7 +238,7 @@ class Signal(object):
         """Update report, close the file. This will write the file to disk
         if backing_store=True was used to create the file."""
 
-        self.f.attrs['report'] = self.report
+        self.f.attrs['report'] = "\n".join(self.report)
         self.f.close()
 
     def save(self, dest, save='time_workup', overwrite=False):
@@ -259,7 +259,7 @@ class Signal(object):
             fit_phase_no_s: workup/fit
         :param overwrite: If true, overwrite an existing destination file.
         """
-        self.f.attrs['report'] = self.report
+        self.f.attrs['report'] = "\n".join(self.report)
 
         save_options = {'all': self.f.keys(),
                         'input': ['x', 'y'],
@@ -298,7 +298,7 @@ class Signal(object):
         flattening, then convert to a list so we can continue appending."""
 
         self.f = h5py.File(filename, 'r+')
-        self.report = list(self.f.attrs['report'].flatten())
+        self.report = self.f.attrs['report'].split("\n")
 
     def plot(self, ordinate, LaTeX=False, component='abs'):
         
@@ -738,7 +738,7 @@ class Signal(object):
 
         else:
 
-            print "**ERROR**: Unrecognized filter function"
+            print("**ERROR**: Unrecognized filter function")
 
         dset = self.f.create_dataset('workup/freq/filter/bp',data=bp)            
         attrs = OrderedDict([
@@ -1416,22 +1416,22 @@ def print_hdf5_item_structure(g, offset='    ') :
     import sys
 
     if   isinstance(g,h5py.File) :
-        print g.file, '(File)', g.name
+        print(g.file+'(File)'+g.name)
  
     elif isinstance(g,h5py.Dataset) :
-        print '(Dataset)', g.name, '    len =', g.shape #, g.dtype
+        print('(Dataset)'+g.name+'    len ='+g.shape) #, g.dtype
  
     elif isinstance(g,h5py.Group) :
-        print '(Group)', g.name
+        print('(Group)'+g.name)
  
     else :
-        print 'WARNING: UNKNOWN ITEM IN HDF5 FILE', g.name
+        print('WARNING: UNKNOWN ITEM IN HDF5 FILE'+g.name)
         sys.exit ( "EXECUTION IS TERMINATED" )
  
     if isinstance(g, h5py.File) or isinstance(g, h5py.Group) :
         for key,val in dict(g).iteritems() :
             subg = val
-            print offset, key, #,"   ", subg.name #, val, subg.len(), type(subg),
+            print(offset+key) #,"   ", subg.name #, val, subg.len(), type(subg),
             print_hdf5_item_structure(subg, offset + '    ')
 						
 def testsignal_sine():
@@ -1627,5 +1627,5 @@ if __name__ == "__main__":
         S = testsignal_sine_exp()                            
                                                                         
     else:
-        print "**warning **"
-        print "--testsignal={} not implimented yet".format(args.testsignal)
+        print("**warning **")
+        print("--testsignal={} not implimented yet".format(args.testsignal))

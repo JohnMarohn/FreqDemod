@@ -4,9 +4,17 @@
 # See https://github.com/scikit-learn/scikit-learn/issues/1016
 # setuptools is included with pip; basically python standard at this point
 import io
+import os
 
 from setuptools import setup, find_packages
 
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+# On readthedocs, we can't install packages with compiled code
+if on_rtd:
+    install_requires = ['six']
+else:
+    install_requires = ['numpy', 'scipy', 'matplotlib', 'h5py', 'six']
 
 description = """Extract the time-dependent frequency of a sinusoidally oscillating signal."""
 
@@ -30,7 +38,7 @@ setup(name='FreqDemod',
       author_email='jam99@cornell.edu',
       url='https://github.com/JohnMarohn/FreqDemod',
       packages=find_packages(),
-      install_requires=['numpy', 'scipy', 'matplotlib', 'h5py', 'six'],
+      install_requires=install_requires,
       setup_requires=["setuptools_git >= 0.3"],
       tests_require=[],
       zip_safe=False,

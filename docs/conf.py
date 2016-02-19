@@ -28,7 +28,7 @@ if on_rtd:
     # Add any other difficult to install modules here
     MOCK_MODULES = ['numpy', 'scipy',
                     'matplotlib', 'matplotlib.pyplot',
-                    'h5py', 'pyaudio']
+                    'h5py', 'pyaudio', 'numpy.testing',]
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -37,9 +37,10 @@ if on_rtd:
 #
 # Modified 2014/08/05 by jam99@cornell.edu:
 
-sys.path.insert(0, os.path.abspath('../freqdemod'))
 sys.path.insert(0, os.path.abspath('../freqdemod/tests'))
 sys.path.insert(0, os.path.abspath('../freqdemod/hdf5'))
+sys.path.insert(0, os.path.abspath('../freqdemod'))
+
 
 # Modified 2014/04/03 by jam99@cornell.edu, following advice at http://stackoverflow.com/questions/5599254/how-to-use-sphinxs-autodoc-to-document-a-classs-init-self-method
 
