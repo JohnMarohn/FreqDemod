@@ -160,7 +160,7 @@ class FFTTests(unittest.TestCase):
         f0 = 5.00E3    # signal frequency
         nt = 512     # number of signal points    
 
-        dt = 1/fd
+        self.dt = dt = 1/fd
         t = dt*np.arange(nt)
         s = 1.0*np.sin(2*np.pi*f0*t) 
 
@@ -191,6 +191,12 @@ class FFTTests(unittest.TestCase):
         filt = self.s.f['workup/freq/filter/Hc'][index]
         
         self.assertTrue(np.allclose(filt,np.array([0, 1, 2])))
+
+    def test_phase_fit_rounding(self):
+        self.s.ifft()
+        # T_chunk_goal set to cause problem due to incorrect rounding
+        T_chunk_goal = self.dt*26
+        self.s.fit_phase(T_chunk_goal)
                            
     def tearDown(self):
         """Close the h5 files before the next iteration."""

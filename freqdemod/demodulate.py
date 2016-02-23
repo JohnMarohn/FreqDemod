@@ -1037,7 +1037,7 @@ class Signal(object):
         
         n_per_chunk = int(round(dt_chunk_target/dt)) # points per chunck
         dt_chunk = dt*n_per_chunk                    # actual time per chunk
-        n_tot_chunk = int(round(n/n_per_chunk))      # total number of chunks
+        n_tot_chunk = int(n/n_per_chunk)             # total number of chunks
         n_total = n_per_chunk*n_tot_chunk            # (realizable) no. of phase points
         
         # report the chunking details
