@@ -383,6 +383,25 @@ class SaveTests(unittest.TestCase):
         self.f_dst.close()
         self.s.close()
 
+class SaveBeforeWorkupTest(unittest.TestCase):
+    def setUp(self):
+        self.s = Signal()
+        self.x = np.array([0, 1, 2, 3])
+        self.y = np.array([0, 1, 0, -1])
+        self.s.load_nparray([0, 1, 0, -1], 'signal', 'm', 1)
+        self.f_dst = h5py.File('.test3.h5', backing_store=False, driver='core')
+
+
+    def test_save_before_workup(self):
+        self.s.save(self.f_dst, 'time_workup')
+        assert_array_equal(self.f_dst['x'][:], self.x)
+        assert_array_equal(self.f_dst['y'][:], self.y)
+
+    def tearDown(self):
+        self.f_dst.close()
+        self.s.close()
+
+
 class MiscTests(unittest.TestCase):
     
     def test_array_middle_1(self):

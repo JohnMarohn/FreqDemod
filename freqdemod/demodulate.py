@@ -56,6 +56,7 @@ import scipy as sp
 import math
 import time
 import datetime
+import warnings
 from freqdemod.hdf5 import (update_attrs, check_minimum_attrs,
                             infer_missing_attrs, infer_labels)
 from freqdemod.hdf5.hdf5_util import save_hdf5
@@ -217,7 +218,7 @@ class Signal(object):
             which contains s_dataset
         :param str s_dataset: signal dataset name (relative to h5object)
         :param str s_name: the signal's name
-        :param str s_name: the signal's units
+        :param str s_unit: the signal's units
         :param str t_dataset: time dataset name (optional; or specify dt)
         :param float dt: the time per point [s]
         :param str s_help: the signal's help string
@@ -273,8 +274,17 @@ class Signal(object):
                         }
 
         if isinstance(save, six.string_types):
-            datasets = save_options[save]
+            requested_datasets = save_options[save]
+            # If save is a string, make sure specified datasets actually exist
+            datasets = [dset for dset in requested_datasets if dset in self.f]
+            
+            if datasets != requested_datasets:
+                warnings.warn(
+                    "Datasets {} missing, will not be saved.".format(
+                    set(requested_datasets) - set(datasets))
+                    )
         else:
+            # If save is a list, save all datasets in list
             datasets = save
 
         if isinstance(dest, six.string_types):
@@ -293,9 +303,7 @@ class Signal(object):
 
 
     def open(self, filename):
-        """Open the file for reading and writing.  The report comes back
-        as a np.ndarray.  Need to convert back to a 1D array by 
-        flattening, then convert to a list so we can continue appending."""
+        """Open the file for reading and writing."""
 
         self.f = h5py.File(filename, 'r+')
         self.report = self.f.attrs['report'].split("\n")
