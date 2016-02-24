@@ -57,6 +57,7 @@ import math
 import time
 import datetime
 import warnings
+from lmfit import minimize, Parameters, fit_report
 from freqdemod.hdf5 import (update_attrs, check_minimum_attrs,
                             infer_missing_attrs, infer_labels)
 from freqdemod.hdf5.hdf5_util import save_hdf5
@@ -1144,8 +1145,6 @@ class Signal(object):
             
         """
         
-        from lmfit import minimize, Parameters, fit_report
-        
         # extract the data from the Datasets
         y_dset = self.f['workup/time/a']
         x = np.array(self.f[y_dset.attrs['abscissa']][:])
@@ -1174,7 +1173,7 @@ class Signal(object):
         #  as an estimate of the standard error in each data point
         y_stdev = np.std(result.residual)*np.ones(y.size)
         result = minimize(fcn2min, params, args=(x,y,y_stdev))
-    
+
         # calculate final result
         y_calc = y + y_stdev*result.residual
 
@@ -1186,56 +1185,58 @@ class Signal(object):
 
         dset = self.f.create_group('workup/fit/exp')
         
+        p = result.params
+
         title = "a(t) = a0*exp(-t/tau) + a1" \
                 "\n" \
                 "a0 = {0:.6f} +/- {1:.6f}, tau = {2:.6f} +/- {3:.6f}, a1 = {4:.6f} +/- {5:.6f}".\
-                format(params['a0'].value,params['a0'].stderr,
-                        params['tau'].value,params['tau'].stderr,
-                        params['a1'].value,params['a1'].stderr)
+                format(p['a0'].value, p['a0'].stderr,
+                        p['tau'].value, p['tau'].stderr,
+                        p['a1'].value, p['a1'].stderr)
                    
         title_LaTeX = r'$a(t) = a_0 \exp(-t/\tau) + a_1$' \
                      '\n' \
                      r'$a_0 = {0:.6f} \pm {1:.6f}, \tau = {2:.6f} \pm {3:.6f}, a_1 = {4:.6f} \pm {5:.6f}$'. \
-                    format(params['a0'].value,params['a0'].stderr,
-                        params['tau'].value,params['tau'].stderr,
-                        params['a1'].value,params['a1'].stderr)
+                    format(p['a0'].value, p['a0'].stderr,
+                        p['tau'].value, p['tau'].stderr,
+                        p['a1'].value, p['a1'].stderr)
                 
         attrs = OrderedDict([
-            ('abscissa',y_dset.attrs['abscissa']),
-            ('ordinate','workup/time/a'),
-            ('fit_report',rep),
-            ('help','fit to decaying exponential'),
-            ('title',title),
-            ('title_LaTeX',title_LaTeX),
-            ('tau',params['tau'].value),
-            ('tau_stderr',params['tau'].stderr),
-            ('a0',params['a0'].value),
-            ('a0_stderr',params['a0'].stderr), 
-            ('a1',params['a1'].value),
-            ('a1_stderr',params['a1'].stderr)         
+            ('abscissa', y_dset.attrs['abscissa']),
+            ('ordinate', 'workup/time/a'),
+            ('fit_report', rep),
+            ('help', 'fit to decaying exponential'),
+            ('title', title),
+            ('title_LaTeX', title_LaTeX),
+            ('tau', p['tau'].value),
+            ('tau_stderr', p['tau'].stderr),
+            ('a0', p['a0'].value),
+            ('a0_stderr', p['a0'].stderr), 
+            ('a1', p['a1'].value),
+            ('a1_stderr', p['a1'].stderr)         
             ])
         update_attrs(dset.attrs,attrs)
         
         dset = self.f.create_dataset('workup/fit/exp/y_calc',data=y_calc)
         a_unit = self.f['workup/time/a'].attrs['unit']
         attrs = OrderedDict([
-            ('abscissa',y_dset.attrs['abscissa']), 
-            ('name','a (calc)'),
-            ('unit',a_unit),
-            ('label','a (calc) [{0}]'.format(a_unit)),
-            ('label_latex','$a_{{\mathrm{{calc}}}} \: [\mathrm{{{0}}}]$'.format(a_unit)),
-            ('help','cantilever amplitude (calculated)')
+            ('abscissa', y_dset.attrs['abscissa']), 
+            ('name', 'a (calc)'),
+            ('unit', a_unit),
+            ('label', 'a (calc) [{0}]'.format(a_unit)),
+            ('label_latex', '$a_{{\mathrm{{calc}}}} \: [\mathrm{{{0}}}]$'.format(a_unit)),
+            ('help', 'cantilever amplitude (calculated)')
             ])
         update_attrs(dset.attrs,attrs)
                 
         dset = self.f.create_dataset('workup/fit/exp/y_resid',data=result.residual) 
         attrs = OrderedDict([ 
-            ('abscissa',y_dset.attrs['abscissa']),
-            ('name','a (resid)'),
-            ('unit',a_unit),
-            ('label','a (resid) [{0}]'.format(a_unit)),
-            ('label_latex','$a - a_{{\mathrm{{calc}}}} \: [\mathrm{{{0}}}]$'.format(a_unit)),
-            ('help','cantilever amplitude (residual)')
+            ('abscissa', y_dset.attrs['abscissa']),
+            ('name', 'a (resid)'),
+            ('unit', a_unit),
+            ('label', 'a (resid) [{0}]'.format(a_unit)),
+            ('label_latex', '$a - a_{{\mathrm{{calc}}}} \: [\mathrm{{{0}}}]$'.format(a_unit)),
+            ('help', 'cantilever amplitude (residual)')
             ])
         update_attrs(dset.attrs,attrs)
 
