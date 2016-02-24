@@ -1,6 +1,12 @@
 Development History
 ===================
 
+2016/02/24
+----------
+* Added ``save`` method, to save part of a ``Signal`` to a new hdf5 file.
+* Added Python 3 support.
+* Assorted bugfixes. In particular, the example signals (available through ``python -m freqdemod.demodulate``), and the IPython notebook example, now work on Python 2 / 3.
+
 2015/07/21
 ----------
 
