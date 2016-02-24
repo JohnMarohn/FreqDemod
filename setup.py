@@ -14,7 +14,7 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
     install_requires = ['six']
 else:
-    install_requires = ['numpy', 'scipy', 'matplotlib', 'h5py', 'six']
+    install_requires = ['numpy', 'scipy', 'matplotlib', 'h5py', 'six', 'lmfit']
 
 description = """Extract the time-dependent frequency of a sinusoidally oscillating signal."""
 

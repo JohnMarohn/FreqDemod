@@ -60,7 +60,8 @@ import warnings
 from lmfit import minimize, Parameters, fit_report
 from freqdemod.hdf5 import (update_attrs, check_minimum_attrs,
                             infer_missing_attrs, infer_labels)
-from freqdemod.hdf5.hdf5_util import save_hdf5
+from freqdemod.hdf5.hdf5_util import save_hdf5, h5ls
+print_hdf5_item_structure = h5ls  # Alias for backward compatibility
 from freqdemod.util import (timestamp_temp_filename, infer_timestep)
 from collections import OrderedDict
 import six
@@ -1338,7 +1339,7 @@ class Signal(object):
         print("")
         print("Signal file summary")
         print("===================")
-        print_hdf5_item_structure(self.f)
+        h5ls(self.f)
 
     def _load_hdf5_default(self, h5object, s_dataset='y', t_dataset='x',
                            infer_dt=True, infer_attrs=True):
@@ -1414,35 +1415,6 @@ class Signal(object):
         update_attrs(self.f['x'].attrs, x_attrs)
 
 
-def print_hdf5_item_structure(g, offset='    ') :
-
-    """
-    Prints the input file/group/dataset (g) name and begin
-    iterations on its content
-    """
-
-    import h5py
-    import sys
-
-    if   isinstance(g,h5py.File) :
-        print(g.file+'(File)'+g.name)
- 
-    elif isinstance(g,h5py.Dataset) :
-        print('(Dataset)'+g.name+'    len ='+g.shape) #, g.dtype
- 
-    elif isinstance(g,h5py.Group) :
-        print('(Group)'+g.name)
- 
-    else :
-        print('WARNING: UNKNOWN ITEM IN HDF5 FILE'+g.name)
-        sys.exit ( "EXECUTION IS TERMINATED" )
- 
-    if isinstance(g, h5py.File) or isinstance(g, h5py.Group) :
-        for key,val in dict(g).iteritems() :
-            subg = val
-            print(offset+key) #,"   ", subg.name #, val, subg.len(), type(subg),
-            print_hdf5_item_structure(subg, offset + '    ')
-						
 def testsignal_sine():
         
     fd = 50.0E3    # digitization frequency
@@ -1455,11 +1427,9 @@ def testsignal_sine():
     t = dt*np.arange(nt)
     s = sn*np.sin(2*np.pi*f0*t) + np.random.normal(0,sn_rms,t.size)
     
-    S = Signal('.temp_sine.h5')
+    S = Signal()
     S.load_nparray(s,"x","nm",dt)
-    S.close()
-    
-    S.open('.temp_sine.h5')
+
     S.time_mask_binarate("middle")
     S.time_window_cyclicize(3E-3)
     S.fft()
@@ -1525,11 +1495,9 @@ def testsignal_sine_fm():
 
     # make the single and work it up
 
-    S = Signal('.temp_sine_fm.h5')
+    S = Signal()
     S.load_nparray(x,"x","nm",dt)
-    S.close()
-    
-    S.open('.temp_sine_fm.h5')
+
     S.time_mask_binarate("middle")
     S.time_window_cyclicize(3E-3)
     S.fft()
@@ -1564,9 +1532,7 @@ def testsignal_sine_exp():
     
     S = Signal('.temp_sine_exp.h5')
     S.load_nparray(s,"x","nm",dt)
-    S.close()
-    
-    S.open('.temp_sine_exp.h5')
+
     S.time_mask_binarate("start")
     S.fft()
     S.freq_filter_Hilbert_complex()
