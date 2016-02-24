@@ -58,7 +58,7 @@ def h5ls_str(g, offset='', print_types=True):
     else:
         raise ValueError('WARNING: UNKNOWN ITEM IN HDF5 FILE'+g.name)
     if isinstance(g, h5py.File) or isinstance(g, h5py.Group):
-        for key, subg in dict(g).iteritems():
+        for key, subg in dict(g).items():
             string.append(h5ls_str(subg, offset + '    ',
                                    print_types=print_types))
     return "\n".join(string)
