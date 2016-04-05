@@ -30,14 +30,14 @@ home = os.getcwd()
 def help():
     """Print out a helpful message."""
 
-    print "===================================================================="
-    print "fab clean      Delete the contents of the _build/ directory"
-    print "fab html       Create sphinx documentation as stand-alone HTML files" 
-    print "fab html_full  Convert the ipynb files in the ../freqdemod/docs"
-    print "               dir to HTML files, then create sphinx documentation"
-    print "               as stand-alone HTML files"
-    print "open           Open the HTML documentation in a web browser."
-    print "===================================================================="
+    print("====================================================================")
+    print("fab clean      Delete the contents of the _build/ directory")
+    print("fab html       Create sphinx documentation as stand-alone HTML files")
+    print("fab html_full  Convert the ipynb files in the ../freqdemod/docs")
+    print("               dir to HTML files, then create sphinx documentation")
+    print("               as stand-alone HTML files")
+    print("open           Open the HTML documentation in a web browser.")
+    print("====================================================================")
 
 def clean():
     """Delete the contents of the _build/ directory."""
@@ -65,7 +65,7 @@ def html_full():
         local('ls -la')
         local('sphinx-build -b html . _build/html')
         
-    print "Build finished; see _build/html/index.html"
+    print("Build finished; see _build/html/index.html")
     
 def html():
     """Create sphinx documentation as stand-alone HTML files."""

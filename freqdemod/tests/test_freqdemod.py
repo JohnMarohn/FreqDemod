@@ -88,16 +88,15 @@ class TestClose(unittest.TestCase):
         
         report_string = "\n".join(report)
         
-        print "\nObjects in file .InitLoadSaveTests_1.h5"
-        print report_string
+        print("\nObjects in file .InitLoadSaveTests_1.h5")
+        print(report_string)
 
         # test one of the attributes
 
         self.assertTrue(self.snew.f.attrs['source'],'demodulate.py')
-
         self.snew.close()
 
-        
+
 class MaskTests(unittest.TestCase):
     
     def setUp(self):
@@ -161,7 +160,7 @@ class FFTTests(unittest.TestCase):
         f0 = 5.00E3    # signal frequency
         nt = 512     # number of signal points    
 
-        dt = 1/fd
+        self.dt = dt = 1/fd
         t = dt*np.arange(nt)
         s = 1.0*np.sin(2*np.pi*f0*t) 
 
@@ -192,6 +191,12 @@ class FFTTests(unittest.TestCase):
         filt = self.s.f['workup/freq/filter/Hc'][index]
         
         self.assertTrue(np.allclose(filt,np.array([0, 1, 2])))
+
+    def test_phase_fit_rounding(self):
+        self.s.ifft()
+        # T_chunk_goal set to cause problem due to incorrect rounding
+        T_chunk_goal = self.dt*26
+        self.s.fit_phase(T_chunk_goal)
                            
     def tearDown(self):
         """Close the h5 files before the next iteration."""
@@ -339,13 +344,12 @@ class HDF5LoadDefault(unittest.TestCase):
         self.assertEqual(dict(self.s.f['x'].attrs), self.x_attrs)
         self.assertEqual(dict(self.s.f['y'].attrs), self.y_attrs)
 
-
     def test_hdf5_general_infer_missing_y_labels(self):
         del self.f['y'].attrs['label']
         del self.f['y'].attrs['label_latex']
 
         self.s._load_hdf5_default(self.f, infer_dt=False,
-                                 infer_attrs=True)
+                                  infer_attrs=True)
 
         assert_array_equal(self.s.f['x'][:], self.x)
         assert_array_equal(self.f['y'][:], self.y)
@@ -357,7 +361,51 @@ class HDF5LoadDefault(unittest.TestCase):
         self.s.close()
 
 
+class SaveTests(unittest.TestCase):
+    def setUp(self):
+        self.s = Signal()
+        self.x = np.array([0, 1, 2, 3])
+        self.y = np.array([0, 1, 0, -1])
+        self.s.load_nparray([0, 1, 0, -1], 'signal', 'm', 1)
+        self.s.fft()
+        self.s.freq_filter_Hilbert_complex()
+        self.s.ifft()
+        self.s.f.attrs['two'] = 2  # test attribute to verify attrs copied
+        self.f_dst = h5py.File('.test2.h5', backing_store=False, driver='core')
 
+    def test_save_pass_list_datasets(self):
+        self.s.save(self.f_dst, ['x', 'y'])
+        assert_array_equal(self.f_dst['x'][:], self.x)
+        assert_array_equal(self.f_dst['y'][:], self.y)
+        self.assertEqual(self.f_dst.attrs['two'], 2)
+
+    def test_save_pass_string(self):
+        self.s.save(self.f_dst, 'input')
+        assert_array_equal(self.f_dst['x'][:], self.x[:])
+        assert_array_equal(self.f_dst['y'][:], self.y)
+        self.assertEqual(self.f_dst.attrs['two'], 2)
+
+    def tearDown(self):
+        self.f_dst.close()
+        self.s.close()
+
+class SaveBeforeWorkupTest(unittest.TestCase):
+    def setUp(self):
+        self.s = Signal()
+        self.x = np.array([0, 1, 2, 3])
+        self.y = np.array([0, 1, 0, -1])
+        self.s.load_nparray([0, 1, 0, -1], 'signal', 'm', 1)
+        self.f_dst = h5py.File('.test3.h5', backing_store=False, driver='core')
+
+
+    def test_save_before_workup(self):
+        self.s.save(self.f_dst, 'time_workup')
+        assert_array_equal(self.f_dst['x'][:], self.x)
+        assert_array_equal(self.f_dst['y'][:], self.y)
+
+    def tearDown(self):
+        self.f_dst.close()
+        self.s.close()
 
 
 class MiscTests(unittest.TestCase):

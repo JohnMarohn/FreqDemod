@@ -49,14 +49,19 @@ We demodulate the signal in the following steps:
 
 """
 
+from __future__ import division, print_function, absolute_import
 import h5py
 import numpy as np 
 import scipy as sp 
 import math
 import time
 import datetime
+import warnings
+from lmfit import minimize, Parameters, fit_report
 from freqdemod.hdf5 import (update_attrs, check_minimum_attrs,
                             infer_missing_attrs, infer_labels)
+from freqdemod.hdf5.hdf5_util import save_hdf5, h5ls
+print_hdf5_item_structure = h5ls  # Alias for backward compatibility
 from freqdemod.util import (timestamp_temp_filename, infer_timestep)
 from collections import OrderedDict
 import six
@@ -215,7 +220,7 @@ class Signal(object):
             which contains s_dataset
         :param str s_dataset: signal dataset name (relative to h5object)
         :param str s_name: the signal's name
-        :param str s_name: the signal's units
+        :param str s_unit: the signal's units
         :param str t_dataset: time dataset name (optional; or specify dt)
         :param float dt: the time per point [s]
         :param str s_help: the signal's help string
@@ -233,20 +238,77 @@ class Signal(object):
                                     s_help=s_help)
 
     def close(self):
-        """Update report; write the file to disk; close the file."""
-        
-        attrs = OrderedDict([('report',self.report)])            
-        update_attrs(self.f.attrs,attrs)
-        
+        """Update report, close the file. This will write the file to disk
+        if backing_store=True was used to create the file."""
+
+        self.f.attrs['report'] = "\n".join(self.report)
         self.f.close()
-        
+
+    def save(self, dest, save='time_workup', overwrite=False):
+        """Save the current signal object to a new hdf5 file, with control over
+        what datasets to save.
+
+        :param dest: Copy destination. A filename, or h5py file or group object.
+        :param save: A string describing the datasets to be saved, or a list
+            of groups / datasets to save.
+            all: All datasets and groups
+            input: x, y
+            input_no_t: y
+            time_workup: x, y, workup/time
+            time_workup_no_t: y, workup/time
+            time_workup_no_s: workup/time
+            fit_phase: x, y, workup/fit
+            fit_phase_no_t: y, workup/fit
+            fit_phase_no_s: workup/fit
+        :param overwrite: If true, overwrite an existing destination file.
+        """
+        self.f.attrs['report'] = "\n".join(self.report)
+
+        save_options = {'all': self.f.keys(),
+                        'input': ['x', 'y'],
+                        'input_no_t': ['y'],
+                        'time_workup': ['x', 'y', 'workup/time'],
+                        'time_workup_no_t': ['y', 'workup/time'],
+                        'time_workup_no_s': ['workup/time'],
+                        'fit_phase':  ['x', 'y', 'workup/fit'],
+                        'fit_phase_no_t': ['y', 'workup/fit'],
+                        'fit_phase_no_s': ['workup/fit'],
+                        }
+
+        if isinstance(save, six.string_types):
+            requested_datasets = save_options[save]
+            # If save is a string, make sure specified datasets actually exist
+            datasets = [dset for dset in requested_datasets if dset in self.f]
+            
+            if datasets != requested_datasets:
+                warnings.warn(
+                    "Datasets {} missing, will not be saved.".format(
+                    set(requested_datasets) - set(datasets))
+                    )
+        else:
+            # If save is a list, save all datasets in list
+            datasets = save
+
+        if isinstance(dest, six.string_types):
+            mode = 'w' if overwrite else 'w-'
+            f_dst = h5py.File(dest, mode=mode)
+        else:
+            f_dst = dest
+
+        save_hdf5(self.f, f_dst, datasets)
+        # Copy top level attributes over by hand
+        update_attrs(f_dst.attrs, self.f.attrs)
+
+        if isinstance(dest, six.string_types):
+            f_dst.close()
+
+
+
     def open(self, filename):
-        """Open the file for reading and writing.  The report comes back
-        as a np.ndarray.  Need to convert back to a 1D array by 
-        flattening, then convert to a list so we can continue appending."""
-        
+        """Open the file for reading and writing."""
+
         self.f = h5py.File(filename, 'r+')
-        self.report = list(self.f.attrs['report'].flatten())
+        self.report = self.f.attrs['report'].split("\n")
 
     def plot(self, ordinate, LaTeX=False, component='abs'):
         
@@ -686,7 +748,7 @@ class Signal(object):
 
         else:
 
-            print "**ERROR**: Unrecognized filter function"
+            print("**ERROR**: Unrecognized filter function")
 
         dset = self.f.create_dataset('workup/freq/filter/bp',data=bp)            
         attrs = OrderedDict([
@@ -977,7 +1039,7 @@ class Signal(object):
         
         n_per_chunk = int(round(dt_chunk_target/dt)) # points per chunck
         dt_chunk = dt*n_per_chunk                    # actual time per chunk
-        n_tot_chunk = int(round(n/n_per_chunk))      # total number of chunks
+        n_tot_chunk = int(n/n_per_chunk)             # total number of chunks
         n_total = n_per_chunk*n_tot_chunk            # (realizable) no. of phase points
         
         # report the chunking details
@@ -1084,8 +1146,6 @@ class Signal(object):
             
         """
         
-        from lmfit import minimize, Parameters, fit_report
-        
         # extract the data from the Datasets
         y_dset = self.f['workup/time/a']
         x = np.array(self.f[y_dset.attrs['abscissa']][:])
@@ -1114,7 +1174,7 @@ class Signal(object):
         #  as an estimate of the standard error in each data point
         y_stdev = np.std(result.residual)*np.ones(y.size)
         result = minimize(fcn2min, params, args=(x,y,y_stdev))
-    
+
         # calculate final result
         y_calc = y + y_stdev*result.residual
 
@@ -1126,56 +1186,58 @@ class Signal(object):
 
         dset = self.f.create_group('workup/fit/exp')
         
+        p = result.params
+
         title = "a(t) = a0*exp(-t/tau) + a1" \
                 "\n" \
                 "a0 = {0:.6f} +/- {1:.6f}, tau = {2:.6f} +/- {3:.6f}, a1 = {4:.6f} +/- {5:.6f}".\
-                format(params['a0'].value,params['a0'].stderr,
-                        params['tau'].value,params['tau'].stderr,
-                        params['a1'].value,params['a1'].stderr)
+                format(p['a0'].value, p['a0'].stderr,
+                        p['tau'].value, p['tau'].stderr,
+                        p['a1'].value, p['a1'].stderr)
                    
         title_LaTeX = r'$a(t) = a_0 \exp(-t/\tau) + a_1$' \
                      '\n' \
                      r'$a_0 = {0:.6f} \pm {1:.6f}, \tau = {2:.6f} \pm {3:.6f}, a_1 = {4:.6f} \pm {5:.6f}$'. \
-                    format(params['a0'].value,params['a0'].stderr,
-                        params['tau'].value,params['tau'].stderr,
-                        params['a1'].value,params['a1'].stderr)
+                    format(p['a0'].value, p['a0'].stderr,
+                        p['tau'].value, p['tau'].stderr,
+                        p['a1'].value, p['a1'].stderr)
                 
         attrs = OrderedDict([
-            ('abscissa',y_dset.attrs['abscissa']),
-            ('ordinate','workup/time/a'),
-            ('fit_report',rep),
-            ('help','fit to decaying exponential'),
-            ('title',title),
-            ('title_LaTeX',title_LaTeX),
-            ('tau',params['tau'].value),
-            ('tau_stderr',params['tau'].stderr),
-            ('a0',params['a0'].value),
-            ('a0_stderr',params['a0'].stderr), 
-            ('a1',params['a1'].value),
-            ('a1_stderr',params['a1'].stderr)         
+            ('abscissa', y_dset.attrs['abscissa']),
+            ('ordinate', 'workup/time/a'),
+            ('fit_report', rep),
+            ('help', 'fit to decaying exponential'),
+            ('title', title),
+            ('title_LaTeX', title_LaTeX),
+            ('tau', p['tau'].value),
+            ('tau_stderr', p['tau'].stderr),
+            ('a0', p['a0'].value),
+            ('a0_stderr', p['a0'].stderr), 
+            ('a1', p['a1'].value),
+            ('a1_stderr', p['a1'].stderr)         
             ])
         update_attrs(dset.attrs,attrs)
         
         dset = self.f.create_dataset('workup/fit/exp/y_calc',data=y_calc)
         a_unit = self.f['workup/time/a'].attrs['unit']
         attrs = OrderedDict([
-            ('abscissa',y_dset.attrs['abscissa']), 
-            ('name','a (calc)'),
-            ('unit',a_unit),
-            ('label','a (calc) [{0}]'.format(a_unit)),
-            ('label_latex','$a_{{\mathrm{{calc}}}} \: [\mathrm{{{0}}}]$'.format(a_unit)),
-            ('help','cantilever amplitude (calculated)')
+            ('abscissa', y_dset.attrs['abscissa']), 
+            ('name', 'a (calc)'),
+            ('unit', a_unit),
+            ('label', 'a (calc) [{0}]'.format(a_unit)),
+            ('label_latex', '$a_{{\mathrm{{calc}}}} \: [\mathrm{{{0}}}]$'.format(a_unit)),
+            ('help', 'cantilever amplitude (calculated)')
             ])
         update_attrs(dset.attrs,attrs)
                 
         dset = self.f.create_dataset('workup/fit/exp/y_resid',data=result.residual) 
         attrs = OrderedDict([ 
-            ('abscissa',y_dset.attrs['abscissa']),
-            ('name','a (resid)'),
-            ('unit',a_unit),
-            ('label','a (resid) [{0}]'.format(a_unit)),
-            ('label_latex','$a - a_{{\mathrm{{calc}}}} \: [\mathrm{{{0}}}]$'.format(a_unit)),
-            ('help','cantilever amplitude (residual)')
+            ('abscissa', y_dset.attrs['abscissa']),
+            ('name', 'a (resid)'),
+            ('unit', a_unit),
+            ('label', 'a (resid) [{0}]'.format(a_unit)),
+            ('label_latex', '$a - a_{{\mathrm{{calc}}}} \: [\mathrm{{{0}}}]$'.format(a_unit)),
+            ('help', 'cantilever amplitude (residual)')
             ])
         update_attrs(dset.attrs,attrs)
 
@@ -1277,7 +1339,7 @@ class Signal(object):
         print("")
         print("Signal file summary")
         print("===================")
-        print_hdf5_item_structure(self.f)
+        h5ls(self.f)
 
     def _load_hdf5_default(self, h5object, s_dataset='y', t_dataset='x',
                            infer_dt=True, infer_attrs=True):
@@ -1353,35 +1415,6 @@ class Signal(object):
         update_attrs(self.f['x'].attrs, x_attrs)
 
 
-def print_hdf5_item_structure(g, offset='    ') :
-
-    """
-    Prints the input file/group/dataset (g) name and begin
-    iterations on its content
-    """
-
-    import h5py
-    import sys
-
-    if   isinstance(g,h5py.File) :
-        print g.file, '(File)', g.name
- 
-    elif isinstance(g,h5py.Dataset) :
-        print '(Dataset)', g.name, '    len =', g.shape #, g.dtype
- 
-    elif isinstance(g,h5py.Group) :
-        print '(Group)', g.name
- 
-    else :
-        print 'WARNING: UNKNOWN ITEM IN HDF5 FILE', g.name
-        sys.exit ( "EXECUTION IS TERMINATED" )
- 
-    if isinstance(g, h5py.File) or isinstance(g, h5py.Group) :
-        for key,val in dict(g).iteritems() :
-            subg = val
-            print offset, key, #,"   ", subg.name #, val, subg.len(), type(subg),
-            print_hdf5_item_structure(subg, offset + '    ')
-						
 def testsignal_sine():
         
     fd = 50.0E3    # digitization frequency
@@ -1394,11 +1427,9 @@ def testsignal_sine():
     t = dt*np.arange(nt)
     s = sn*np.sin(2*np.pi*f0*t) + np.random.normal(0,sn_rms,t.size)
     
-    S = Signal('.temp_sine.h5')
+    S = Signal()
     S.load_nparray(s,"x","nm",dt)
-    S.close()
-    
-    S.open('.temp_sine.h5')
+
     S.time_mask_binarate("middle")
     S.time_window_cyclicize(3E-3)
     S.fft()
@@ -1464,11 +1495,9 @@ def testsignal_sine_fm():
 
     # make the single and work it up
 
-    S = Signal('.temp_sine_fm.h5')
+    S = Signal()
     S.load_nparray(x,"x","nm",dt)
-    S.close()
-    
-    S.open('.temp_sine_fm.h5')
+
     S.time_mask_binarate("middle")
     S.time_window_cyclicize(3E-3)
     S.fft()
@@ -1503,9 +1532,7 @@ def testsignal_sine_exp():
     
     S = Signal('.temp_sine_exp.h5')
     S.load_nparray(s,"x","nm",dt)
-    S.close()
-    
-    S.open('.temp_sine_exp.h5')
+
     S.time_mask_binarate("start")
     S.fft()
     S.freq_filter_Hilbert_complex()
@@ -1575,5 +1602,5 @@ if __name__ == "__main__":
         S = testsignal_sine_exp()                            
                                                                         
     else:
-        print "**warning **"
-        print "--testsignal={} not implimented yet".format(args.testsignal)
+        print("**warning **")
+        print("--testsignal={} not implimented yet".format(args.testsignal))

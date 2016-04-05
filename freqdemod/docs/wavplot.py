@@ -29,7 +29,7 @@ fs = spf.getframerate()
 #If Stereo
 
 if spf.getnchannels() == 2:
-    print 'Just mono files please'
+    print('Just mono files please')
     sys.exit(0)
 
 t = np.linspace(0, len(signal)/fs, num=len(signal))

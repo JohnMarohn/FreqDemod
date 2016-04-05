@@ -31,6 +31,7 @@ and writing the data as needed.
 * h5ls command line tool [`link <http://www.hdfgroup.org/HDF5/doc/RM/Tools.html#Tools-Ls>`__]
 
 """
+from __future__ import division, print_function, absolute_import
 import unittest
 import h5py
 import numpy as np
@@ -262,6 +263,7 @@ class Test_update_attrs_extended(unittest.TestCase):
 
     def tearDown(self):
         silent_remove(self.filename)
+
 
 
 if __name__ == '__main__':
