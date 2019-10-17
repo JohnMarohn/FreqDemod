@@ -1321,9 +1321,9 @@ class Signal(object):
         temp.append("\n\n".join(["* " + msg for msg in self.report]))
 
         return '\n'.join(temp)
-	
+
     def list(self, offset='', indent ='     '):
-	
+
         """
         List all file/group/dataset elements in the hdf5 file by iterating
         over the file contents.
@@ -1335,7 +1335,7 @@ class Signal(object):
            #HowtoaccessHDF5datafromPython-HDF5filestructure
 
         """
-	
+
         print("")
         print("Signal file summary")
         print("===================")
