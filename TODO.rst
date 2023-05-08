@@ -3,7 +3,7 @@ To do
 
 * **PSD and fitting**: Define another object (``PSD`` perhaps) and make methods that computes a power spectrum, saves the power spectum as an hdf5 file, and fits the power spectrum to one of two models.  You should also just be able to read in power-spectrum data from an hdf5 files and fit it. 
 
-* **Documentation**. (1) With the total review, the quickstart files are brokwn.  Rewrite them!  Split the files into a few true ``quickstart`` files and longer ``development`` files.  (2) The documentation for the new, HDF5-based code is pretty rough; update it.  (3) Update the ``report`` string in all the functions.  The report could be even more informative.
+* **Documentation**. (1) With the total review, the quickstart files are brokwn.  Rewrite them!  Split the files into a few true ``quickstart`` files and longer ``development`` files.  (2) The documentation for the new, HDF5-based code is pretty rough; update it.  (3) Update the ``report`` string in all the functions.  The report could be even more informative.  (4) Rewrite /docs/fabfile.py since the fabric package is totally different now.
 
 Done
 ----
