@@ -12,9 +12,9 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 # On readthedocs, we can't install packages with compiled code
 if on_rtd:
-    install_requires = ['six']
+    install_requires = ['six >= 1.16.0']
 else:
-    install_requires = ['numpy', 'scipy', 'matplotlib', 'h5py>3', 'six', 'lmfit']
+    install_requires = ['numpy >= 1.22.4', 'scipy >= 1.10.1', 'matplotlib >= 3.7.1', 'h5py >= 3.8.0', 'six >= 1.16.0', 'lmfit >= 1.2.1']
 
 description = """Extract the time-dependent frequency of a sinusoidally oscillating signal."""
 

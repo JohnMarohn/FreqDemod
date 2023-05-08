@@ -29,6 +29,11 @@ This package requires the following packages.  See the ``requirements.txt`` file
 
 * lmfit 1.0.3
 
+It is recommended that you create a virtual enviroment to run the package in.  Using the conda package manager to create a new virtual environment called "freqdemod" running python version 3.10 ::
+
+    conda create -n freqdemod python=3.10
+    conda activate freqdemod
+
 To install the package ::
 
     pip install FreqDemod
@@ -72,7 +77,18 @@ If you are working on an update to freqdemod, and want to install it, run ::
 The `-e` is short for `--editable`.  Passing the `-e` flag to pip will force pip to reinstall the package every time the package contents are updated.  This way, the installation will remain current as you continue to modify freqdemod.  Then you are done with modifications and want to install the package " for good", you can instead run ::
 
     pip install .
-    
+
+If you plan on running the example jupyter notebooks locally, you will need to install jupyter and a matching ipython kernel in the freqdemod virtual enviroment ::
+ 
+    conda activate freqdemod 
+    conda install notebook
+    conda install ipykernel
+    python -m ipykernel install --user --name=freqdemod
+
+Verify the kernel using ::
+
+    jupyter kernelspec list
+
 Your modified code should now load when you ``import freqdemod`` in your code.  To recreate the documentation, switch to the docs subdirectory, and run ::
 
     fab html

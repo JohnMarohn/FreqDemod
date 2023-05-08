@@ -3,8 +3,9 @@ Development History
 
 2023/05/08
 ----------
-* Add requirements.txt file
-* Added h5py fixes, version 3 compatability.
+* Add requirements.txt file.  Intended to run in Google Colab with Python 3.10 and newest packages. 
+* Added h5py fixes for version 3.8 compatibility.
+* Rewrote Signal.plot() to resolve histogram now being unhappy with ``np.bool_`` type data.
 * Fixed one unit test.
 
 2016/02/24

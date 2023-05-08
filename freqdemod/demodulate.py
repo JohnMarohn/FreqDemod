@@ -330,9 +330,9 @@ class Signal(object):
         # Get the x and y axis. 
 
         y = self.f[ordinate]
-        x = self.f[y.attrs['abscissa']] 
-        
-        # Posslby use tex-formatted axes labels temporarily for this plot
+        x = self.f[y.attrs['abscissa']]
+
+        # Possibly use tex-formatted axes labels temporarily for this plot
         # and compute plot labels
         
         old_param = plt.rcParams['text.usetex']        
@@ -355,35 +355,54 @@ class Signal(object):
         # plot the abs() of it. To use the abs() method, we need to force the 
         # HDF5 dataset to be of type np.ndarray 
         
-        fig=plt.figure(facecolor='w')
+        # fig=plt.figure(facecolor='w')
 
-        if isinstance(y[0],complex) == True:
+        fig, axs = plt.subplots(1, 2, 
+                                figsize=(10, 5),
+                                width_ratios=[3, 1],
+                                sharey=True,
+                                tight_layout=True)
+
+        if isinstance(y[0],complex):
             
             if component == 'abs':
-                plt.plot(x[()], abs(np.array(y[()])))
+                axs[0].plot(x[()], abs(np.array(y[()])))
+                yhist = abs(np.array(y[()]))
                 y_label_string = "abs of {}".format(y_label_string)
                 
             if component == 'real':
-                plt.plot(x[()], (np.array(y[()])).real)
+                axs[0].plot(x[()], (np.array(y[()])).real)
+                yhist = (np.array(y[()])).real
                 y_label_string = "real part of {}".format(y_label_string) 
                 
             if component == 'imag':
-                plt.plot(x[()], (np.array(y[()])).imag)
+                axs[0].plot(x[()], (np.array(y[()])).imag)
+                yhist = (np.array(y[()])).imag
                 y_label_string = "imag part of {}".format(y_label_string)
                 
             if component == 'both':
-                plt.plot(x[()], (np.array(y[()])).real)
-                plt.plot(x[()], (np.array(y[()])).imag)
+                axs[0].plot(x[()], (np.array(y[()])).real)
+                axs[0].plot(x[()], (np.array(y[()])).imag)
+                yhist = (np.array(y[()])).real # just histogram the real part, for simplicity
                 y_label_string = "real and imag part of {}".format(y_label_string)                
                     
         else:
-           plt.plot(x[()], y[()])               
-                                
+
+            if isinstance(y[0], (np.bool_, bool)):
+                axs[0].plot(x[()], y[()])
+                yhist = y[()].astype(int)
+
+            else:
+                axs[0].plot(x[()], y[()])
+                yhist = y[()]
+         
         # axes limits and labels
         
-        plt.xlabel(x_label_string)
-        plt.ylabel(y_label_string)
-        plt.title(title_string)
+        title_string = "{0} vs. {1}".format(y.attrs['help'], x.attrs['help'])
+
+        axs[0].set_xlabel(x_label_string)
+        axs[0].set_ylabel(y_label_string)
+        axs[0].set_title(title_string)
                 
         # set text spacing so that the plot is pleasing to the eye
 
@@ -391,9 +410,25 @@ class Signal(object):
         plt.locator_params(axis = 'y', nbins = 4)
         fig.subplots_adjust(bottom=0.15,left=0.12)  
 
+        # create a sideways histogram plot with a text
+        # message of the mean and stdev
+
+        counts, _ = np.histogram(yhist, bins=256)
+        axs[1].hist(yhist, bins=256, orientation="horizontal")   
+        axs[1].set_xlabel('counts')
+
+        msg1 = '{:0.3f} {:}'.format(yhist.mean(), y.attrs['unit'])
+        msg2 = '{:0.3f} {:}'.format(yhist.std(), y.attrs['unit'])
+
+        axs[1].text(0.90*counts.max(), 1.00*yhist.max(),
+                    msg1 + '\n $\pm$ ' + msg2, 
+                    fontsize=14, 
+                    horizontalalignment='right',
+                    verticalalignment='top')
+
         # clean up label spacings, show the plot, and reset the tex option
-          
-        fig.subplots_adjust(bottom=0.15,left=0.12)   
+
+        # fig.subplots_adjust(bottom=0.15,left=0.12)   
         plt.show()
         plt.rcParams['text.usetex'] = old_param  
         
@@ -1255,7 +1290,7 @@ class Signal(object):
         y_calc_dset = fit_group + '/y_calc'
         y_resid_dset = fit_group + '/y_resid'
 
-        # Posslby use tex-formatted axes labels temporarily for this plot
+        # Possibly use tex-formatted axes labels temporarily for this plot
         # and compute plot labels
         
         old_param = plt.rcParams['text.usetex']        
@@ -1434,7 +1469,6 @@ def testsignal_sine():
     S.time_window_cyclicize(3E-3)
     S.fft()
     S.freq_filter_Hilbert_complex()
-    #S.freq_filter_bp(1.00)
     S.freq_filter_bp(bw=1.00, style="cosine")
     S.time_mask_rippleless(15E-3)
     S.ifft()
