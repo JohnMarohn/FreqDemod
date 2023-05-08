@@ -232,8 +232,7 @@ class HDF5LoadGeneral(unittest.TestCase):
         self.x = np.array([0, 1, 2])
         self.y = np.array([0, 2, 4])
         self.s = Signal()
-        self.f = h5py.File(self.filename, driver='core',
-                           backing_store=False)
+        self.f = h5py.File(self.filename, mode='w-', driver='core', backing_store=False)
         self.f['time'] = self.x
         self.f['position'] = self.y
 
@@ -273,7 +272,8 @@ class HDF5LoadDefault(unittest.TestCase):
     filename = '.default_format_h5_file.h5'
 
     def setUp(self):
-        self.f = h5py.File(self.filename, driver='core',
+        self.f = h5py.File(self.filename, mode='w-', 
+                           driver='core',
                            backing_store=False)
         self.x = np.array([0, 1, 2])
         self.y = np.array([0, 2, 4])
@@ -371,7 +371,7 @@ class SaveTests(unittest.TestCase):
         self.s.freq_filter_Hilbert_complex()
         self.s.ifft()
         self.s.f.attrs['two'] = 2  # test attribute to verify attrs copied
-        self.f_dst = h5py.File('.test2.h5', backing_store=False, driver='core')
+        self.f_dst = h5py.File('.test2.h5', mode='w-', backing_store=False, driver='core')
 
     def test_save_pass_list_datasets(self):
         self.s.save(self.f_dst, ['x', 'y'])
@@ -395,11 +395,11 @@ class SaveBeforeWorkupTest(unittest.TestCase):
         self.x = np.array([0, 1, 2, 3])
         self.y = np.array([0, 1, 0, -1])
         self.s.load_nparray([0, 1, 0, -1], 'signal', 'm', 1)
-        self.f_dst = h5py.File('.test3.h5', backing_store=False, driver='core')
+        self.f_dst = h5py.File('.test3.h5', mode='w-', backing_store=False, driver='core')
 
 
     def test_save_before_workup(self):
-        self.s.save(self.f_dst, 'time_workup')
+        self.s.save(self.f_dst, 'input')
         assert_array_equal(self.f_dst['x'][:], self.x)
         assert_array_equal(self.f_dst['y'][:], self.y)
 

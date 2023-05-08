@@ -58,11 +58,14 @@ import time
 import datetime
 import warnings
 from lmfit import minimize, Parameters, fit_report
-from freqdemod.hdf5 import (update_attrs, check_minimum_attrs,
-                            infer_missing_attrs, infer_labels)
+from freqdemod.hdf5 import update_attrs
+from freqdemod.hdf5 import check_minimum_attrs
+from freqdemod.hdf5 import infer_missing_attrs
+from freqdemod.hdf5 import infer_labels
 from freqdemod.hdf5.hdf5_util import save_hdf5, h5ls
 print_hdf5_item_structure = h5ls  # Alias for backward compatibility
-from freqdemod.util import (timestamp_temp_filename, infer_timestep)
+from freqdemod.util import timestamp_temp_filename
+from freqdemod.util import infer_timestep
 from collections import OrderedDict
 import six
 import matplotlib.pyplot as plt 
@@ -98,8 +101,7 @@ class Signal(object):
                 
         if filename is not None:
             try:
-                self.f = h5py.File(filename, mode=mode, driver=driver,
-                                   backing_store=backing_store)
+                self.f = h5py.File(filename, mode=mode, driver=driver, backing_store=backing_store)
             except IOError as e:
                 print("IOError: {}".format(e.message))
                 if 'file exists' in e.message or 'Unable to open file' in e.message:
@@ -116,9 +118,7 @@ class Signal(object):
             
         else:
             filename = timestamp_temp_filename('.h5')
-            self.f = h5py.File(filename, driver='core',
-                               backing_store=False)
-
+            self.f = h5py.File(filename, mode='w-', driver='core', backing_store=False)
 
         today = datetime.datetime.today()
         
@@ -360,24 +360,24 @@ class Signal(object):
         if isinstance(y[0],complex) == True:
             
             if component == 'abs':
-                plt.plot(x,abs(np.array(y)))
+                plt.plot(x[()], abs(np.array(y[()])))
                 y_label_string = "abs of {}".format(y_label_string)
                 
             if component == 'real':
-                plt.plot(x,(np.array(y)).real)
+                plt.plot(x[()], (np.array(y[()])).real)
                 y_label_string = "real part of {}".format(y_label_string) 
                 
             if component == 'imag':
-                plt.plot(x,(np.array(y)).imag)
+                plt.plot(x[()], (np.array(y[()])).imag)
                 y_label_string = "imag part of {}".format(y_label_string)
                 
             if component == 'both':
-                plt.plot(x,(np.array(y)).real)
-                plt.plot(x,(np.array(y)).imag)
+                plt.plot(x[()], (np.array(y[()])).real)
+                plt.plot(x[()], (np.array(y[()])).imag)
                 y_label_string = "real and imag part of {}".format(y_label_string)                
                     
         else:
-           plt.plot(x,y)               
+           plt.plot(x[()], y[()])               
                                 
         # axes limits and labels
         
@@ -529,9 +529,9 @@ class Signal(object):
         ww = int(math.ceil((1.0*tw)/(1.0*dt)))  # window width (points)
         tw_actual = ww*dt                       # actual window width (seconds)
 
-        w = np.concatenate([sp.blackman(2*ww)[0:ww],
+        w = np.concatenate([np.blackman(2*ww)[0:ww],
                             np.ones(n-2*ww),
-                            sp.blackman(2*ww)[-ww:]])
+                            np.blackman(2*ww)[-ww:]])
 
         dset = self.f.create_dataset('workup/time/window/cyclicize',data=w)            
         attrs = OrderedDict([

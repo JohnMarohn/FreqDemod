@@ -1,6 +1,12 @@
 Development History
 ===================
 
+2023/05/08
+----------
+* Add requirements.txt file
+* Added h5py fixes, version 3 compatability.
+* Fixed one unit test.
+
 2016/02/24
 ----------
 * Added ``save`` method, to save part of a ``Signal`` to a new hdf5 file.

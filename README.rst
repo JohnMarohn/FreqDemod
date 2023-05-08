@@ -15,15 +15,19 @@ Resources
 Install
 -------
 
-This package requires the following packages.  If you use the Enthought Canopy Distribution, then you should install these packages first using Enthought's package manager.  If you do not install them first, then ``pip`` will install them for you
+This package requires the following packages.  See the ``requirements.txt`` file.  If you do not install these packages first, then ``pip`` will install them for you.
 
-* numpy 1.8.1
+* numpy 1.19.2
 
-* scipy 0.14.1
+* scipy 1.5.2
 
-* matplotlib 1.4.2
+* matplotlib 3.3.4
 
-* h5py 2.4.0 
+* h5py 3.8
+
+* six 1.16
+
+* lmfit 1.0.3
 
 To install the package ::
 
@@ -61,11 +65,15 @@ or ::
 
     python setup.py test
     
-If you make modifications to the code, and want to test drive your modifications, run ::
+If you are working on an update to freqdemod, and want to install it, run ::
 
-    python setup.py develop
+    pip install -e .
     
-Your modified code should now load when you ``import FreqDemod`` in your code.  To recreate the documentation, switch to the docs subdirectory, and run ::
+The `-e` is short for `--editable`.  Passing the `-e` flag to pip will force pip to reinstall the package every time the package contents are updated.  This way, the installation will remain current as you continue to modify freqdemod.  Then you are done with modifications and want to install the package " for good", you can instead run ::
+
+    pip install .
+    
+Your modified code should now load when you ``import freqdemod`` in your code.  To recreate the documentation, switch to the docs subdirectory, and run ::
 
     fab html
     fab open

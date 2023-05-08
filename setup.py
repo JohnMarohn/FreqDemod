@@ -14,7 +14,7 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
     install_requires = ['six']
 else:
-    install_requires = ['numpy', 'scipy', 'matplotlib', 'h5py', 'six', 'lmfit']
+    install_requires = ['numpy', 'scipy', 'matplotlib', 'h5py>3', 'six', 'lmfit']
 
 description = """Extract the time-dependent frequency of a sinusoidally oscillating signal."""
 
@@ -30,7 +30,7 @@ history = io.open('HISTORY.rst', mode='r',
                   encoding='utf-8').read().replace('.. :changelog:', '')
 
 setup(name='FreqDemod',
-      version='0.3.dev1',
+      version='0.3.1',
       description=description,
       long_description=readme + '\n\n' + doclink + '\n\n' + history,
       author='John Marohn',
@@ -49,7 +49,7 @@ setup(name='FreqDemod',
         'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
         'Intended Audience :: Science/Research',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
     ],
       )
