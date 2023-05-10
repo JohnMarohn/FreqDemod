@@ -156,6 +156,10 @@ class Signal(object):
         
         """
         s = np.atleast_1d(s)
+ 
+        if 'x' in self.f:
+            del self.f['x']
+  
         self.f['x'] = dt * np.arange(s.size)
         attrs = OrderedDict([
             ('name','t'),
@@ -168,6 +172,9 @@ class Signal(object):
             ])
         update_attrs(self.f['x'].attrs, attrs)        
 
+        if 'y' in self.f:
+            del self.f['y']
+        
         self.f['y'] = s
         attrs = OrderedDict([
             ('name',s_name),
@@ -590,7 +597,7 @@ class Signal(object):
         
         self.report.append(" ".join(new_report))        
  
-    def fft(self):
+    def fft(self, psd=False):
 
         """
         Take a Fast Fourier transform of the windowed signal. If the signal

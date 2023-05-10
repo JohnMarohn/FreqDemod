@@ -424,3 +424,25 @@ class MiscTests(unittest.TestCase):
         n = 6
         t = np.arange(n) # [0,1,2,3,4,5] => mean 2.5 => (t[2]+t[3])/2.0
         self.assertEqual(np.mean(t,axis=0),2.5)
+
+class OverwriteTests(unittest.TestCase):
+
+    def setUp(self):
+        self.x1 = np.array([0, 1, 0, -1, 0, 1, 0, -1, 0])
+        self.s = Signal()
+        self.s.load_nparray(self.x1, 'x', 'nm', 1)
+
+    def tests_x_as_expected(self):
+        """Test that we see the expected data in Signal()."""
+        self.assertEqual(self.s.f['x'][3], 3)
+        self.assertEqual(self.s.f['y'][3], -1)
+
+    def tests_x_overwritten(self):
+        """Test that we can overload data into an existing Signal()."""
+        self.x2 = np.array([0, 1, 2, 3])
+        self.s.load_nparray(self.x2, 'x', 'nm', 2)
+        self.assertEqual(self.s.f['x'][3], 6)
+        self.assertEqual(self.s.f['y'][3], 3)
+
+    def tearDown(self):
+        self.s.close()
