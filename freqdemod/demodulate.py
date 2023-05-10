@@ -624,14 +624,32 @@ class Signal(object):
                     
         dt = self.f['x'].attrs['step']
           
-        freq = \
-            np.fft.fftshift(
-                np.fft.fftfreq(s.size,dt))   
-                        
-        sFT = dt * \
-            np.fft.fftshift(
-                np.fft.fft(s))
-                                    
+        freq = np.fft.fftshift(np.fft.fftfreq(s.size,dt))   
+
+        name_orig = self.f['y'].attrs['name']
+        unit_orig = self.f['y'].attrs['unit']
+
+        if psd == False:                
+            sFT = dt * np.fft.fftshift(np.fft.fft(s))
+
+            sFTunit = '{0}/Hz'.format(unit_orig)
+            sFTlabel = 'FT({0}) [{1}]'.format(name_orig,sFTunit)
+            sFTlabel_latex = '$\hat{{{0}}} \: [\mathrm{{{1}}}/\mathrm{Hz}]$'.format(name_orig,unit_orig)
+            sFThelp = 'Fourier transform of {0}(t)'.format(name_orig)
+
+        elif psd == True:
+            sFT = (dt / len(s)) * abs(np.fft.fftshift(np.fft.fft(s)))
+
+            sFTunit = '{0}^2/Hz'.format(unit_orig)
+            sFTlabel = 'PSD({0}) [{1}^2/Hz]'.format(name_orig,unit_orig)
+            sFTlabel_latex = '$P_{{{0}}} \: [\mathrm{{{1}}}^2/\mathrm{{Hz}}]$'.format(name_orig,unit_orig)
+            sFThelp = 'Power spectrum of {0}(t)'.format(name_orig)
+
+            # single-sided; multiply by two so the area is (approx) correct
+            mask = freq >= 0
+            freq = freq[mask]
+            sFT = 2.0 * sFT[mask]
+
         # Save the data
         
         dset = self.f.create_dataset('workup/freq/freq',data=freq/1E3)
@@ -647,14 +665,12 @@ class Signal(object):
         update_attrs(dset.attrs,attrs)        
 
         dset = self.f.create_dataset('workup/freq/FT',data=sFT)
-        name_orig = self.f['y'].attrs['name']
-        unit_orig = self.f['y'].attrs['unit']
         attrs = OrderedDict([
             ('name','FT({0})'.format(name_orig)),
-            ('unit','{0}/Hz'.format(unit_orig)),
-            ('label','FT({0}) [{1}/Hz]'.format(name_orig,unit_orig)),
-            ('label_latex','$\hat{{{0}}} \: [\mathrm{{{1}/Hz}}]$'.format(name_orig,unit_orig)),
-            ('help','Fourier transform of {0}(t)'.format(name_orig)),
+            ('unit',sFTunit),
+            ('label',sFTlabel),
+            ('label_latex',sFTlabel_latex),
+            ('help',sFThelp),
             ('abscissa','workup/freq/freq'),
             ('n_avg',1)
             ])
@@ -1450,7 +1466,6 @@ class Signal(object):
 
         update_attrs(self.f['x'].attrs, x_attrs)
 
-
 def testsignal_sine():
         
     fd = 50.0E3    # digitization frequency
@@ -1587,6 +1602,33 @@ def testsignal_sine_exp():
     print(S)
     return S
     
+def testsignal_sine_noise():
+
+    fd = 50.0E3    # digitization frequency
+    f0 = 2.00E3    # signal frequency
+    tau = 0.325    # decay time [s]
+    nt = 60E3      # number of signal points    
+    sn = 1.0       # signal zero-to-peak amplitude
+    sn_rms = 0.1   # noise rms amplitude
+    
+    dt = 1/fd
+    t = dt*np.arange(nt)
+    s = sn*np.sin(2*np.pi*f0*t)*np.exp(-t/tau) + np.random.normal(0,sn_rms,t.size)
+    
+    S = Signal()
+    S.load_nparray(s,"x","nm",dt)
+
+    S.time_mask_binarate("middle")
+    S.time_window_cyclicize(3E-3)
+    S.fft(psd=True)
+        
+    S.plot('y', LaTeX=latex)
+    S.plot('workup/freq/FT', LaTeX=latex)
+                           
+    print(S)
+    S.list()
+    return S
+
 if __name__ == "__main__":
     
     # Parge command-line arguments
@@ -1601,7 +1643,7 @@ if __name__ == "__main__":
         "    python demodulate.py --testsignal=sine --LaTeX\n\n")
     parser.add_argument('--testsignal',
         default='sine',
-        choices = ['sine', 'sinefm', 'sineexp'],
+        choices = ['sine', 'sinefm', 'sineexp', 'sinenoise'],
         help='create analyze a test signal')
     parser.add_argument('--LaTeX',
         dest='latex',
@@ -1635,7 +1677,10 @@ if __name__ == "__main__":
 
     elif args.testsignal == 'sineexp': 
         S = testsignal_sine_exp()                            
-                                                                        
+
+    elif args.testsignal == 'sinenoise': 
+        S = testsignal_sine_noise()    
+
     else:
         print("**warning **")
         print("--testsignal={} not implimented yet".format(args.testsignal))
