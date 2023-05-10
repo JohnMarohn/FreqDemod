@@ -634,7 +634,7 @@ class Signal(object):
 
             sFTunit = '{0}/Hz'.format(unit_orig)
             sFTlabel = 'FT({0}) [{1}]'.format(name_orig,sFTunit)
-            sFTlabel_latex = '$\hat{{{0}}} \: [\mathrm{{{1}}}/\mathrm{Hz}]$'.format(name_orig,unit_orig)
+            sFTlabel_latex = '$\hat{{{0}}} \: [\mathrm{{{1}}}/\mathrm{{Hz}}]$'.format(name_orig,unit_orig)
             sFThelp = 'Fourier transform of {0}(t)'.format(name_orig)
 
         elif psd == True:
