@@ -157,12 +157,7 @@ class Signal(object):
         """
         s = np.atleast_1d(s)
 
-        if 'x' in self.f:
-            datax = self.f['x'] 
-            datax[...] = dt * np.arange(s.size)
-        else:
-            self.f['x'] = dt * np.arange(s.size)
-
+        self.f['x'] = dt * np.arange(s.size)
         attrs = OrderedDict([
             ('name','t'),
             ('unit','s'),
@@ -172,14 +167,9 @@ class Signal(object):
             ('initial',0.0),
             ('step',dt)
             ])
-        update_attrs(self.f['x'].attrs, attrs)        
-
-        if 'y' in self.f:
-            datay = self.f['y']
-            datay[...] = s
-        else:
-            self.f['y'] = s
-            
+        update_attrs(self.f['x'].attrs, attrs)
+        
+        self.f['y'] = s
         attrs = OrderedDict([
             ('name',s_name),
             ('unit',s_unit),
