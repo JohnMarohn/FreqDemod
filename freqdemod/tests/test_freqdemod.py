@@ -439,7 +439,7 @@ class OverwriteTests(unittest.TestCase):
 
     def tests_x_overwritten(self):
         """Test that we can overload data into an existing Signal()."""
-        self.x2 = np.array([0, 1, 2, 3])
+        self.x2 = np.arange(len(self.x1)) # same size as self.x1
         self.s.load_nparray(self.x2, 'x', 'nm', 2)
         self.assertEqual(self.s.f['x'][3], 6)
         self.assertEqual(self.s.f['y'][3], 3)
