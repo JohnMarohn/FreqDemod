@@ -314,7 +314,7 @@ class Signal(object):
     def plot(self, ordinate, LaTeX=False, component='abs'):
         
         """ 
-        Plot a component of the *Signal* object.  
+        Plot a component of the *Signal* object.  Both axis are linear.  Display a histogram.
         
             :param str ordinate: the name the y-axis data key
             :param str component: `abs` (default), `real`, `imag`, or `both`;
@@ -404,12 +404,6 @@ class Signal(object):
         axs[0].set_xlabel(x_label_string)
         axs[0].set_ylabel(y_label_string)
         axs[0].set_title(title_string)
-                
-        # set text spacing so that the plot is pleasing to the eye
-
-        plt.locator_params(axis = 'x', nbins = 4)
-        plt.locator_params(axis = 'y', nbins = 4)
-        fig.subplots_adjust(bottom=0.15,left=0.12)  
 
         # create a sideways histogram plot with a text
         # message of the mean and stdev
@@ -426,6 +420,12 @@ class Signal(object):
                     fontsize=14, 
                     horizontalalignment='right',
                     verticalalignment='top')
+
+        # set text spacing so that the plot is pleasing to the eye
+
+        plt.locator_params(axis = 'x', nbins = 4)
+        plt.locator_params(axis = 'y', nbins = 4)
+        fig.subplots_adjust(bottom=0.15,left=0.12)  
 
         # clean up label spacings, show the plot, and reset the tex option
 
@@ -638,17 +638,17 @@ class Signal(object):
             sFThelp = 'Fourier transform of {0}(t)'.format(name_orig)
 
         elif psd == True:
-            sFT = (dt / len(s)) * abs(np.fft.fftshift(np.fft.fft(s)))
+            sFT = (dt / len(s)) * np.power(abs(np.fft.fftshift(np.fft.fft(s))), 2.0)
 
             sFTunit = '{0}^2/Hz'.format(unit_orig)
             sFTlabel = 'PSD({0}) [{1}^2/Hz]'.format(name_orig,unit_orig)
             sFTlabel_latex = '$P_{{{0}}} \: [\mathrm{{{1}}}^2/\mathrm{{Hz}}]$'.format(name_orig,unit_orig)
             sFThelp = 'Power spectrum of {0}(t)'.format(name_orig)
 
-            # single-sided; multiply by two so the area is (approx) correct
+            # single-sided power s
             mask = freq >= 0
             freq = freq[mask]
-            sFT = 2.0 * sFT[mask]
+            sFT = sFT[mask]
 
         # Save the data
         
@@ -1644,7 +1644,7 @@ if __name__ == "__main__":
     parser.add_argument('--testsignal',
         default='sine',
         choices = ['sine', 'sinefm', 'sineexp', 'sinenoise'],
-        help='create analyze a test signal')
+        help='create and analyze a test signal')
     parser.add_argument('--LaTeX',
         dest='latex',
         action='store_true',

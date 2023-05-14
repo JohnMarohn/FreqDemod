@@ -3,7 +3,7 @@
 #
 # util.py
 # John A. Marohn
-# 2014/06/28
+# 2014/06/28, 2023/05/11
 
 import math
 import datetime
@@ -57,4 +57,6 @@ def infer_timestep(x):
     else:
         return dt_array.mean()
 
-
+def nearest2power(x):
+    """Nearest power of 2 to x, rounded down."""
+    return int(math.pow(2,int(math.floor(math.log(x, 2)))))

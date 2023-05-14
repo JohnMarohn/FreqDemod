@@ -19,6 +19,7 @@ Tests for the demodulate module.
 from freqdemod.demodulate import Signal
 from freqdemod.hdf5 import update_attrs
 from freqdemod.util import silent_remove
+from freqdemod.util import nearest2power
 import unittest
 import numpy as np
 from numpy.testing import assert_allclose, assert_array_equal
@@ -424,3 +425,8 @@ class MiscTests(unittest.TestCase):
         n = 6
         t = np.arange(n) # [0,1,2,3,4,5] => mean 2.5 => (t[2]+t[3])/2.0
         self.assertEqual(np.mean(t,axis=0),2.5)
+
+class UtilTests(unittest.TestCase):
+
+    def test_nearest2power(self):
+        self.assertEqual(nearest2power(1025), 1024) 
