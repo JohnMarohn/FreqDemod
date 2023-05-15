@@ -60,3 +60,14 @@ def infer_timestep(x):
 def nearest2power(x):
     """Nearest power of 2 to x, rounded down."""
     return int(math.pow(2,int(math.floor(math.log(x, 2)))))
+
+
+def find_nearest(array, value, verbose=False):
+    """The nearest value in a numpy array."""
+    array = np.asarray(array)
+    index = (np.abs(array - value)).argmin()
+    if verbose:
+        print('index = {:}'.format(index))
+        print('target = {:}'.format(value))
+        print('actual = {:}'.format(array[index]))
+    return index, array[index]
