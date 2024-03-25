@@ -735,7 +735,7 @@ class Signal(object):
         
         :param float bw: filter bandwidth, :math:`\\Delta f` [kHz]
         :param int order: filter order, :math:`n` (defaults to 50)
-        :param string style: "brick wall" (default) or "cosine"
+        :param string style: "brick wall" (default) or "cosine or "gaussian"
         
         Note that the filter width **bw** should be specified **in kHz and
         not Hz**.  Store the filter in::
@@ -755,8 +755,8 @@ class Signal(object):
         
         The absolute value makes the filter symmetric, even for odd values of :math:`n`.
         With the **bw** parameter set to 1 kHz, the filter will pass a 2 kHz band of frequencies,
-        from 1 kHz below to 1 kHz above the center frequency.  The power spectrum will
-        show noise falling away starting 1 kHz away from the carrier.
+        from 1 kHz below to 1 kHz above the center frequency.  The frequency-noise power spectrum 
+        will show noise falling away starting 1 kHz away from the carrier.
 
         The filtering function for the cosine filter is
 
@@ -770,6 +770,14 @@ class Signal(object):
                 & f_0 - \\Delta f < f < f_0 + \\Delta f \\\\
             0 & f_0 + \\Delta f < f
             \\end{cases}
+            \\end{equation}
+
+        The filtering function for the gaussian filter is
+
+        .. math::
+
+            \\begin{equation}
+            \\exp(-(f - f_0)^2/ \\Delta f^2)
             \\end{equation}
                                 
         """
@@ -797,6 +805,10 @@ class Signal(object):
             sub_index = (freq >= -1.0*bw + fc) & (freq <= bw + fc)
             sub_indices = np.arange(freq.size)[sub_index]
             bp[sub_indices] = np.sin(np.linspace(0,np.pi,sub_indices.size))
+
+        elif style == "gaussian":
+
+            bp = np.exp(-1 * np.power(freq_scaled, 2.0))
 
         else:
 
